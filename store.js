@@ -1,3 +1,3 @@
 import { atom } from 'jotai'
 
-const textAtom = atom('hello')
+export const messageAtom = atom('hello! welcome to the website');

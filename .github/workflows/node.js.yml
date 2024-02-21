@@ -1,0 +1,66 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint:
+    # Give your job a name that will show up in the GitHub Actions web UI
+    name: ESLint
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      # https://github.com/actions/checkout
+      - name: Check out code
+        uses: actions/checkout@v3
+            # https://github.com/actions/setup-node
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          # Use node LTS version 18 - https://github.com/actions/setup-node#supported-version-syntax
+          node-version: ${{ matrix.node-version }}
+          # Cache npm dependencies so they don't have to be downloaded next time - https://github.com/actions/setup-node#caching-packages-dependencies
+          cache: 'npm'
+
+      - name: Install node dependencies
+        # Use `ci` vs. `install`, see https://docs.npmjs.com/cli/v8/commands/npm-ci
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+        
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        
+    steps:
+      # https://github.com/actions/checkout
+      - name: Check out code
+        uses: actions/checkout@v3
+            # https://github.com/actions/setup-node
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          # Use node LTS version 18 - https://github.com/actions/setup-node#supported-version-syntax
+          node-version: ${{ matrix.node-version }}
+          # Cache npm dependencies so they don't have to be downloaded next time - https://github.com/actions/setup-node#caching-packages-dependencies
+          cache: 'npm'
+
+      - name: Install node dependencies and run Tests
+        run: npm install-ci-test

@@ -1,7 +1,7 @@
 // src/app/api/userWorkouts/route.js
 // code to handle userWorkouts api endpoints
 
-import dbConnect from "@/lib/dbConnect";
+import {dbConnect} from "@/lib/dbConnect";
 // for future use
 import UserWorkouts from "@/models/userWorkouts";
 export async function GET() {

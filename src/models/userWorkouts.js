@@ -1,7 +1,7 @@
 // src/models/userWorkouts.js
 // schema for userWorkouts
 
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const exerciseSchema = new mongoose.Schema({
   bodyPart: {

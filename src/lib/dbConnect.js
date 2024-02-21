@@ -1,14 +1,13 @@
 // src/dbConnect.js
 // code to connect to mongoDB database
-
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 global.mongoose = global.mongoose || { conn: null, promise: null };
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+if (!MONGODB_URI || MONGODB_URI.trim() === '') {
+  throw new Error('Please define the MONGODB_URI environment variable');
 }
 
 let cached = global.mongoose;
@@ -17,7 +16,7 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
 }
 
-async function dbConnect() {
+module.exports.dbConnect = async function () {
   if (cached.conn) {
     return cached.conn;
   }
@@ -37,6 +36,4 @@ async function dbConnect() {
   }
 
   return cached.conn;
-}
-
-export default dbConnect;
+};

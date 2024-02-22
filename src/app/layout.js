@@ -2,9 +2,10 @@ import { Inter as FontSans } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import Header from '../components/header';
-import { cn } from '@/lib/utils';
+import { cn } from '../lib/utils';
 
-export const fontSans = FontSans({
+// might need to export this for ClerkProvider
+const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 });

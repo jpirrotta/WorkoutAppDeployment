@@ -1,7 +1,7 @@
 import { Inter as FontSans } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
-import Header from '@/components/header';
+import Header from '../components/header';
 import { cn } from '@/lib/utils';
 
 export const fontSans = FontSans({

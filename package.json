@@ -12,12 +12,12 @@
     "coverage": "jest -c jest.config.js --runInBand --coverage"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.29.7",
+    "@clerk/nextjs": "^4.29.8",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "jotai": "^2.6.4",
-    "lucide-react": "^0.336.0",
+    "lucide-react": "^0.341.0",
     "mongoose": "^8.1.3",
     "next": "14.1.0",
     "pino": "^8.19.0",
@@ -29,14 +29,13 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@types/react": "18.2.57",
-    "autoprefixer": "^10.4.17",
+    "autoprefixer": "^10.0.1",
     "dotenv": "^16.4.5",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
     "jest": "29.7.0",
-    "postcss": "^8.4.34",
+    "postcss": "^8",
     "prettier": "3.2.5",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.3.0"
   }
 }

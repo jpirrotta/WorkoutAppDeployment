@@ -16,6 +16,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "framer-motion": "^11.0.6",
     "jotai": "^2.6.4",
     "lucide-react": "^0.341.0",
     "mongoose": "^8.1.3",

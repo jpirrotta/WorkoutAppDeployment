@@ -1,10 +1,15 @@
-import { Inter as FontSans } from 'next/font/google';
-import './globals.css';
+// auth
 import { ClerkProvider } from '@clerk/nextjs';
-import Header from '../components/header';
-import { cn } from '../lib/utils';
 
-const fontSans = FontSans({
+// styles
+import './globals.css';
+import { cn } from '@/lib/utils';
+import { Inter as FontSans } from 'next/font/google';
+
+// components
+import Header from '@/components/Header';
+
+export const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 });
@@ -17,12 +22,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={cn(
-          'min-h-screen bg-background font-sans antialiased',
-          fontSans.variable
-        )}
-      >
+      <body className={cn('min-h-screen bg-background font-sans antialiased', fontSans.variable)}>
         <ClerkProvider>
           <Header />
           {children}

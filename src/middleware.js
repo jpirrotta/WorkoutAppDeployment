@@ -1,3 +1,8 @@
+// https://github.com/clerk/javascript/issues/2435
+// using import { authMiddleware } from '@clerk/nextjs'; as in the docs can causes some issues when building the app
+// the git issue above suggests using import { authMiddleware } from '@clerk/nextjs/server'; if the above import causes issues
+
+
 import { authMiddleware } from '@clerk/nextjs';
 
 export default authMiddleware({

@@ -1,5 +1,5 @@
 'use client';
-import Spotlight from '@/components/ui/spotlight';
+import Spotlight from '@/components/ui/Spotlight';
 import CallToActionButton from '@/components/Hero/CallToActionButton';
 
 export default function Hero() {

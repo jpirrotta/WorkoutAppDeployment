@@ -40,7 +40,7 @@ export default function ServiceItem({
             <Link
               target="_blank"
               href={iconSource}
-              className={`${buttonVariants({ variant: 'link', size: 'xs', className: 'text-[0.6rem] pl-1' })}`}
+              className={`${buttonVariants({ variant: 'link', size: 'xs', className: 'text-[0.7rem] pl-1' })}`}
             >
               {iconAuthor}
             </Link>

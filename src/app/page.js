@@ -1,6 +1,7 @@
 import Hero from '@/components/Hero.jsx';
 import Services from '@/components/Services/Services';
 import CallToActionSection from '@/components/CallToActionSection';
+import Testimonials from '@/components/Testimonials';
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
         buttonText="Sign Up"
         buttonLink="/sign-up"
       />
+      <Testimonials />
     </main>
   );
 }

@@ -7,7 +7,7 @@ export default function Hero() {
     // consider adding overflow-hidden to that the spotlight doesn't overflow to the header
     <div className="h-[50rem] 3xl:h-[55rem] items-center w-full flex md:items-center md:justify-center bg-slate-900 antialiased bg-grid-rose/[0.02] relative">
       <Spotlight
-        className="-top-20 md:-top-20 lg:-top-10 xl:-top-5 2xl:-top-0 3xl:-top-0 left-20 md:left-60 lg:left-80 xl:left-96 2xl:left-[30rem] 3xl:left-[50rem]"
+        className="-top-1 md:-top-20 lg:-top-10 xl:-top-5 2xl:-top-0 3xl:-top-0 left-1 md:left-55 lg:left-80 xl:left-96 2xl:left-[30rem] 3xl:left-[50rem]"
         fill="#fb7185"
       />
       <div className=" p-4 max-w-7xl  mx-auto relative z-10  w-full pt-20 md:pt-0">

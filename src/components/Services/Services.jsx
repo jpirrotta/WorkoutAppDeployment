@@ -31,8 +31,8 @@ export default function Services() {
           description="Dive into our extensive library of over 1300 exercises. Use our advanced search tool to find the perfect exercise for you. Save your favorites for easy access and learn how to perform each exercise with detailed instructions and animations."
           linkText="Explore Exercises"
           linkHref="/" // temporary
-          iconAuthor="GameIcons"
-          iconSource="https://game-icons.net/"
+          author="GameIcons"
+          attributeSource="https://game-icons.net/"
           reverse
         />
         <ServiceItem
@@ -41,8 +41,8 @@ export default function Services() {
           description="Utilize our variety of easy-to-use health calculators, including BMI, BMR, Diet, and Calorie calculators. Keep track of your health and progress effortlessly."
           linkText="Calculate Now"
           linkHref="/" // temporary
-          iconAuthor="fontawesome"
-          iconSource="https://fontawesome.com/"
+          author="fontawesome"
+          attributeSource="https://fontawesome.com/"
         />
       </div>
     </section>

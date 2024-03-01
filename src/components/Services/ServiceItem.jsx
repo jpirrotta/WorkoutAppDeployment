@@ -1,5 +1,6 @@
 import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
+import Attribution from '@/components/Attribution.jsx';
 
 import RightArrow from '@/components/svgs/RightArrow.svg';
 export default function ServiceItem({
@@ -9,8 +10,8 @@ export default function ServiceItem({
   linkText,
   linkHref,
   reverse,
-  iconAuthor,
-  iconSource,
+  author,
+  attributeSource,
 }) {
   return (
     <div
@@ -21,7 +22,7 @@ export default function ServiceItem({
         {svg}
       </div>
       <div className="flex-grow sm:text-left text-center mt-6 sm:mt-0">
-        <h2 className="text-white text-lg title-font font-medium mb-2">
+        <h2 className="text-primary-foreground text-lg title-font font-medium mb-2">
           {title}
         </h2>
         <p className="leading-relaxed text-base">{description}</p>
@@ -34,18 +35,7 @@ export default function ServiceItem({
           {/* right arrow icon in JSX! */}
           <RightArrow width={'1.3em'} className="ml-2" />
         </Link>
-        {iconAuthor && (
-          <p className="text-[0.59rem] pl-2 pt-2">
-            Icon made by
-            <Link
-              target="_blank"
-              href={iconSource}
-              className={`${buttonVariants({ variant: 'link', size: 'xs', className: 'text-[0.58rem] pl-1' })}`}
-            >
-              {iconAuthor}
-            </Link>
-          </p>
-        )}
+        {author && attributeSource && <Attribution author={author} attributeSource={attributeSource} type="Icon" />}
       </div>
     </div>
   );

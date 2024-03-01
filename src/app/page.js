@@ -1,7 +1,7 @@
 import Hero from '@/components/Hero.jsx';
 import Services from '@/components/Services/Services';
 import CallToActionSection from '@/components/CallToActionSection';
-import Testimonials from '@/components/Testimonials';
+import Testimonials from '@/components/Testimonials/Testimonials';
 
 export default function Home() {
   return (

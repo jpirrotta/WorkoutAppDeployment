@@ -11,7 +11,7 @@ const StyledIcon = ({ Icon, ...props }) => {
 // ================================================================
 export default function Services() {
   return (
-    <section className="text-slate-400 bg-slate-900 w-full">
+    <section id="services" className="text-slate-400 bg-slate-900 w-full">
       <div className="container px-5 py-24 mx-auto">
         <ServiceItem
           svg={<StyledIcon Icon={DumbbellIcon} />}

@@ -35,12 +35,12 @@ export default function ServiceItem({
           <RightArrow width={'1.3em'} className="ml-2" />
         </Link>
         {iconAuthor && (
-          <p className="text-[0.6rem] pl-2 pt-2">
+          <p className="text-[0.59rem] pl-2 pt-2">
             Icon made by
             <Link
               target="_blank"
               href={iconSource}
-              className={`${buttonVariants({ variant: 'link', size: 'xs', className: 'text-[0.7rem] pl-1' })}`}
+              className={`${buttonVariants({ variant: 'link', size: 'xs', className: 'text-[0.58rem] pl-1' })}`}
             >
               {iconAuthor}
             </Link>

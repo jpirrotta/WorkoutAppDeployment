@@ -20,14 +20,16 @@ export default function Hero() {
           Track Workouts, Share Routines, and Learn Together.
         </p>
         <div className="flex justify-center mt-8">
-          <Link href="/sign-up">
+          <Link href="/sign-up" scroll={false}>
             <Button size="lg" variant="outline">
               Start Your Fitness Journey Today
             </Button>
           </Link>
         </div>
       </div>
-      <ArrowCloseDownIcon className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 text-primary" />
+      <Link href="#services">
+        <ArrowCloseDownIcon className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-12 h-12 text-primary" />
+      </Link>
     </div>
   );
 }

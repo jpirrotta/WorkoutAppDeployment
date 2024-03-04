@@ -1,4 +1,4 @@
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/Button';
 import Link from 'next/link';
 import Attribution from '@/components/Attribution.jsx';
 
@@ -35,7 +35,13 @@ export default function ServiceItem({
           {/* right arrow icon in JSX! */}
           <RightArrow width={'1.3em'} className="ml-2" />
         </Link>
-        {author && attributeSource && <Attribution author={author} attributeSource={attributeSource} type="Icon" />}
+        {author && attributeSource && (
+          <Attribution
+            author={author}
+            attributeSource={attributeSource}
+            type="Icon"
+          />
+        )}
       </div>
     </div>
   );

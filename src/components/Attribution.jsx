@@ -8,7 +8,7 @@ export default function Attribution({ attributeSource, author, type, ...props })
       <Link
         target="_blank"
         href={attributeSource}
-        className={`${buttonVariants({ variant: 'link', size: 'xs', className: 'text-[10px] leading-none pl-1' })}`}
+        className={`${buttonVariants({ variant: 'link', size: 'xxs', className: 'text-[9px] leading-none pl-1' })} `}
       >
         {author}
       </Link>

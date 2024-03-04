@@ -1,4 +1,4 @@
-import { buttonVariants } from '@/components/ui/Button';
+import { buttonVariants } from '@/components/ui/Button.jsx';
 import Link from 'next/link';
 
 export default function Attribution({

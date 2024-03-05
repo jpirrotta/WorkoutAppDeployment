@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
-import { UserButton, auth } from '@clerk/nextjs';
+import { UserButton, auth, SignInButton } from '@clerk/nextjs';
+import ClerkBtn from '@/components/ClerkBtn';
 
 export default function Header() {
   const { userId } = auth();
-
   return (
     <div className="bg-slate-900">
       <div className="container mx-auto flex items-center justify-between py-2">
@@ -16,12 +16,11 @@ export default function Header() {
             About Us
           </Link>
         </div>
+
         {userId ? (
-          <UserButton afterSignOutUrl="/" />
+          <ClerkBtn />
         ) : (
-          <Link href="/sign-in" className={buttonVariants()}>
-            Sign In
-          </Link>
+          <SignInButton mode="modal" className={buttonVariants()} />
         )}
       </div>
     </div>

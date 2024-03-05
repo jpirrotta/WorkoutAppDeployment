@@ -22,8 +22,22 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={cn('min-h-screen bg-background font-sans antialiased', fontSans.variable)}>
-        <ClerkProvider>
+      <body
+        className={cn(
+          'min-h-screen bg-background font-sans antialiased',
+          fontSans.variable
+        )}
+      >
+        <ClerkProvider
+          appearance={{
+            elements: {
+              userButtonPopoverCard:
+                'mt-1 w-[65%] sm:w-[40%] md:w-[30%] lg:w-[25%] xl:w-[20%]',
+              card: 'shadow-none w-full',
+              rootBox: 'flex w-full',
+            },
+          }}
+        >
           <Header />
           {children}
         </ClerkProvider>

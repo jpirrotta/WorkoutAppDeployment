@@ -30,7 +30,7 @@ export default function Services() {
           title="Discover Our Exercise Library"
           description="Dive into our extensive library of over 1300 exercises. Use our advanced search tool to find the perfect exercise for you. Save your favorites for easy access and learn how to perform each exercise with detailed instructions and animations."
           linkText="Explore Exercises"
-          linkHref="/" // temporary
+          linkHref="/exercises" // temporary
           author="GameIcons"
           attributeSource="https://game-icons.net/"
           reverse

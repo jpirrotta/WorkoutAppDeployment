@@ -10,7 +10,7 @@ import {
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Button } from './ui/button';
+import { Button } from './ui/Button';
 
 export default function ExerciseCards({ exercises }) {
   const [showDemo, setShowDemo] = useState(false);

@@ -8,7 +8,6 @@ import {
 import Testimonial from '@/components/Testimonials/Testimonial';
 import testimonialsList from '@/data/testimonialsList';
 
-
 export default function Testimonials() {
   return (
     <div className="bg-slate-900 p-10 w-full pt-16 ">

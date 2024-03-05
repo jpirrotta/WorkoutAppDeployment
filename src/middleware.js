@@ -2,12 +2,11 @@
 // using import { authMiddleware } from '@clerk/nextjs'; as in the docs can causes some issues when building the app
 // the git issue above suggests using import { authMiddleware } from '@clerk/nextjs/server'; if the above import causes issues
 
-
 import { authMiddleware } from '@clerk/nextjs';
 
 export default authMiddleware({
   // Routes that can be accessed while signed out
-  publicRoutes: ['/', '/sign-in',],
+  publicRoutes: ['/', '/sign-in', '/exercises'],
   // Routes that can always be accessed, and have
   // no authentication information
   // ignoredRoutes: [""],

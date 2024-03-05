@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/Button.jsx';
+import { buttonVariants } from '@/components/ui/button.jsx';
 import { UserButton, SignInButton, auth } from '@clerk/nextjs';
 
 export default function Header() {

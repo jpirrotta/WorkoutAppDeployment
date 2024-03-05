@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button.jsx';
+import { Button } from '@/components/ui/button.jsx';
 
 export default function CallToActionSection({
   title,

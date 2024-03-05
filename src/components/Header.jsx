@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
-import { UserButton, auth } from '@clerk/nextjs';
+import { buttonVariants } from '@/components/ui/Button';
+import { UserButton, SignInButton, auth } from '@clerk/nextjs';
 
 export default function Header() {
   const { userId } = auth();
@@ -19,9 +19,7 @@ export default function Header() {
         {userId ? (
           <UserButton afterSignOutUrl="/" />
         ) : (
-          <Link href="/sign-in" className={buttonVariants()}>
-            Sign In
-          </Link>
+          <SignInButton mode="modal" className={buttonVariants()} />
         )}
       </div>
     </div>

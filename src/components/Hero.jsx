@@ -1,6 +1,6 @@
 import Spotlight from '@/components/ui/Spotlight';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import ArrowCloseDownIcon from '@/components/svgs/ArrowCloseDownIcon.svg';
 export default function Hero() {
   return (

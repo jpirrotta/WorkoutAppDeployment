@@ -4,45 +4,16 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel';
+} from '@/components/ui/Carousel';
 import Testimonial from '@/components/Testimonials/Testimonial';
-
-const testimonials = [
-  {
-    src: '/testimonials3.jpg',
-    name: 'Arnold Schwarzenegger',
-    type: 'Professional Trainer',
-    desc: "As a professional trainer, I've seen many workout apps, but this one stands out. The custom workout builder is a game-changer, allowing my clients to tailor their workouts to their needs. The progress tracker keeps them motivated and accountable. I highly recommend this app to anyone serious about fitness",
-    author: 'Gordon Cowie',
-    attributeSource:
-      'https://unsplash.com/photos/man-in-red-tank-top-holding-black-dumbbell-vQmuOVMDRhQ?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash',
-  },
-  {
-    src: '/testimonials2.jpg',
-    name: 'Aladdin Aladdin',
-    type: 'Gym Enthusiast',
-    desc: "This app has taken my gym routine to the next level. The extensive library of exercises ensures I never run out of options. The advanced search tool helps me find the perfect exercise for each muscle group. It's like having a personal trainer in my pocket.",
-    author: 'Dollar Gill',
-    attributeSource:
-      'https://unsplash.com/photos/man-in-black-and-white-tank-top-and-brown-shorts-sitting-on-black-and-red-exercise-PcBbrjiShAk?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash',
-  },
-  {
-    src: '/testimonials1.jpg',
-    name: 'Wonder Woman',
-    type: 'Indoor & Outdoor Fitness Lover',
-    desc: "I love the flexibility this app offers. Whether I'm working out at home or outside, I have a variety of exercises at my fingertips. The health calculators are super helpful for tracking my progress. It's everything I need in a fitness app",
-    author: 'Big Dodzy',
-    attributeSource:
-      'https://unsplash.com/photos/woman-in-black-sports-bra-and-black-shorts-sitting-on-concrete-bench-during-daytime-gTTtXwqmKPQ?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash',
-  },
-];
+import testimonialsList from '@/data/testimonialsList';
 
 export default function Testimonials() {
   return (
-    <div className="bg-slate-900 p-10 w-full pt-20 ">
+    <div className="bg-slate-900 p-10 w-full pt-16 ">
       <Carousel className="bg-slate-900 mx-5 sm:mx-10 md:mx-20 3xl:mx-[30rem] text-slate-400">
         <CarouselContent>
-          {testimonials.map((testimonial) => (
+          {testimonialsList.map((testimonial) => (
             <CarouselItem key={testimonial.name}>
               <Testimonial
                 src={testimonial.src}

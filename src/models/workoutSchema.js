@@ -50,12 +50,5 @@ const workoutSchema = new mongoose.Schema({
   exercises: [exerciseSchema],
 });
 
-const userWorkoutsSchema = new mongoose.Schema({
-  userId: {
-    type: String,
-    required: true,
-  },
-  workouts: [workoutSchema],
-});
 
-export default mongoose.models.UserWorkouts || mongoose.model('UserWorkouts', userWorkoutsSchema);
+export default mongoose.models.workouts || mongoose.model('workouts', workoutSchema);

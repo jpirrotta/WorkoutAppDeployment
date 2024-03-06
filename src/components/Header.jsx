@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/Button';
 import { UserButton, auth, SignInButton } from '@clerk/nextjs';
-import ClerkBtn from '@/components/ClerkBtn';
 
 export default function Header() {
   const { userId } = auth();
@@ -16,12 +15,17 @@ export default function Header() {
             About Us
           </Link>
         </div>
-
-        {userId ? (
-          <ClerkBtn />
-        ) : (
-          <SignInButton mode="modal" className={buttonVariants()} />
-        )}
+        <div>
+          {userId ? (
+            <UserButton
+              afterSignOutUrl="/"
+              userProfileMode="navigation"
+              userProfileUrl="/user-profile"
+            />
+          ) : (
+            <SignInButton mode="modal" className={buttonVariants()} />
+          )}
+        </div>
       </div>
     </div>
   );

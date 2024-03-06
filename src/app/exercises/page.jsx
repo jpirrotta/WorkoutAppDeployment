@@ -16,7 +16,7 @@ export default function ExercisePage() {
   const { data: exercises, error } = useSWR(url, fetcher);
 
   const loadMore = () => {
-    setLimit(limit + 10);
+    setLimit(limit + 6);
   };
 
   if (error) return <div>Failed to load exercises</div>;

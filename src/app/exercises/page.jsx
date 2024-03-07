@@ -7,8 +7,11 @@ import useSWR from 'swr';
 import Spinner from '@/components/svgs/Spinner.svg';
 import { Button } from '@/components/ui/Button';
 
+import { useAtom } from 'jotai';
+import { limitAtom } from '../../../store';
+
 export default function ExercisePage() {
-  const [limit, setLimit] = useState(6);
+  const [limit, setLimit] = useAtom(limitAtom);
 
   let url = `https://exercisedb.p.rapidapi.com/exercises?limit=${limit}`;
   const fetcher = (url) => fetchData(url, ExerciseOptions);
@@ -29,9 +32,9 @@ export default function ExercisePage() {
     );
 
   return (
-    <div className="bg-slate-900 min-h-screen p-4 flex flex-col justify-between">
-      <h1 className="text-primary text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4">
-        Exercises
+    <div className="bg-slate-900 min-h-screen flex flex-col justify-between">
+      <h1 className="text-primary italic font-semibold text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4">
+        Our Exercises!
       </h1>
       <ExerciseCards exercises={exercises} />
       <Button

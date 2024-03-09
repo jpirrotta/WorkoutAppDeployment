@@ -6,7 +6,7 @@ const logger = require('../src/lib/logger');
 // this has to be set before requiring dbConnect
 process.env.MONGODB_URI = globalThis.__MONGO_URI__;
 // now dbConnect can see the environment variable
-const { dbConnect } = require('../src/lib/dbConnect');
+const { dbConnect } = require('../src/lib/dbConnect.js');
 
 jest.mock('mongoose');
 
@@ -19,7 +19,9 @@ describe('Connect to Database', () => {
   });
   test('should throw an error', async () => {
     // Mock mongoose.connect to return a rejected promise
-    mongoose.connect.mockRejectedValue(new Error('Could not connect to database'));
+    mongoose.connect.mockRejectedValue(
+      new Error('Could not connect to database')
+    );
     try {
       await dbConnect();
     } catch (e) {
@@ -36,13 +38,15 @@ describe('Connect to Database', () => {
     jest.isolateModules(async () => {
       mongoose.connect.mockResolvedValue({});
       try {
-        dbConnect = require('../src/lib/dbConnect');
+        dbConnect = require('../src/lib/dbConnect.js');
         await dbConnect();
       } catch (e) {
         error = e;
       }
     });
     expect(error).toBeDefined();
-    expect(error.message).toBe('Please define the MONGODB_URI environment variable');
+    expect(error.message).toBe(
+      'Please define the MONGODB_URI environment variable'
+    );
   });
 });

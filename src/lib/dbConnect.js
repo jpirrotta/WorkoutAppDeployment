@@ -1,7 +1,7 @@
 // src/dbConnect.js
 // code to connect to mongoDB database
-import mongoose from 'mongoose';
-import logger from '@/lib/logger';
+const mongoose = require('mongoose'); 
+const logger = require('./logger');
 
 global.mongoose = global.mongoose || { conn: null, promise: null };
 

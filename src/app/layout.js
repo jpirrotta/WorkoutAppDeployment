@@ -9,7 +9,7 @@ import { Inter as FontSans } from 'next/font/google';
 
 // components
 import Header from '@/components/Header';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/components/ui/Toaster';
 
 export const fontSans = FontSans({
   subsets: ['latin'],

@@ -235,7 +235,6 @@ export default function ProfileForm() {
                 <FormControl>
                   <Select
                     {...field}
-                    value={userProfileData?.profile?.sex}
                     defaultValue="other"
                     onValueChange={(value) => field.onChange(value)}
                   >

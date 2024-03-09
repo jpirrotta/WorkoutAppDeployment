@@ -3,10 +3,28 @@
 // the git issue above suggests using import { authMiddleware } from '@clerk/nextjs/server'; if the above import causes issues
 
 import { authMiddleware } from '@clerk/nextjs';
+import logger from '@/lib/logger.js';
+import { NextResponse } from "next/server";
+
+
+// Log the log level
+logger.info(`initializing authMiddleware`);
 
 export default authMiddleware({
+  afterAuth: (auth, req, evt) => {
+    logger.info(`initializing afterAuth`);
+    // If the user is logged in and trying to access a protected route, allow them to access route
+    if (auth.userId && !auth.isPublicRoute) {
+      logger.info(`User is logged in and trying to access a protected route`);
+      return NextResponse.next();
+    }
+    // Allow users visiting public routes to access them
+    logger.info(`User is visiting a public route`);
+    return NextResponse.next();
+  },
   // Routes that can be accessed while signed out
   publicRoutes: ['/', '/sign-in', '/exercises'],
+
   // Routes that can always be accessed, and have
   // no authentication information
   // ignoredRoutes: [""],

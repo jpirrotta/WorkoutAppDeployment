@@ -4,4 +4,6 @@ const measurementAtom = atom('numerical');
 
 const profileDataAtom = atom(undefined);
 
-export { profileDataAtom, measurementAtom };
+const limitAtom = atom(6);
+
+export { profileDataAtom, measurementAtom, limitAtom };

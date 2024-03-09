@@ -5,6 +5,9 @@ const nextConfig = {
     esmExternals: 'loose', // <-- needed for mongoose
     serverComponentsExternalPackages: ['mongoose', 'pino'], // <-- needed external packages for server components
   },
+  images: {
+    domains: ['v2.exercisedb.io'],
+  },
   webpack(config) {
     config.experiments = {
       // <-- needed for mongoose

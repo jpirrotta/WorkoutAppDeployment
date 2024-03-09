@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/Button';
-import { UserButton, auth, SignInButton } from '@clerk/nextjs';
+import { UserButton, SignInButton, auth } from '@clerk/nextjs';
+
 
 export default function Header() {
   const { userId } = auth();

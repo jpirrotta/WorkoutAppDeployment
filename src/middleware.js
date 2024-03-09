@@ -23,7 +23,8 @@ export default authMiddleware({
     return NextResponse.next();
   },
   // Routes that can be accessed while signed out
-  publicRoutes: ['/', '/sign-in'],
+  publicRoutes: ['/', '/sign-in', '/exercises'],
+
   // Routes that can always be accessed, and have
   // no authentication information
   // ignoredRoutes: [""],

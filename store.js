@@ -1,3 +1,7 @@
-import { atom } from 'jotai'
+import { atom } from 'jotai';
 
-export const measurementAtom = atom("empirical")
+const measurementAtom = atom('numerical');
+
+const profileDataAtom = atom(undefined);
+
+export { profileDataAtom, measurementAtom };

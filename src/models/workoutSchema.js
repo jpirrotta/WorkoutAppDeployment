@@ -1,54 +1,47 @@
 // src/models/userWorkouts.js
 // schema for userWorkouts
 
-const mongoose = require('mongoose');
+import mongoose, { Schema } from 'mongoose';
 
-const exerciseSchema = new mongoose.Schema({
+const exerciseSchema = new Schema({
   bodyPart: {
     type: String,
-    required: [true, 'Body Part is required'],
+    required: [false, 'Body Part is required'],
     max: [100, 'Body Part cannot be greater than 100 characters'],
   },
   equipment: {
     type: String,
-    required: [true, 'Equipment is required'],
+    required: [false, 'Equipment is required'],
     max: [100, 'Equipment cannot be greater than 100 characters'],
   },
   id: {
     type: String,
-    required: [true, 'ID is required'],
+    required: [false, 'ID is required'],
     max: [100, 'ID cannot be greater than 100 characters'],
   },
   name: {
     type: String,
-    required: [true, 'Name is required'],
+    required: [false, 'Name is required'],
     max: [100, 'Name cannot be greater than 100 characters'],
   },
   target: {
     type: String,
-    required: [true, 'Target is required'],
+    required: [false, 'Target is required'],
     max: [100, 'Target cannot be greater than 100 characters'],
   },
   secondaryMuscles: {
     type: [String],
-    required: [true, 'Secondary Muscles are required'],
+    required: [false, 'Secondary Muscles are required'],
   },
   instructions: {
     type: [String],
-    required: [true, 'Instructions are required'],
+    required: [false, 'Instructions are required'],
   },
 });
 
-exerciseSchema.pre('save', function(next) {
-  if (this.EquipmentType === 'body weight') {
-    this.weight = 0;
-  }
-  next();
-});
-
-const workoutSchema = new mongoose.Schema({
+const workoutSchema = new Schema({
   exercises: [exerciseSchema],
 });
 
 
-export default mongoose.models.workouts || mongoose.model('workouts', workoutSchema);
+export default workoutSchema;

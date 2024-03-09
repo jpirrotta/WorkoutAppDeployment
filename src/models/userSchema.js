@@ -1,11 +1,22 @@
 // src/models/user.js
-const mongoose = require('mongoose');
-const workoutSchema = require('./workoutSchema');
+import workoutSchema from './workoutSchema';
+import mongoose, { Schema } from 'mongoose';
+const historySchema = new Schema(
+  {
+    date: {
+      type: Date,
+      default: Date.now,
+    },
+    value: Number,
+  },
+  { _id: false }
+);
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   userId: {
     type: String,
     required: true,
+    unique: true,
   },
   name: {
     type: String,
@@ -23,21 +34,25 @@ const userSchema = new mongoose.Schema({
     },
     weight: {
       type: Number,
-      min: 20,
-      max: 200,
+      min: 1,
+      max: 600,
     },
     height: {
       type: Number,
-      min: 60,
-      max: 250,
+      min: 1,
+      max: 300,
     },
     bodyFat: {
       type: Number,
-      min: 3,
+      min: 1,
       max: 50,
     },
   },
+  weightHistory: [historySchema],
+  bodyFatHistory: [historySchema],
   workouts: [workoutSchema],
 });
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+
+export default User;

@@ -1,6 +1,7 @@
 // src/dbConnect.js
 // code to connect to mongoDB database
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import logger from '@/lib/logger';
 
 global.mongoose = global.mongoose || { conn: null, promise: null };
 
@@ -17,23 +18,23 @@ if (!cached) {
 }
 
 module.exports.dbConnect = async function () {
-  if (cached.conn) {
-    return cached.conn;
-  }
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
-    });
-  }
   try {
+    if (cached.conn) {
+      return cached.conn;
+    }
+    if (!cached.promise) {
+      const opts = {
+        bufferCommands: false,
+      };
+      cached.promise = await mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+        logger.info('dbConnect() MongoDB Connected');
+        return mongoose;
+      });
+    }
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
     throw e;
   }
-
   return cached.conn;
 };

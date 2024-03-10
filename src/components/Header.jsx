@@ -39,7 +39,8 @@ export default function Header({ user }) {
           }
         </div>
         {user ? (
-          <UserButton afterSignOutUrl="/" />
+          <UserButton afterSignOutUrl="/" userProfileMode="navigation"
+          userProfileUrl="/user-profile" />
         ) : (
           <SignInButton mode="modal" className={buttonVariants()} />
         )}

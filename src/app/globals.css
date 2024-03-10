@@ -5,6 +5,22 @@
 html {
   scroll-behavior: smooth;
 }
+/* custom scroll bar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  backdrop-filter: blur(1rem);
+  border-radius: 1rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary));
+  border-radius: 1rem;
+}
+/* end of custom scrollbar */
 
 @layer base {
   :root {

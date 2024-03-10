@@ -1,5 +1,6 @@
 // auth
 import { ClerkProvider } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs';
 
 // styles
 import './globals.css';
@@ -20,11 +21,13 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const { userId } = auth()
+
   return (
     <html lang="en">
       <body className={cn('min-h-screen bg-background font-sans antialiased', fontSans.variable)}>
         <ClerkProvider>
-          <Header />
+          <Header user={userId} />
           {children}
         </ClerkProvider>
       </body>

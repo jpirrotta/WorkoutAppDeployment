@@ -1,3 +1,9 @@
-import { atom } from 'jotai'
+import { atom } from 'jotai';
 
-const textAtom = atom('hello')
+const measurementAtom = atom('numerical');
+
+const profileDataAtom = atom(undefined);
+
+const limitAtom = atom(6);
+
+export { profileDataAtom, measurementAtom, limitAtom };

@@ -4,7 +4,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel';
+} from '@/components/ui/Carousel';
 import Testimonial from '@/components/Testimonials/Testimonial';
 
 import testimonialImage1 from '@/assets/images/testimonials1.jpg';

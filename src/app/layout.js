@@ -1,5 +1,6 @@
 // auth
 import { ClerkProvider } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 
 // styles
@@ -10,6 +11,8 @@ import { Inter as FontSans } from 'next/font/google';
 // components
 import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/Toaster';
+import Footer from '@/components/footer';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const fontSans = FontSans({
   subsets: ['latin'],
@@ -22,6 +25,8 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const { userId } = auth();
+
   return (
     <html lang="en">
       <body
@@ -30,23 +35,31 @@ export default function RootLayout({ children }) {
           fontSans.variable
         )}
       >
-        <ClerkProvider
-          appearance={{
-            baseTheme: dark,
-            variables: { colorPrimary: '#E11D49' },
-            elements: {
-              userButtonPopoverCard:
-                'mt-1 w-[65%] sm:w-[40%] md:w-[30%] lg:w-[25%] xl:w-[20%]',
-              card: 'shadow-none w-full bg-slate-900 text-primary-foreground radius-2xl ',
-              rootBox:
-                'flex w-full text-primary-foreground bg-slate-900 radius-2xl',
-            },
-          }}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
         >
-          <Header />
-          {children}
-          <Toaster />
-        </ClerkProvider>
+          <ClerkProvider
+            appearance={{
+              baseTheme: dark,
+              variables: { colorPrimary: '#E11D49' },
+              elements: {
+                userButtonPopoverCard:
+                  'mt-1 w-[65%] sm:w-[40%] md:w-[30%] lg:w-[25%] xl:w-[20%]',
+                card: 'shadow-none w-full bg-slate-900 text-primary-foreground radius-2xl',
+                rootBox:
+                  'flex flex-row-reverse w-full text-primary-foreground bg-slate-900 radius-2xl mr-5',
+              },
+            }}
+          >
+            <Header user={userId} />
+            {children}
+            <Toaster />
+            <Footer />
+          </ClerkProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

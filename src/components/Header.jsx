@@ -29,8 +29,8 @@ export default function Header({ user }) {
   return (
     <div className="bg-slate-900">
       <div className="flex justify-between py-2">
-        <div className="container items-center hidden md:block">
-          <Link href="/" className={buttonVariants()}>
+        <div className="container items-center hidden md:block mt-1">
+          <Link href="/" className={buttonVariants()} style={{marginRight: 15}}>
             Home
           </Link>
           <Link href="/about-us" className={buttonVariants()}>

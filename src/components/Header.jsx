@@ -72,7 +72,7 @@ export default function Header({ user }) {
             </Link>
           </li>
           <li>
-            <Link href="/about-us" className="px-4 cursor-pointer capitalize py-6 text text-white">
+            <Link href="/about-us" className="px-4 cursor-pointer capitalize py-6 text text-white" style={{ color: "#e11d48" }}>
               About Us
             </Link>
           </li>

@@ -12,7 +12,7 @@ import { Inter as FontSans } from 'next/font/google';
 import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/Toaster';
 import Footer from '@/components/footer';
-import { ThemeProvider } from '@/components/theme-provider';
+// import { ThemeProvider } from '@/components/theme-provider';
 
 export const fontSans = FontSans({
   subsets: ['latin'],
@@ -35,12 +35,6 @@ export default function RootLayout({ children }) {
           fontSans.variable
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
           <ClerkProvider
             appearance={{
               baseTheme: dark,
@@ -59,7 +53,6 @@ export default function RootLayout({ children }) {
             <Toaster />
             <Footer />
           </ClerkProvider>
-        </ThemeProvider>
       </body>
     </html>
   );

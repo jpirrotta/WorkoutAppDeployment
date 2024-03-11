@@ -53,14 +53,13 @@ export default function Footer() {
                 </div>
                 <div className="p-5 text-center sm:w-7/12 border-r border-indigo-950">
                     <h3 className="uppercase font-bold text-xl text-indigo-950 mb-4">Componentity</h3>
-                    <p className="text-gray-100 text-sm mb-10">Lorem Ipsum is simply dummy text of the printing and typesetting
-                        industry. Lorem Ipsum has been the industry{'\''}s standard dummy text ever since the 1500s.</p>
+                    <p className="text-gray-100 text-sm mb-10">Thinking of adding a Input area for User{'\''}s Email Address to provide them daily updates and other news</p>
                 </div>
                 <div className="text-center sm:text-left p-5 sm:w-3/12">
                     <div className="uppercase text-indigo-950 font-bold">Contact Us</div>
                     <ul>
                         <li className="my-2">
-                            <a className="hover:text-gray-300" href="#">XXX XXXX, Floor 4 San Francisco, CA</a>
+                            <a className="hover:text-gray-300" href="#">XXX XXXX, Seneca Newnham, North York</a>
                         </li>
                         <li className="my-2">
                             <a className="hover:text-gray-300" href="#">contact@company.com</a>

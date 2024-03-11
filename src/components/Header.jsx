@@ -18,8 +18,8 @@ export default function Header({ user }) {
 
   return (
     <div className="bg-slate-900">
-      <div className="container mx-auto flex items-center justify-between py-2">
-        <div className="flex gap-2 items-center hidden md:block">
+      <div className="flex justify-between py-2">
+        <div className="container items-center hidden md:block">
           <Link href="/" className={buttonVariants()}>
             Home
           </Link>
@@ -27,11 +27,12 @@ export default function Header({ user }) {
             About Us
           </Link>
         </div>
-        <div className="md:hidden">
+        <div className="container md:hidden">
           {isOpen ?
-            <FaTimes size={30} onClick={toggleMenu} className="text-2xl cursor-pointer" style={{ color: "#e11d48" }} />
+            <FaTimes size={25} onClick={toggleMenu} className="text-2xl cursor-pointer" style={{ color: "#e11d48" }} />
             :
             <FaBars
+              size={25}
               onClick={toggleMenu}
               className="text-2xl cursor-pointer"
               style={{ color: "#e11d48" }}
@@ -40,7 +41,7 @@ export default function Header({ user }) {
         </div>
         {user ? (
           <UserButton afterSignOutUrl="/" userProfileMode="navigation"
-          userProfileUrl="/user-profile" />
+            userProfileUrl="/user-profile" />
         ) : (
           <SignInButton mode="modal" className={buttonVariants()} />
         )}

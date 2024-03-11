@@ -11,6 +11,7 @@ import { Inter as FontSans } from 'next/font/google';
 // components
 import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/Toaster';
+import Footer from '@/components/footer';
 
 export const fontSans = FontSans({
   subsets: ['latin'],
@@ -23,7 +24,7 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const { userId } = auth()
+  const { userId } = auth();
 
   return (
     <html lang="en">
@@ -40,15 +41,16 @@ export default function RootLayout({ children }) {
             elements: {
               userButtonPopoverCard:
                 'mt-1 w-[65%] sm:w-[40%] md:w-[30%] lg:w-[25%] xl:w-[20%]',
-              card: 'shadow-none w-full bg-slate-900 text-primary-foreground radius-2xl ',
+              card: 'shadow-none w-full bg-slate-900 text-primary-foreground radius-2xl',
               rootBox:
-                'flex w-full text-primary-foreground bg-slate-900 radius-2xl',
+                'flex flex-row-reverse w-full text-primary-foreground bg-slate-900 radius-2xl mr-5',
             },
           }}
         >
           <Header user={userId} />
           {children}
           <Toaster />
+          <Footer />
         </ClerkProvider>
       </body>
     </html>

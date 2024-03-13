@@ -1,8 +1,9 @@
 import ServiceItem from '@/components/Services/ServiceItem';
-//icons
+// Icons
 import DumbbellIcon from '@/components/svgs/DumbbellIcon.svg';
 import WeightLiftingIcon from '@/components/svgs/WeightLiftingIcon.svg';
 import WeightScaleIcon from '@/components/svgs/WeightScaleIcon.svg';
+// Icon Maker
 import { StyledIcon } from '@/components/StyledIcon'
 
 // ================================================================

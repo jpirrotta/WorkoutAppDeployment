@@ -5,14 +5,26 @@ import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/Button';
 import { UserButton, SignInButton } from '@clerk/nextjs';
 import { useState } from 'react';
+
+// Light/Dark Mode theme import
 import { useTheme } from "next-themes"
+
+// Icon imports
+import {  StyledIcon } from "./StyledIcon";
+import Menu from "@/components/svgs/Menu.svg"
+import Cross from "@/components/svgs/Cross.svg"
+import Sun from "@/components/svgs/Sun.svg"
+import Moon from "@/components/svgs/Moon.svg"
 
 export default function Header({ user }) {
   const [isOpen, setIsOpen] = useState(false)
   const { theme, setTheme } = useTheme()
+
+  // checking for dark mode on every render
   const isDarkMode = theme === 'dark'
 
-  const toggleMode = () => {
+  // Change Mode
+  const handleMode = () => {
     const newMode = isDarkMode ? 'light' : 'dark'
     console.log(newMode)
     setTheme(newMode)
@@ -28,7 +40,7 @@ export default function Header({ user }) {
     <div className="bg-slate-900">
       <div className="flex justify-between py-2">
         <div className="container items-center hidden md:block mt-1">
-          <Link href="/" className={buttonVariants()} style={{marginRight: 15}}>
+          <Link href="/" className={buttonVariants()} style={{ marginRight: 15 }}>
             Home
           </Link>
           <Link href="/about-us" className={buttonVariants()}>
@@ -37,20 +49,16 @@ export default function Header({ user }) {
         </div>
         <div className="container md:hidden">
           {isOpen ?
-            <FaTimes size={25} onClick={toggleMenu} className="text-2xl m-2 cursor-pointer" style={{ color: "#e11d48" }} />
+            <StyledIcon Icon={Cross} w={'10%'} className="text-primary" onClick={toggleMenu} />
             :
-            <FaBars
-              size={25}
-              onClick={toggleMenu}
-              className="text-2xl m-2 cursor-pointer"
-              style={{ color: "#e11d48" }}
-            />
+            <StyledIcon Icon={Menu} w={'10%'} className="text-primary" onClick={toggleMenu} />
           }
         </div>
         {isDarkMode ? (
-          <FaSun size={45} className="text-2xl cursor-pointer" style={{ color: "#e11d48" }} />
+          <StyledIcon Icon={Sun} w={'4%'} className="text-primary hover:cursor-pointer" onClick={handleMode} />
         ) : (
-          <FaMoon size={45} className="text-2xl cursor-pointer" style={{ color: "#e11d48" }} />
+          <StyledIcon Icon={Moon} w={'4%'} className="text-primary hover:cursor-pointer" onClick={handleMode} />
+
         )}
         {user ? (
           <UserButton afterSignOutUrl="/" userProfileMode="navigation"

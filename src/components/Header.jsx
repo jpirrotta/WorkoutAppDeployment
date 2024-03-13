@@ -5,20 +5,18 @@ import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/Button';
 import { UserButton, SignInButton } from '@clerk/nextjs';
 import { useState } from 'react';
-import { FaBars, FaTimes } from 'react-icons/fa';
-// need for dark/light mode
-// import { useTheme } from "next-themes"
+import { useTheme } from "next-themes"
 
 export default function Header({ user }) {
   const [isOpen, setIsOpen] = useState(false)
-  // const { theme, setTheme } = useTheme()
-  // const isDarkMode = theme === 'dark'
+  const { theme, setTheme } = useTheme()
+  const isDarkMode = theme === 'dark'
 
-  // const toggleMode = () => {
-  //   const newMode = isDarkMode ? 'light' : 'dark'
-  //   console.log(newMode)
-  //   setTheme(newMode)
-  // }
+  const toggleMode = () => {
+    const newMode = isDarkMode ? 'light' : 'dark'
+    console.log(newMode)
+    setTheme(newMode)
+  }
 
   const toggleMenu = () => {
     const menu = document.getElementById('mobile-menu');
@@ -49,11 +47,11 @@ export default function Header({ user }) {
             />
           }
         </div>
-        {/* {isDarkMode ? (
+        {isDarkMode ? (
           <FaSun size={45} className="text-2xl cursor-pointer" style={{ color: "#e11d48" }} />
         ) : (
           <FaMoon size={45} className="text-2xl cursor-pointer" style={{ color: "#e11d48" }} />
-        )} */}
+        )}
         {user ? (
           <UserButton afterSignOutUrl="/" userProfileMode="navigation"
             userProfileUrl="/user-profile" />

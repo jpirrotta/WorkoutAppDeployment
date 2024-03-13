@@ -5,10 +5,8 @@ import Facebook from '@/components/svgs/Facebook.svg';
 import Linkedin from '@/components/svgs/Linkedin.svg';
 import Youtube from '@/components/svgs/Youtube.svg';
 import Instagram from '@/components/svgs/Instagram.svg';
-
-const StyledIcon = ({ Icon, ...props }) => {
-    return <Icon width={'130%'} {...props} />;
-};
+// importing the icon specifier component
+import { StyledIcon } from '@/components/StyledIcon';
 
 export default function Footer() {
     const links = [
@@ -35,8 +33,8 @@ export default function Footer() {
     ]
     return (
         <div className="bg-rose-600">
-            <div className="max-w-screen-lg py-8 px-4 sm:px-6 text-gray-100 sm:flex mx-auto justify-center items-center">
-                <div className="p-5 text-center sm:w-1/6 border-r border-indigo-950 sm:text-left">
+            <div className="max-w-screen-lg py-8 px-4 md:px-6 md:divide-x text-gray-100 md:flex mx-auto justify-center">
+                <div className="p-5 text-center md:w-1/6 border-indigo-950 md:text-left">
                     <div className="uppercase text-indigo-950 font-bold">Menu</div>
                     <ul>
                         {links.map(({ id, title, link }) => (
@@ -51,11 +49,11 @@ export default function Footer() {
                         ))}
                     </ul>
                 </div>
-                <div className="p-5 text-center sm:w-4/6 border-r border-indigo-950">
+                <div className="p-5 text-center xl:w-4/6 md:w-3/6 border-indigo-950">
                     <h3 className="uppercase font-bold text-xl text-indigo-950 mb-4">Componentity</h3>
                     <p className="text-gray-100 text-sm mb-10">Thinking of adding a Input area for User{'\''}s Email Address to provide them daily updates and other news</p>
                 </div>
-                <div className="text-center sm:text-left p-5 sm:w-1/6">
+                <div className="text-center md:text-left p-5 md:w-1/6 border-indigo-950">
                     <div className="uppercase text-indigo-950 font-bold">Contact Us</div>
                     <ul>
                         <li className="my-2">
@@ -72,34 +70,39 @@ export default function Footer() {
                     <Link href="#" className="w-6 mx-6 text-indigo-950 hover:text-gray-300 hover:h-7 hover:w-7 duration-200">
                         <StyledIcon
                             Icon={Twitter}
+                            w={'130%'}
                         />
                     </Link>
 
                     <Link href="#" className="w-6 mx-6 text-indigo-950 hover:text-gray-300 hover:h-7 hover:w-7 duration-200">
                         <StyledIcon
                             Icon={Facebook}
+                            w={'130%'}
                         />
                     </Link>
 
                     <Link href="#" className="w-6 mx-6 text-indigo-950 hover:text-gray-300 hover:h-7 hover:w-7 duration-200">
                         <StyledIcon
                             Icon={Linkedin}
+                            w={'130%'}
                         />
                     </Link>
 
                     <Link href="#" className="w-6 mx-6 text-indigo-950 hover:text-gray-300 hover:h-7 hover:w-7 duration-200">
                         <StyledIcon
                             Icon={Youtube}
+                            w={'130%'}
                         />
                     </Link>
 
                     <Link href="#" className="w-6 mx-6 text-indigo-950 hover:text-gray-300 hover:h-7 hover:w-7 duration-200">
                         <StyledIcon
                             Icon={Instagram}
+                            w={'130%'}
                         />
                     </Link>
                 </div>
-                <div className="my-5 text-gray-100">© Copyright 2024. All Rights Reserved.</div>
+                <div className="my-5 text-indigo-950">© Copyright 2024. All Rights Reserved.</div>
             </div>
         </div>
     );

@@ -1,4 +1,6 @@
-// src/lib/EmpiricalMetricConversion.js
+// src/utils/EmpiricalMetricConversion.js
+const WEIGHT_CONVERSION = 2.20462;
+const HEIGHT_CONVERSION = 0.0328084;
 
 const EmpiricalMetricConversion = (selectedTab, weight, height) => {
   let convertedData = { weight: null, height: null };
@@ -9,9 +11,9 @@ const EmpiricalMetricConversion = (selectedTab, weight, height) => {
     if (isNaN(weight)) {
       console.log('Invalid weight');
     } else if (selectedTab === 'empirical') {
-      convertedData.weight = (weight * 2.20462).toFixed(2);
-    } else if (selectedTab === 'numerical') {
-      convertedData.weight = (weight / 2.20462).toFixed(2);
+      convertedData.weight = (weight * WEIGHT_CONVERSION).toFixed(2);
+    } else if (selectedTab === 'metric') {
+      convertedData.weight = (weight / WEIGHT_CONVERSION).toFixed(2);
     }
   }
 
@@ -20,9 +22,9 @@ const EmpiricalMetricConversion = (selectedTab, weight, height) => {
     if (isNaN(height)) {
       console.log('Invalid height');
     } else if (selectedTab === 'empirical') {
-      convertedData.height = (height * 0.0328084).toFixed(2);
-    } else if (selectedTab === 'numerical') {
-      convertedData.height = (height / 0.0328084).toFixed(2);
+      convertedData.height = (height * HEIGHT_CONVERSION).toFixed(2);
+    } else if (selectedTab === 'metric') {
+      convertedData.height = (height / HEIGHT_CONVERSION).toFixed(2);
     }
   }
 

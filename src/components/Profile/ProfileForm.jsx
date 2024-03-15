@@ -10,7 +10,7 @@ import _ from 'lodash';
 
 // utils
 import { useUser } from '@clerk/clerk-react';
-import EmpiricalMetricConversion from '@/lib/EmpiricalMetricConversion.js';
+import EmpiricalMetricConversion from '@/utils/EmpiricalMetricConversion.js';
 import getUserProfileData from '@/lib/getUserProfileData.js';
 //!
 
@@ -21,6 +21,7 @@ import { useEffect } from 'react';
 //!
 
 // UI components
+import BMICard from '@/components/BMICard.jsx';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import {
@@ -68,8 +69,7 @@ export default function ProfileForm() {
         logger.info('Fetched from the server');
         const data = await getUserProfileData(userId);
         setUserProfileData(data);
-      }
-      else{
+      } else {
         logger.info('Fetched from the store / cache');
       }
     }
@@ -112,12 +112,12 @@ export default function ProfileForm() {
       return;
     }
 
-    // Data is saved in Numerical format by default in the db
+    // Data is saved in metric format by default in the db
     // first check if the selected tab is empirical
     if (selectedTab === 'empirical') {
-      // if it is, convert the form data to numerical
+      // if it is, convert the form data to metric
       const convertedData = EmpiricalMetricConversion(
-        'numerical',
+        'metric',
         data.profile.weight,
         data.profile.height
       );
@@ -263,7 +263,7 @@ export default function ProfileForm() {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>
-                    Weight {selectedTab === 'numerical' ? '(kg)' : '(lbs)'}
+                    Weight {selectedTab === 'metric' ? '(kg)' : '(lbs)'}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -285,7 +285,7 @@ export default function ProfileForm() {
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>
-                    Height {selectedTab === 'numerical' ? '(cm)' : '(ft)'}
+                    Height {selectedTab === 'metric' ? '(cm)' : '(ft)'}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -322,7 +322,7 @@ export default function ProfileForm() {
           />
           {/* metric or empirical tab */}
           <Tabs
-            defaultValue="numerical"
+            defaultValue="metric"
             value={selectedTab}
             onValueChange={(value) => handleTabChange(value)}
           >
@@ -330,8 +330,8 @@ export default function ProfileForm() {
               <TabsTrigger className="px-10" value="empirical">
                 Empirical
               </TabsTrigger>
-              <TabsTrigger className="px-10" value="numerical">
-                Numerical
+              <TabsTrigger className="px-10" value="metric">
+                Metric
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -341,6 +341,10 @@ export default function ProfileForm() {
           </div>
         </form>
       </Form>
+      <BMICard
+        weight={userProfileData?.profile?.weight}
+        height={userProfileData?.profile?.height}
+      />
     </section>
   );
 }

@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 
-const measurementAtom = atom('numerical');
+const measurementAtom = atom('metric');
 
 const profileDataAtom = atom(undefined);
 

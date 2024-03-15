@@ -341,10 +341,12 @@ export default function ProfileForm() {
           </div>
         </form>
       </Form>
-      <BMICard
-        weight={userProfileData?.profile?.weight}
-        height={userProfileData?.profile?.height}
-      />
+      {userProfileData?.profile?.weight && userProfileData?.profile?.height && (
+        <BMICard
+          weight={userProfileData?.profile?.weight}
+          height={userProfileData?.profile?.height}
+        />
+      )}
     </section>
   );
 }

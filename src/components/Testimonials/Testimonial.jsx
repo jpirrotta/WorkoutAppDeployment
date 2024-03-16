@@ -21,7 +21,7 @@ export default function Testimonial({
   return (
     <div className="flex flex-col justify-center items-center text-center text-balance">
       <Image
-        className="mx-auto shadow-lg shadow-primary w-[70%] h-[35%] sm:w-[60%] lg:w-[30%] rounded-full"
+        className="mx-auto shadow-lg shadow-primary w-[70%] h-[35%] sm:w-[60%] lg:w-[30%] m-3 rounded-full"
         src={src}
         alt="gym goer"
         width={450}
@@ -40,11 +40,11 @@ export default function Testimonial({
       <div className="w-full px-3 lg:w-8/12 flex-shrink-0 flex-grow-0">
         <h5 className="my-2 text-lg text-primary font-bold">{name}</h5>
         {type && (
-          <p className="mb-2 font-medium text-secondary dark:text-slate-400">
+          <p className="mb-2 font-medium text-secondary text-secondary-foreground">
             {type}
           </p>
         )}
-        <p className="text-slate-400 dark:text-secondary w-[80%] mx-auto">
+        <p className="text-muted-foreground w-[80%] mx-auto">
           {textWithoutLastWord + ' '}
           <span className="inline-flex items-baseline">
             {lastWord}

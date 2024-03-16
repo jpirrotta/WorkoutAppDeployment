@@ -10,8 +10,8 @@ import { Inter as FontSans } from 'next/font/google';
 
 // components
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { Toaster } from '@/components/ui/Toaster';
-import Footer from '@/components/footer';
 import { ThemeProvider } from '@/components/Theme-provider';
 
 export const fontSans = FontSans({
@@ -28,10 +28,12 @@ export default function RootLayout({ children }) {
   const { userId } = auth();
 
   return (
-    <html lang="en">
+    // Need suppressHydrationWarning to suppress hydration warnings because next-theme is updating this element (no worries, it only suppresses 1 level deep warning)
+    // Refer for more Info: https://github.com/pacocoursey/next-themes?tab=readme-ov-file#with-app
+    <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          'min-h-screen bg-slate-900 font-sans antialiased',
+          'min-h-screen bg-background font-sans antialiased',
           fontSans.variable
         )}
       >
@@ -42,23 +44,24 @@ export default function RootLayout({ children }) {
             elements: {
               userButtonPopoverCard:
                 'mt-1 w-[65%] sm:w-[40%] md:w-[30%] lg:w-[25%] xl:w-[20%]',
-              card: 'shadow-none w-full bg-slate-900 text-primary-foreground radius-2xl',
+              card: 'shadow-none w-full bg-gray-100 dark:bg-background text-secondary-foreground radius-2xl',
               rootBox:
-                'flex flex-row-reverse w-full text-primary-foreground bg-slate-900 radius-2xl mr-5',
+                'flex flex-row-reverse w-full text-secondary-foreground dark:bg-background radius-2xl mr-5',
+              navbarButton: 'text-secondary-foreground hover:bg-card',
             },
           }}
         >
-          {/* <ThemeProvider
+          <ThemeProvider
             attribute="class"
-            defaultTheme="system"
-            enableSystem
+            defaultTheme="dark"
+            enableSystem={false}
             disableTransitionOnChange
-          > */}
+          >
             <Header user={userId} />
             {children}
             <Toaster />
             <Footer />
-          {/* </ThemeProvider> */}
+          </ThemeProvider>
         </ClerkProvider>
       </body>
     </html>

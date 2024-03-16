@@ -18,7 +18,7 @@ export default function CallToActionSection({
         </p>
         <div className="flex justify-center mt-8">
           <Link href={buttonLink}>
-            <Button size="lg" className="text-slate-900 bg-secondary">
+            <Button size="lg" variant="secondary" className="text-indigoTouch">
               {buttonText}
             </Button>
           </Link>

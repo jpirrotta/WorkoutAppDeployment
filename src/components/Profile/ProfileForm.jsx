@@ -74,7 +74,7 @@ export default function ProfileForm() {
       }
     }
     fetchData();
-  }, []);
+  }, [userProfileData, userId, setUserProfileData]);
 
   // define the form and its default values
   const form = useForm({

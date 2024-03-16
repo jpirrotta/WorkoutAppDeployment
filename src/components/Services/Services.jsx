@@ -9,7 +9,7 @@ import { StyledIcon } from '@/components/StyledIcon'
 // ================================================================
 export default function Services() {
   return (
-    <section id="services" className="text-slate-400 bg-slate-900 w-full">
+    <section id="services" className="text-secondary-foreground bg-background w-full">
       <div className="container px-5 py-24 mx-auto">
         <ServiceItem
           svg={<StyledIcon Icon={DumbbellIcon} w={'80%'} className="text-primary" />}

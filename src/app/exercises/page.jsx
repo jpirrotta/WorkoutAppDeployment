@@ -26,13 +26,13 @@ export default function ExercisePage() {
 
   if (!exercises)
     return (
-      <div className="bg-slate-900 min-h-screen p-4 flex items-center justify-center">
+      <div className="bg-background min-h-screen p-4 flex items-center justify-center">
         <Spinner className="text-primary text-6xl" />
       </div>
     );
 
   return (
-    <div className="bg-slate-900 min-h-screen flex flex-col justify-between">
+    <div className="bg-background min-h-screen flex flex-col justify-between">
       <h1 className="text-primary italic font-semibold text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4">
         Our Exercises!
       </h1>

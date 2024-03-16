@@ -4,21 +4,39 @@ import * as React from "react"
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/Button';
 import { UserButton, SignInButton } from '@clerk/nextjs';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Light/Dark Mode theme import
 import { useTheme } from "next-themes"
 
 // Icon imports
-import {  StyledIcon } from "./StyledIcon";
+import { StyledIcon } from "@/components/StyledIcon";
 import Menu from "@/components/svgs/Menu.svg"
 import Cross from "@/components/svgs/Cross.svg"
 import Sun from "@/components/svgs/Sun.svg"
 import Moon from "@/components/svgs/Moon.svg"
+import logger from "@/lib/logger";
 
 export default function Header({ user }) {
+  // state vars
+  // state var for opening and closing of navbar Menu
   const [isOpen, setIsOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
+  // state var for mounting particular theme (light/dark) during CSR
+  const [mounted, setMounted] = useState(false)
+
+  // handling root theme of our webApp
+  const { theme, setTheme } = useTheme('dark')
+
+
+  // Avoid Hydration Mismatch: useEffect only runs on the client, so now we can safely show the UI
+  // Refer for more info: https://github.com/pacocoursey/next-themes?tab=readme-ov-file#avoid-hydration-mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   // checking for dark mode on every render
   const isDarkMode = theme === 'dark'
@@ -26,10 +44,11 @@ export default function Header({ user }) {
   // Change Mode
   const handleMode = () => {
     const newMode = isDarkMode ? 'light' : 'dark'
-    console.log(newMode)
+    logger.info(`Changing Theme Mode to ${newMode}`)
     setTheme(newMode)
   }
 
+  // handling toggling of Navbar Menu (for Responsive design)
   const toggleMenu = () => {
     const menu = document.getElementById('mobile-menu');
     menu.classList.toggle('hidden');
@@ -37,7 +56,7 @@ export default function Header({ user }) {
   };
 
   return (
-    <div className="bg-slate-900">
+    <div className="dark:bg-background light:bg-gray-500">
       <div className="flex justify-between py-2">
         <div className="container items-center hidden md:block mt-1">
           <Link href="/" className={buttonVariants()} style={{ marginRight: 15 }}>
@@ -49,17 +68,18 @@ export default function Header({ user }) {
         </div>
         <div className="container md:hidden">
           {isOpen ?
-            <StyledIcon Icon={Cross} w={'10%'} className="text-primary" onClick={toggleMenu} />
+            <StyledIcon Icon={Cross} w={'25px'} className="text-primary" onClick={toggleMenu} />
             :
-            <StyledIcon Icon={Menu} w={'10%'} className="text-primary" onClick={toggleMenu} />
+            <StyledIcon Icon={Menu} w={'25px'} className="text-primary" onClick={toggleMenu} />
           }
         </div>
-        {isDarkMode ? (
-          <StyledIcon Icon={Sun} w={'4%'} className="text-primary hover:cursor-pointer" onClick={handleMode} />
-        ) : (
-          <StyledIcon Icon={Moon} w={'4%'} className="text-primary hover:cursor-pointer" onClick={handleMode} />
 
+        {isDarkMode ? (
+          <StyledIcon Icon={Sun} w={'65px'} className="text-primary hover:cursor-pointer" onClick={handleMode} />
+        ) : (
+          <StyledIcon Icon={Moon} w={'65px'} className="text-primary hover:cursor-pointer" onClick={handleMode} />
         )}
+
         {user ? (
           <UserButton afterSignOutUrl="/" userProfileMode="navigation"
             userProfileUrl="/user-profile" />
@@ -67,9 +87,11 @@ export default function Header({ user }) {
           <SignInButton mode="modal" className={buttonVariants()} />
         )}
       </div>
+
+      {/* Navbar Menu for responsiveness (for smaller screens) */}
       <div
         id="mobile-menu"
-        className="hidden md:hidden bg-gray-800 py-4"
+        className="hidden md:hidden bg-background py-4"
       >
         <ul className="flex flex-col items-center">
           <li className='mb-4'>

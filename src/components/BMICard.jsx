@@ -55,7 +55,6 @@ const bmiTooltipDesc =
   'Body mass index (BMI) is a person’s weight in kilograms divided by the square of height in meters. BMI is an inexpensive and easy screening method for weight category—underweight, healthy weight, overweight, and obesity.BMI does not measure body fat directly, but BMI is moderately correlated with more direct measures of body fat';
 
 export default function BMICard({ weight, height }) {
-  console.log(`BMICard: weight: ${weight}, height: ${height}`);
   const [bmi, setBMI] = useAtom(userBMI);
 
   const statusTextColor = setStatusColor(bmi.category);

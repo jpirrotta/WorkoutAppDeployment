@@ -87,3 +87,27 @@ export async function GET(req, res) {
     return new Response(error.message, { status: 500 });
   }
 }
+
+export async function DELETE(req, res) {
+  logger.info('\n\nDELETE Profile API called');
+  try {
+    const { searchParams } = new URL(req.url);
+    // Get the userId from the query parameters
+    const userId = searchParams.get('userId');
+    logger.info(`DELETE Request userId: ${userId}`);
+    await dbConnect();
+    const user = await User.findOne({ userId: userId });
+    if (!user) {
+      logger.info('DELETE User not found');
+      return new Response('User not found', { status: 404 });
+    } else {
+      logger.info(`DELETE User found`);
+      await user.deleteOne();
+      logger.info(`DELETE User deleted`);
+      return new Response('User deleted', { status: 200 });
+    }
+  } catch (error) {
+    logger.error(`DELETE Error deleting profile: ${error}`);
+    return new Response(error.message, { status: 500 });
+  }
+}

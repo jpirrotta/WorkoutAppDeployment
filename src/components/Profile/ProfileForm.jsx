@@ -24,6 +24,7 @@ import { useEffect } from 'react';
 import BMICard from '@/components/BMICard.jsx';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import DeleteProfileData from '@/components/Profile/DeleteProfileData';
 import {
   Select,
   SelectContent,
@@ -341,11 +342,15 @@ export default function ProfileForm() {
           </div>
         </form>
       </Form>
+      {/* if there is some profile data saved show the calculated BMI and DELETE option */}
       {userProfileData?.profile?.weight && userProfileData?.profile?.height && (
-        <BMICard
-          weight={userProfileData?.profile?.weight}
-          height={userProfileData?.profile?.height}
-        />
+        <>
+          <BMICard
+            weight={userProfileData?.profile?.weight}
+            height={userProfileData?.profile?.height}
+          />
+          <DeleteProfileData userId={userId} />
+        </>
       )}
     </section>
   );

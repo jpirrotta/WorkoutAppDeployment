@@ -4,7 +4,6 @@ export function calculateBMI(weight, height) {
     console.error('Invalid input. Weight and height must be numeric values.');
     return 'Invalid input. Weight and height must be numeric values.';
   }
-  console.log(`calculateBMI: weight: ${weight}, height: ${height}`)
 
   // Convert height from cm to m
   height = height / 100;

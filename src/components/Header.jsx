@@ -6,8 +6,11 @@ import { buttonVariants } from '@/components/ui/Button';
 import { UserButton, SignInButton } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 
-// Light/Dark Mode theme import
-import { useTheme } from 'next-themes';
+// Current auth state
+import { useAuth } from "@clerk/nextjs";
+
+// Light/Dark Mode theme decider import
+import { useTheme } from "next-themes"
 
 // Icon imports
 import { StyledIcon } from '@/components/StyledIcon';
@@ -17,15 +20,17 @@ import Sun from '@/components/svgs/Sun.svg';
 import Moon from '@/components/svgs/Moon.svg';
 import logger from '@/lib/logger';
 
-export default function Header({ user }) {
-  // state vars
-  // state var for opening and closing of navbar Menu
-  const [isOpen, setIsOpen] = useState(false);
-  // state var for mounting particular theme (light/dark) during CSR
-  const [mounted, setMounted] = useState(false);
+export default function Header() {
+  const { isSignedIn } = useAuth();
+  // State vars
+  // State var for opening and closing of navbar Menu
+  const [isOpen, setIsOpen] = useState(false)
+  // State var for mounting particular theme (light/dark) during CSR
+  const [mounted, setMounted] = useState(false)
 
-  // handling root theme of our webApp
-  const { theme, setTheme } = useTheme('dark');
+  // Handle root theme of our webApp
+  const { theme, setTheme } = useTheme('dark')
+
 
   // Avoid Hydration Mismatch: useEffect only runs on the client, so now we can safely show the UI
   // Refer for more info: https://github.com/pacocoursey/next-themes?tab=readme-ov-file#avoid-hydration-mismatch
@@ -33,6 +38,7 @@ export default function Header({ user }) {
     setMounted(true);
   }, []);
 
+  // return nothing until UI is not mounted on client side
   if (!mounted) {
     return null;
   }
@@ -47,7 +53,7 @@ export default function Header({ user }) {
     setTheme(newMode);
   };
 
-  // handling toggling of Navbar Menu (for Responsive design)
+  // handle toggling of Navbar Menu (for Responsive design)
   const toggleMenu = () => {
     const menu = document.getElementById('mobile-menu');
     menu.classList.toggle('hidden');
@@ -86,6 +92,7 @@ export default function Header({ user }) {
             />
           )}
         </div>
+        {/* Switching between Light/Dark Mode */}
         <div className="theme-toggle flex basis-1/3 justify-center ">
           {isDarkMode ? (
             <StyledIcon
@@ -103,8 +110,9 @@ export default function Header({ user }) {
             />
           )}
         </div>
+        {/* Check if the user is signed in and show their profile */}
         <div className="container basis-1/3 flex justify-end">
-          {user ? (
+          {isSignedIn ? (
             <UserButton
               afterSignOutUrl="/"
               userProfileMode="navigation"
@@ -115,8 +123,9 @@ export default function Header({ user }) {
           )}
         </div>
 
-        {/* Navbar Menu for responsiveness (for smaller screens) */}
-      </div>
+
+      </div >
+      {/* Navbar Menu for responsiveness (for smaller screens) */}
       <div id="mobile-menu" className="hidden md:hidden bg-background py-4">
         <ul className="flex flex-col items-center">
           <li className="mb-4">
@@ -139,6 +148,6 @@ export default function Header({ user }) {
           </li>
         </ul>
       </div>
-    </header>
+    </header >
   );
 }

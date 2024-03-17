@@ -1,6 +1,5 @@
 // auth
 import { ClerkProvider } from '@clerk/nextjs';
-import { auth } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 
 // styles
@@ -25,7 +24,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  const { userId } = auth();
 
   return (
     // Need suppressHydrationWarning to suppress hydration warnings because next-theme is updating this element (no worries, it only suppresses 1 level deep warning)
@@ -57,7 +55,7 @@ export default function RootLayout({ children }) {
             enableSystem={false}
             disableTransitionOnChange
           >
-            <Header user={userId} />
+            <Header />
             {children}
             <Toaster />
             <Footer />

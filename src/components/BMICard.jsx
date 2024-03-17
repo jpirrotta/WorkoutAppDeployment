@@ -26,7 +26,7 @@ import Link from 'next/link.js';
 
 // helpers
 import logger from '@/lib/logger';
-import { calculateBMI, getBMICategory } from '@/utils/BMICalculator';
+import { calculateBMI, getBMICategory } from '@/utils/BMICalculator.js';
 //
 
 // state management
@@ -93,7 +93,7 @@ export default function BMICard({ weight, height }) {
                   <Link
                     className={`${buttonVariants({ variant: 'link', size: 'xxs', className: 'text-[8px] leading-none pl-1' })} `}
                     href="https://www.cdc.gov/healthyweight/assessing/bmi/adult_bmi/index.html"
-                    target='_blank'
+                    target="_blank"
                     rel="noopener noreferrer"
                   >
                     Source

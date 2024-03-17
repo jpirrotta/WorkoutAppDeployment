@@ -2,7 +2,7 @@
 const WEIGHT_CONVERSION = 2.20462;
 const HEIGHT_CONVERSION = 0.0328084;
 
-const EmpiricalMetricConversion = (selectedTab, weight, height) => {
+function EmpiricalMetricConversion(selectedTab, weight, height) {
   let convertedData = { weight: null, height: null };
 
   // Convert weight and height to numbers if they are not undefined
@@ -30,6 +30,10 @@ const EmpiricalMetricConversion = (selectedTab, weight, height) => {
 
   console.log(`Converting to ${selectedTab}`);
   return convertedData;
-};
+}
 
-export default EmpiricalMetricConversion;
+module.exports = {
+  EmpiricalMetricConversion,
+  WEIGHT_CONVERSION,
+  HEIGHT_CONVERSION,
+};

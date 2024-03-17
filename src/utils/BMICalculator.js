@@ -1,7 +1,14 @@
-export function calculateBMI(weight, height) {
+// src/utils/BMICalculator.js
+const logger = require('../lib/logger');
+
+function calculateBMI(weight, height) {
+  // Convert inputs to numbers
+  weight = parseFloat(weight);
+  height = parseFloat(height);
+
   // Validate input
-  if (typeof weight !== 'number' || typeof height !== 'number') {
-    console.error('Invalid input. Weight and height must be numeric values.');
+  if (isNaN(weight) || isNaN(height)) {
+    logger.error('Invalid input. Weight and height must be numeric values.');
     return 'Invalid input. Weight and height must be numeric values.';
   }
 
@@ -11,11 +18,10 @@ export function calculateBMI(weight, height) {
   // Calculate BMI using the metric formula: BMI = weight (kg) / height (m)²
   let bmi = weight / height ** 2;
 
-
   return bmi.toFixed(1); // Rounded to 2 decimal places
 }
 
-export function getBMICategory(bmi) {
+function getBMICategory(bmi) {
   if (bmi < 18.5) {
     return 'Underweight';
   } else if (bmi >= 18.5 && bmi <= 24.9) {
@@ -26,3 +32,5 @@ export function getBMICategory(bmi) {
     return 'Obese';
   }
 }
+
+module.exports = { calculateBMI, getBMICategory };

@@ -111,7 +111,7 @@ export default function Header() {
           )}
         </div>
         {/* Check if the user is signed in and show their profile */}
-        <div className="basis-1/3 flex justify-end">
+        <div className="pr-2 basis-1/3 flex justify-end">
           {isSignedIn ? (
             <UserButton
               afterSignOutUrl="/"

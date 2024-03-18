@@ -10,7 +10,13 @@ import _ from 'lodash';
 
 // utils
 import { useUser } from '@clerk/clerk-react';
-import { EmpiricalMetricConversion } from '@/utils/EmpiricalMetricConversion.js';
+import {
+  EmpiricalMetricConversion,
+  lbsToKg,
+  kgToLbs,
+  ftToCm,
+  cmToFt,
+} from '@/utils/EmpiricalMetricConversion.js';
 import getUserProfileData from '@/lib/getUserProfileData.js';
 import deepPickBy from '@/utils/deepPickBy.js';
 //!
@@ -48,11 +54,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 //!
 
 export default function ProfileForm() {
+  // use the useToast hook to show toast messages
+  const { toast } = useToast();
   // state to manage the selected tab imperial or metric
   const [selectedTab, setSelectedTab] = useAtom(measurementAtom);
   // state to manage the user profile data
   const [userProfileData, setUserProfileData] = useAtom(profileDataAtom);
-  const { toast } = useToast();
   // use the useUser hook to get the current user
   const { user } = useUser();
   // critical default values
@@ -76,7 +83,7 @@ export default function ProfileForm() {
     },
   });
 
-  // only fetch the data once when the component mounts and when the form is updated
+  // only fetch the data once when the component mounts
   useEffect(() => {
     logger.info('Fetching user profile data');
     async function fetchData() {
@@ -141,10 +148,15 @@ export default function ProfileForm() {
         data.profile.height
       );
       // set the converted data to the form data
-      convertedData.weight !== null &&
+      if (convertedData.weight !== null) {
         form.setValue('profile.weight', convertedData.weight);
-      convertedData.height !== null &&
+        data.profile.weight = convertedData.weight;
+      }
+      if (convertedData.height !== null) {
         form.setValue('profile.height', convertedData.height);
+        // update the data object with the converted data
+        data.profile.height = convertedData.height;
+      }
 
       logger.info('Converted Data: \n', convertedData);
     }
@@ -208,7 +220,7 @@ export default function ProfileForm() {
     // Check if the form data is empty, only the weight and height fields are required
     // for the conversion / tab change
     if (!formData.profile.weight && !formData.profile.height) {
-      console.log('Theres no data to convert');
+      logger.info('Theres no data to convert');
     } else {
       // if not empty, convert the form data
       const convertedData = EmpiricalMetricConversion(
@@ -241,7 +253,9 @@ export default function ProfileForm() {
                 <FormLabel>Age</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={userProfileData?.profile?.age?.toString() || ""}
+                    placeholder={
+                      userProfileData?.profile?.age?.toString() || ''
+                    }
                     min={0}
                     type="number"
                     {...field}
@@ -265,12 +279,12 @@ export default function ProfileForm() {
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        defaultValue={userProfileData?.profile?.sex || ""}
+                        defaultValue={userProfileData?.profile?.sex || ''}
                         placeholder={
                           userProfileData?.profile?.sex
                             ?.charAt(0)
                             .toUpperCase() +
-                          userProfileData?.profile?.sex?.slice(1) || ""
+                            userProfileData?.profile?.sex?.slice(1) || ''
                         }
                       />
                     </SelectTrigger>
@@ -297,7 +311,13 @@ export default function ProfileForm() {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={userProfileData?.profile?.weight?.toString()}
+                      placeholder={
+                        selectedTab === 'metric'
+                          ? userProfileData?.profile?.weight?.toString()
+                          : kgToLbs(
+                              userProfileData?.profile?.weight
+                            )?.toString()
+                      }
                       min="0"
                       step="any"
                       type="number"
@@ -319,7 +339,11 @@ export default function ProfileForm() {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder={userProfileData?.profile?.height?.toString()}
+                      placeholder={
+                        selectedTab === 'metric'
+                          ? userProfileData?.profile?.height?.toString()
+                          : cmToFt(userProfileData?.profile?.height)?.toString()
+                      }
                       min="0"
                       step="any"
                       type="number"

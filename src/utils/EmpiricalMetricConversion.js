@@ -1,39 +1,65 @@
 // src/utils/EmpiricalMetricConversion.js
-const WEIGHT_CONVERSION = 2.20462;
-const HEIGHT_CONVERSION = 0.0328084;
+const logger = require('../lib/logger.js');
 
-function EmpiricalMetricConversion(selectedTab, weight, height) {
+const WEIGHT_CONVERSION_TO_KG = 0.453592;
+const WEIGHT_CONVERSION_TO_LBS = 2.20462;
+const HEIGHT_CONVERSION_TO_CM = 30.48;
+const HEIGHT_CONVERSION_TO_FT = 0.0328084;
+
+const lbsToKg = (weight) => {
+  return (weight * WEIGHT_CONVERSION_TO_KG).toFixed(2);
+};
+
+const kgToLbs = (weight) => {
+  return (weight * WEIGHT_CONVERSION_TO_LBS).toFixed(2);
+};
+
+const ftToCm = (height) => {
+  return (height * HEIGHT_CONVERSION_TO_CM).toFixed(2);
+};
+
+const cmToFt = (height) => {
+  return (height * HEIGHT_CONVERSION_TO_FT).toFixed(2);
+};
+
+const EmpiricalMetricConversion = (selectedTab, weight, height) => {
   let convertedData = { weight: null, height: null };
 
   // Convert weight and height to numbers if they are not undefined
   if (weight !== undefined) {
     weight = parseFloat(weight);
     if (isNaN(weight)) {
-      console.log('Invalid weight');
+      logger.info('Invalid weight');
     } else if (selectedTab === 'empirical') {
-      convertedData.weight = (weight * WEIGHT_CONVERSION).toFixed(2);
+      convertedData.weight = kgToLbs(weight);
     } else if (selectedTab === 'metric') {
-      convertedData.weight = (weight / WEIGHT_CONVERSION).toFixed(2);
+      convertedData.weight = lbsToKg(weight);
     }
   }
 
   if (height !== undefined) {
     height = parseFloat(height);
     if (isNaN(height)) {
-      console.log('Invalid height');
+      logger.info('Invalid height');
     } else if (selectedTab === 'empirical') {
-      convertedData.height = (height * HEIGHT_CONVERSION).toFixed(2);
+      convertedData.height = cmToFt(height);
     } else if (selectedTab === 'metric') {
-      convertedData.height = (height / HEIGHT_CONVERSION).toFixed(2);
+      convertedData.height = ftToCm(height);
     }
   }
 
-  console.log(`Converting to ${selectedTab}`);
+  logger.info(`Converting to ${selectedTab}`);
   return convertedData;
-}
+};
 
 module.exports = {
   EmpiricalMetricConversion,
-  WEIGHT_CONVERSION,
-  HEIGHT_CONVERSION,
+  lbsToKg,
+  kgToLbs,
+  ftToCm,
+  cmToFt,
+  WEIGHT_CONVERSION_TO_KG,
+  WEIGHT_CONVERSION_TO_LBS,
+  HEIGHT_CONVERSION_TO_CM,
+  HEIGHT_CONVERSION_TO_FT,
 };

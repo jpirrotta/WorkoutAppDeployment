@@ -4,11 +4,11 @@ import { cn } from '@/lib/utils';
 import { Inter as FontSans } from 'next/font/google';
 
 // components
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import AuthProvider from '../components/AuthProvider';
-import { Toaster } from '@/components/ui/Toaster';
-import { ThemeProvider } from '@/components/Theme-provider';
+import { Toaster } from '../components/ui/Toaster';
+import { ThemeProvider } from '../components/Theme-provider';
 
 export const fontSans = FontSans({
   subsets: ['latin'],

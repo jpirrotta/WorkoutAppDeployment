@@ -13,11 +13,11 @@ import { useAuth } from "@clerk/nextjs";
 import { useTheme } from "next-themes"
 
 // Icon imports
-import { StyledIcon } from '@/components/StyledIcon';
-import Menu from '@/components/svgs/Menu.svg';
-import Cross from '@/components/svgs/Cross.svg';
-import Sun from '@/components/svgs/Sun.svg';
-import Moon from '@/components/svgs/Moon.svg';
+import { StyledIcon } from './StyledIcon';
+import Menu from './svgs/Menu.svg';
+import Cross from './svgs/Cross.svg';
+import Sun from './svgs/Sun.svg';
+import Moon from './svgs/Moon.svg';
 import logger from '@/lib/logger';
 
 export default function Header() {

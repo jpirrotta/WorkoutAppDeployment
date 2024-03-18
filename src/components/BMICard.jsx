@@ -27,6 +27,7 @@ import Link from 'next/link.js';
 // helpers
 import logger from '@/lib/logger';
 import { calculateBMI, getBMICategory } from '@/utils/BMICalculator.js';
+import { EmpiricalMetricConversion } from '@/utils/EmpiricalMetricConversion.js';
 //
 
 // state management
@@ -56,7 +57,6 @@ const bmiTooltipDesc =
 
 export default function BMICard({ weight, height }) {
   const [bmi, setBMI] = useAtom(userBMI);
-
   const statusTextColor = setStatusColor(bmi.category);
 
   // Calculate BMI

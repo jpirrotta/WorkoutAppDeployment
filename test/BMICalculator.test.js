@@ -6,14 +6,17 @@ const {
 describe('BMI Calculator', () => {
   describe('calculateBMI', () => {
     test('should return the correct BMI when given valid weight and height', () => {
-      expect(calculateBMI(70, 170)).toBe('24.2');
+      expect(calculateBMI('70', '170')).toBe('24.2');
     });
 
     test('should return an error message when given invalid input', () => {
-      expect(calculateBMI('70', 170)).toBe(
+      expect(calculateBMI('70', 'abc')).toBe(
         'Invalid input. Weight and height must be numeric values.'
       );
-      expect(calculateBMI(70, '170')).toBe(
+      expect(calculateBMI('abc', '170')).toBe(
+        'Invalid input. Weight and height must be numeric values.'
+      );
+      expect(calculateBMI('abc', 'abc')).toBe(
         'Invalid input. Weight and height must be numeric values.'
       );
     });

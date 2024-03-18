@@ -37,7 +37,7 @@ export default function DeleteProfileData({ userId }) {
         throw new Error(res.statusText);
       }
       // Clear profile data from the store
-      setProfileData(null);
+      setProfileData(undefined);
       // refresh the form page
       // window.location.reload();
       //

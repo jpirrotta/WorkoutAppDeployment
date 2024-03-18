@@ -13,7 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from '@/components/ui/Form';
 
 const contactFormSchema = z.object({
   name: z.string(),

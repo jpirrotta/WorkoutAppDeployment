@@ -25,11 +25,14 @@ module.exports = {
         '3xl': '2000px',
       },
       colors: {
+        indigoTouch: "hsl(var(--indigo-touch))",
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        success: 'hsl(var(--success))',
+        warning: 'hsl(var(--warning))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',

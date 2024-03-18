@@ -29,7 +29,7 @@ export default function Header() {
   const [mounted, setMounted] = useState(false)
 
   // Handle root theme of our webApp
-  const { theme, setTheme } = useTheme('dark')
+  const { theme, setTheme } = useTheme()
 
 
   // Avoid Hydration Mismatch: useEffect only runs on the client, so now we can safely show the UI

@@ -46,7 +46,7 @@ body {
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
+    --border: 216 12% 84%;
     --input: 240 5.9% 90%;
     --ring: 346.8 77.2% 49.8%; /* same */
     --radius: 1rem;
@@ -57,7 +57,7 @@ body {
     --background: 224 41.1% 11.4%;
     --foreground: 0 0% 95%;
     --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
+    --card-foreground: 216 12% 84%;
     --popover: 0 0% 9%;
     --popover-foreground: 0 0% 95%;
     --primary: 346.8 77.2% 49.8%;

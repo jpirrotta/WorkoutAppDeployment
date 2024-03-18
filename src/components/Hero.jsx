@@ -11,17 +11,17 @@ export default function Hero() {
         fill="#fb7185"
       />
       <div className="p-4 max-w-7xl  mx-auto relative z-10  w-full pt-20 md:pt-0">
-        <h1 className="light: from-rose-500 light: to-rose-300 text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b dark:from-rose-50 dark:to-rose-400  bg-opacity-50">
+        <h1 className="light: from-rose-500 light: to-rose-300 text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b dark:from-rose-50 dark:to-rose-400 bg-opacity-50 pb-2">
           Join Our Fitness
           <br />
           Community.
         </h1>
-        <p className="mt-4 font-normal text-base text-secondary-foreground max-w-lg text-center mx-auto">
+        <p className="mt-2 font-normal text-base text-secondary-foreground max-w-lg text-center mx-auto">
           Track Workouts, Share Routines, and Learn Together.
         </p>
         <div className="flex justify-center mt-8">
           <Link href="/sign-up" scroll={false}>
-            <Button size="lg" variant="outline" className="light: text-secondary-foreground">
+            <Button size="lg" variant="outline" className="light: text-secondary-foreground light: hover:text-secondary">
               Start Your Fitness Journey Today
             </Button>
           </Link>

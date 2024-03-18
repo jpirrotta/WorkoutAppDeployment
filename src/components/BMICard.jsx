@@ -6,14 +6,8 @@ import {
   CardHeader,
   CardContent,
   Card,
-} from '@/components/ui/card';
+} from '@/components/ui/Card';
 import { buttonVariants } from '@/components/ui/Button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/Tooltip';
 import {
   Popover,
   PopoverContent,
@@ -27,7 +21,6 @@ import Link from 'next/link.js';
 // helpers
 import logger from '@/lib/logger';
 import { calculateBMI, getBMICategory } from '@/utils/BMICalculator.js';
-import { EmpiricalMetricConversion } from '@/utils/EmpiricalMetricConversion.js';
 //
 
 // state management

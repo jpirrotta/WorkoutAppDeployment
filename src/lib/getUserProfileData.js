@@ -4,9 +4,6 @@ export default async function getUserProfileData(id) {
   try {
     const response = await fetch(`/api/profile?userId=${id}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
 
     // if the status is 404, the user in not found, which means that it's a new user

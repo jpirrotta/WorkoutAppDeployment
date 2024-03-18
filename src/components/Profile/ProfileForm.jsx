@@ -99,7 +99,7 @@ export default function ProfileForm() {
       }
     }
     fetchData();
-  }, []);
+  }, [userProfileData, userId, setUserProfileData]);
 
   //
   // checks if the form data is totally empty or the same as the user data
@@ -238,7 +238,7 @@ export default function ProfileForm() {
   //
 
   return (
-    <section className="flex flex-col w-full xl:w-[80%]">
+    <section className="flex flex-col w-full xl:w-[80%] light: text-foreground">
       <h2 className="pb-2 text-4xl font-bold italic text-primary">Profile</h2>
       <p className="pb-4 text:md text-slate-400">Hi there {userName} 👋</p>
       <Form {...form} className="flex justify-center">
@@ -380,7 +380,7 @@ export default function ProfileForm() {
             value={selectedTab}
             onValueChange={(value) => handleTabChange(value)}
           >
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2 light: bg-background light: border-border light: border-2">
               <TabsTrigger className="px-10" value="empirical">
                 Empirical
               </TabsTrigger>

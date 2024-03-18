@@ -24,7 +24,7 @@ export default function ExerciseCard({ exercise }) {
       key={exercise.id}
     >
       <CardHeader>
-        <CardTitle className="text-white uppercase text-center">
+        <CardTitle className="text-secondary uppercase text-center">
           {exercise.name}
         </CardTitle>
       </CardHeader>
@@ -47,7 +47,7 @@ export default function ExerciseCard({ exercise }) {
             Show Demo
           </Button>
         )}
-        <CardDescription className="text-white capitalize">
+        <CardDescription className="text-secondary capitalize">
           <strong>Target:</strong> {exercise.target}
           <br />
           <strong>Equipment:</strong> {exercise.equipment}
@@ -60,7 +60,7 @@ export default function ExerciseCard({ exercise }) {
           Add To Workout
         </Button>
       </CardContent>
-      <CardFooter className="capitalize text-white">
+      <CardFooter className="capitalize text-secondary">
         <strong>Secondary Muscles:&nbsp;</strong>
         {exercise.secondaryMuscles.join(', ')}
       </CardFooter>

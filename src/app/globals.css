@@ -5,6 +5,7 @@
 html {
   scroll-behavior: smooth;
 }
+
 /* custom scroll bar */
 ::-webkit-scrollbar {
   width: 12px;
@@ -20,19 +21,24 @@ html {
   background-color: hsl(var(--primary));
   border-radius: 1rem;
 }
+
+body {
+  overflow-x: hidden;
+}
+
 /* end of custom scrollbar */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 214 32% 91%;
     --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
+    --card: 204 8% 76%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 346.8 77.2% 49.8%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 4.8% 95.9%;
+    --primary: 346.8 77.2% 49.8%; /* same */
+    --primary-foreground: 355.7 100% 97.3%; /* same */
+    --secondary: 240 4.8% 95.9%; /* same */
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
@@ -42,22 +48,23 @@ html {
     --warning: 61 68% 56%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
+    --border: 216 12% 84%;
     --input: 240 5.9% 90%;
-    --ring: 346.8 77.2% 49.8%;
+    --ring: 346.8 77.2% 49.8%; /* same */
     --radius: 1rem;
+    --indigo-touch: 244 47% 20%; /* same */
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
+    --background: 224 41.1% 11.4%;
     --foreground: 0 0% 95%;
     --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
+    --card-foreground: 216 12% 84%;
     --popover: 0 0% 9%;
     --popover-foreground: 0 0% 95%;
     --primary: 346.8 77.2% 49.8%;
     --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 3.7% 15.9%;
+    --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 15%;
     --muted-foreground: 240 5% 64.9%;
@@ -70,15 +77,6 @@ html {
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 346.8 77.2% 49.8%;
-  }
-}
-
-/* !? not sure if needed, consider to remove in the future */
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
+    --indigo-touch: 244 47% 20%;
   }
 }

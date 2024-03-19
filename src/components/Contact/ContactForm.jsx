@@ -47,7 +47,7 @@ export default function ContactForm() {
 
 
   return (
-    <section className="flex flex-col w-full text-primary-foreground">
+    <section className="flex flex-col w-full light: text-foreground">
       <h2 className="pb-2 text-4xl font-bold italic text-primary">Contact Request</h2>
       <Form {...form} className="flex justify-center">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

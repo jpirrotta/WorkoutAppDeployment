@@ -40,7 +40,7 @@ const setStatusColor = (bmi) => {
     return 'text-warning';
   }
   if ('Obese' === bmi) {
-    return 'text-destructive';
+    return 'text-primary';
   }
   return 'text-primary-foreground';
 };

@@ -12,7 +12,7 @@ import Image from 'next/image';
 import { Button } from './ui/Button';
 
 export default function ExerciseCard({ exercise }) {
-  const [showDemo, setShowDemo] = useState(false);
+  const [showDemo, setShowDemo] = useState(true);
 
   const ImageToggler = () => {
     setShowDemo((prev) => !prev);

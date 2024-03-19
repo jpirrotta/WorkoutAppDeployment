@@ -21,7 +21,7 @@ export default function Hero() {
         </p>
         <div className="flex justify-center mt-8">
           <Link href="/sign-up" scroll={false}>
-            <Button size="lg" variant="outline" className="light: text-secondary-foreground light: hover:text-secondary">
+            <Button size="lg" variant="outline">
               Start Your Fitness Journey Today
             </Button>
           </Link>

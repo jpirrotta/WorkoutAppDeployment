@@ -22,7 +22,7 @@ const cmToFt = (height) => {
   return (height * HEIGHT_CONVERSION_TO_FT).toFixed(2);
 };
 
-const EmpiricalMetricConversion = (selectedTab, weight, height) => {
+const ImperialMetricConversion = (selectedTab, weight, height) => {
   let convertedData = { weight: null, height: null };
 
   // Convert weight and height to numbers if they are not undefined
@@ -30,7 +30,7 @@ const EmpiricalMetricConversion = (selectedTab, weight, height) => {
     weight = parseFloat(weight);
     if (isNaN(weight)) {
       logger.info('Invalid weight');
-    } else if (selectedTab === 'empirical') {
+    } else if (selectedTab === 'imperial') {
       convertedData.weight = kgToLbs(weight);
     } else if (selectedTab === 'metric') {
       convertedData.weight = lbsToKg(weight);
@@ -41,7 +41,7 @@ const EmpiricalMetricConversion = (selectedTab, weight, height) => {
     height = parseFloat(height);
     if (isNaN(height)) {
       logger.info('Invalid height');
-    } else if (selectedTab === 'empirical') {
+    } else if (selectedTab === 'imperial') {
       convertedData.height = cmToFt(height);
     } else if (selectedTab === 'metric') {
       convertedData.height = ftToCm(height);
@@ -53,7 +53,7 @@ const EmpiricalMetricConversion = (selectedTab, weight, height) => {
 };
 
 module.exports = {
-  EmpiricalMetricConversion,
+  ImperialMetricConversion,
   lbsToKg,
   kgToLbs,
   ftToCm,

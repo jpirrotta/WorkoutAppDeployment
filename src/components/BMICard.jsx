@@ -51,7 +51,7 @@ const bmiTooltipDesc =
 export default function BMICard({ weight, height }) {
   const [bmi, setBMI] = useAtom(userBMI);
   const statusTextColor = setStatusColor(bmi.category);
-  logger.info(`Weight: ${weight}, Height: ${height}`);
+  logger.debug(`Weight: ${weight}, Height: ${height}`);
 
   // Calculate BMI
   const newBMI = (weight, height) => {

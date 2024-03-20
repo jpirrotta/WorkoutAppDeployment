@@ -11,12 +11,12 @@ import _ from 'lodash';
 // utils
 import { useUser } from '@clerk/clerk-react';
 import {
-  EmpiricalMetricConversion,
+  ImperialMetricConversion,
   lbsToKg,
   kgToLbs,
   ftToCm,
   cmToFt,
-} from '@/utils/EmpiricalMetricConversion.js';
+} from '@/utils/ImperialMetricConversion.js';
 import getUserProfileData from '@/lib/getUserProfileData.js';
 import deepPickBy from '@/utils/deepPickBy.js';
 //!
@@ -75,7 +75,7 @@ export default function ProfileForm() {
       name: userProfileData?.name || userName,
       profile: {
         age: userProfileData?.profile?.age?.toString() || '',
-        sex: userProfileData?.profile?.sex?.toString(),
+        gender: userProfileData?.profile?.gender?.toString() || '',
         weight: userProfileData?.profile?.weight?.toString() || '',
         height: userProfileData?.profile?.height?.toString() || '',
         bodyFat: userProfileData?.profile?.bodyFat?.toString() || '',
@@ -101,10 +101,43 @@ export default function ProfileForm() {
     fetchData();
   }, [userProfileData, userId, setUserProfileData]);
 
+  // check if the form values match the user data, if they do, don't submit the form
+  // do the check only for age and gender
+  const isAgeGenderSame = (formData) => {
+    if (!userProfileData) {
+      logger.info('User data is not available');
+      return false;
+    }
+    logger.debug('Checking if the form data is the same as the user data');
+    const stateAge = userProfileData?.profile?.age;
+    const stateGender = userProfileData?.profile?.gender;
+    const formAge = formData.profile.age;
+    const formGender = formData.profile.gender;
+
+    // 1. if the age is the same but the form gender is empty
+    if (stateAge === formAge && !formGender) {
+      logger.info('Age is the same but the form gender is empty');
+      return true;
+    }
+    // 2. if the gender is the same but the form age is empty
+    if (stateGender === formGender && !formAge) {
+      logger.info('gender is the same but the form age is empty');
+      return true;
+    }
+    // 3. if the age and gender are the same as the user data
+    if (stateAge === formAge && stateGender === formGender) {
+      logger.info('Both age and gender are the same');
+      return true;
+    }
+    logger.info('Form data is different from the user data');
+    return false;
+  };
+
   //
   // checks if the form data is totally empty or the same as the user data
   const isFormDataEmpty = (formData) => {
     for (const key in formData.profile) {
+      // log the form data
       if (formData.profile[key]) {
         return false;
       }
@@ -117,10 +150,11 @@ export default function ProfileForm() {
     if (isFormDataEmpty(form.getValues())) {
       return;
     }
+    logger.info(`gender: ${userProfileData?.profile?.gender}`);
     logger.info('Form reset');
     // if a field is not empty, set it to empty
     if (form.getValues('profile.age')) form.setValue('profile.age', '');
-    if (form.getValues('profile.sex')) form.setValue('profile.sex', '');
+    if (form.getValues('profile.gender')) form.setValue('profile.gender', '');
     if (form.getValues('profile.weight')) form.setValue('profile.weight', '');
     if (form.getValues('profile.height')) form.setValue('profile.height', '');
     if (form.getValues('profile.bodyFat')) form.setValue('profile.bodyFat', '');
@@ -130,7 +164,7 @@ export default function ProfileForm() {
   };
 
   const onSubmit = async (data) => {
-    if (isFormDataEmpty(data)) {
+    if (isFormDataEmpty(data) || isAgeGenderSame(data)) {
       logger.info(
         'Form data is empty / user data is the same as the form data'
       );
@@ -138,11 +172,11 @@ export default function ProfileForm() {
     }
 
     // Data is saved in metric format by default in the db
-    // first check if the selected tab is empirical
-    if (selectedTab === 'empirical') {
+    // first check if the selected tab is imperial
+    if (selectedTab === 'imperial') {
       logger.info('Converting form data to metric before submission');
       // if it is, convert the form data to metric
-      const convertedData = EmpiricalMetricConversion(
+      const convertedData = ImperialMetricConversion(
         'metric',
         data.profile.weight,
         data.profile.height
@@ -158,7 +192,7 @@ export default function ProfileForm() {
         data.profile.height = convertedData.height;
       }
 
-      logger.info('Converted Data: \n', convertedData);
+      logger.debug('Converted Data: \n', convertedData);
     }
     try {
       const response = await fetch('/api/profile', {
@@ -223,7 +257,7 @@ export default function ProfileForm() {
       logger.info('Theres no data to convert');
     } else {
       // if not empty, convert the form data
-      const convertedData = EmpiricalMetricConversion(
+      const convertedData = ImperialMetricConversion(
         newTab,
         formData.profile.weight,
         formData.profile.height
@@ -265,26 +299,31 @@ export default function ProfileForm() {
               </FormItem>
             )}
           />
-          {/* Sex/Gender */}
+          {/* Gender */}
           <FormField
             control={form.control}
-            name="profile.sex"
+            name="profile.gender"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sex</FormLabel>
+                <FormLabel>Gender</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  placeholder={userProfileData?.profile?.sex?.toString()}
+                  placeholder={userProfileData?.profile?.gender?.toString()}
                 >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        defaultValue={userProfileData?.profile?.sex || ''}
+                        defaultValue={
+                          userProfileData?.profile?.gender?.toString() || ''
+                        }
                         placeholder={
-                          userProfileData?.profile?.sex
-                            ?.charAt(0)
+                          userProfileData?.profile?.gender
+                            ?.toString()
+                            .charAt(0)
                             .toUpperCase() +
-                            userProfileData?.profile?.sex?.slice(1) || ''
+                            userProfileData?.profile?.gender
+                              ?.toString()
+                              .slice(1) || ''
                         }
                       />
                     </SelectTrigger>
@@ -374,15 +413,15 @@ export default function ProfileForm() {
               </FormItem>
             )}
           />
-          {/* metric or empirical tab */}
+          {/* metric or imperial tab */}
           <Tabs
             defaultValue="metric"
             value={selectedTab}
             onValueChange={(value) => handleTabChange(value)}
           >
             <TabsList className="grid w-full grid-cols-2 light: bg-background light: border-border light: border-2">
-              <TabsTrigger className="px-10" value="empirical">
-                Empirical
+              <TabsTrigger className="px-10" value="impirical">
+                Imperial
               </TabsTrigger>
               <TabsTrigger className="px-10" value="metric">
                 Metric

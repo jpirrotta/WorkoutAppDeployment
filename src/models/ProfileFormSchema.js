@@ -1,5 +1,6 @@
 // src/models/ProfileFormSchema.js
 
+import logger from '@/lib/logger';
 import { z } from 'zod';
 // this is a zod schema for the profile form
 // zod is a library for data validation and parsing
@@ -23,7 +24,17 @@ const profileFormSchema = z.object({
       })
       .optional(),
 
-    sex: z.enum(['male', 'female', 'other']).optional(),
+    gender: z
+      .enum(['male', 'female', 'other'])
+      .optional()
+      .catch((error) => {
+        logger.debug(
+          'catch error: ',
+          error,
+          'there is no need to validate an optional field when its a select field'
+        );
+      })
+      .optional(),
     weight: z
       .string()
       .transform((val, ctx) => {

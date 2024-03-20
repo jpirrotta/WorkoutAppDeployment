@@ -28,7 +28,7 @@ const userSchema = new Schema({
       min: 8,
       max: 99,
     },
-    sex: {
+    gender: {
       type: String,
       enum: ['male', 'female', 'other'],
     },

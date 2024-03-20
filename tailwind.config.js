@@ -25,6 +25,7 @@ module.exports = {
         '3xl': '2000px',
       },
       colors: {
+        indigoTouch: "hsl(var(--indigo-touch))",
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

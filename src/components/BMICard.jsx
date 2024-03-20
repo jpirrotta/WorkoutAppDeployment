@@ -40,7 +40,7 @@ const setStatusColor = (bmi) => {
     return 'text-warning';
   }
   if ('Obese' === bmi) {
-    return 'text-destructive';
+    return 'text-primary';
   }
   return 'text-primary-foreground';
 };
@@ -73,8 +73,8 @@ export default function BMICard({ weight, height }) {
     <Card className="my-6 bg-transparent">
       <CardHeader>
         <div className="flex items-center space-x-4">
-          <div className="flex flex-col text-primary-foreground">
-            <div className="flex flex-row gap-2 ">
+          <div className="flex flex-col dark:text-primary-foreground light: text-primary">
+            <div className="flex flex-row gap-2">
               <CardTitle className="text-sm">Your BMI</CardTitle>
               {/* help popover tooltip */}
               <Popover>
@@ -105,7 +105,7 @@ export default function BMICard({ weight, height }) {
       <CardContent className="p-0">
         <div className="flex items-center justify-center h-[200px]">
           <div className="flex flex-col items-center">
-            <h1 className="text-6xl font-extrabold tracking-tighter text-primary-foreground">
+            <h1 className="text-6xl font-extrabold tracking-tighter dark:text-primary-foreground light: text-gray-700">
               {bmi.score}
             </h1>
             <p

@@ -104,6 +104,10 @@ export default function ProfileForm() {
   // check if the form values match the user data, if they do, don't submit the form
   // do the check only for age and gender
   const isAgeGenderSame = (formData) => {
+    if (!userProfileData) {
+      logger.info('User data is not available');
+      return false;
+    }
     logger.debug('Checking if the form data is the same as the user data');
     const stateAge = userProfileData?.profile?.age;
     const stateGender = userProfileData?.profile?.gender;
@@ -310,7 +314,7 @@ export default function ProfileForm() {
                     <SelectTrigger>
                       <SelectValue
                         defaultValue={
-                          userProfileData?.profile?.gender.toString() || ''
+                          userProfileData?.profile?.gender?.toString() || ''
                         }
                         placeholder={
                           userProfileData?.profile?.gender

@@ -1,20 +1,18 @@
 import ServiceItem from '@/components/Services/ServiceItem';
-//icons
+// Icons
 import DumbbellIcon from '@/components/svgs/DumbbellIcon.svg';
 import WeightLiftingIcon from '@/components/svgs/WeightLiftingIcon.svg';
 import WeightScaleIcon from '@/components/svgs/WeightScaleIcon.svg';
+// Icon Maker
+import { StyledIcon } from '@/components/StyledIcon'
 
-// the default style of the icons below is defied in this component
-const StyledIcon = ({ Icon, ...props }) => {
-  return <Icon width={'80%'} className="text-primary" {...props} />;
-};
 // ================================================================
 export default function Services() {
   return (
-    <section id="services" className="text-slate-400 bg-slate-900 w-full">
+    <section id="services" className="text-secondary-foreground bg-background w-full">
       <div className="container px-5 py-24 mx-auto">
         <ServiceItem
-          svg={<StyledIcon Icon={DumbbellIcon} />}
+          svg={<StyledIcon Icon={DumbbellIcon} w={'80%'} className="text-primary" />}
           title="Customize Your Fitness Journey"
           description="Experience the freedom of creating your own workout plans with our user-friendly workout builder. Enjoy advanced features like supersets, rest times, and more to tailor your workouts to your needs."
           linkText="Start Building Now"
@@ -24,6 +22,7 @@ export default function Services() {
           svg={
             <StyledIcon
               Icon={WeightLiftingIcon}
+              w={'80%'}
               className="-translate-y-1/4 text-primary"
             />
           }
@@ -36,7 +35,7 @@ export default function Services() {
           reverse
         />
         <ServiceItem
-          svg={<StyledIcon Icon={WeightScaleIcon} width={'60%'} />}
+          svg={<StyledIcon Icon={WeightScaleIcon} w={'60%'} className="text-primary" />}
           title="Track Your Health with Ease"
           description="Utilize our variety of easy-to-use health calculators, including BMI, BMR, Diet, and Calorie calculators. Keep track of your health and progress effortlessly."
           linkText="Calculate Now"

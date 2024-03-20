@@ -10,8 +10,8 @@ import testimonialsList from '@/data/testimonialsList';
 
 export default function Testimonials() {
   return (
-    <div className="bg-slate-900 p-10 w-full pt-16 ">
-      <Carousel className="bg-slate-900 mx-5 sm:mx-10 md:mx-20 3xl:mx-[30rem] text-slate-400">
+    <div className="bg-background p-10 w-full pt-16 ">
+      <Carousel className="bg-background mx-5 sm:mx-10 md:mx-20 3xl:mx-[30rem] text-secondary-foreground">
         <CarouselContent>
           {testimonialsList.map((testimonial) => (
             <CarouselItem key={testimonial.name}>

@@ -28,20 +28,11 @@ const profileFormSchema = z.object({
       .enum(['male', 'female', 'other'])
       .optional()
       .catch((error) => {
-        if (
-          error.input === undefined ||
-          error.input === null ||
-          error.input === ''
-        ) {
-          logger.error('SEXO VAZIO');
-          throw new z.ZodError([
-            {
-              ...error.error.issues[0],
-              message: 'Please select a gender.',
-            },
-          ]);
-        }
-        throw error;
+        logger.debug(
+          'catch error: ',
+          error,
+          'there is no need to validate an optional field when its a select field'
+        );
       })
       .optional(),
     weight: z

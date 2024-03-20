@@ -11,12 +11,12 @@ import _ from 'lodash';
 // utils
 import { useUser } from '@clerk/clerk-react';
 import {
-  EmpiricalMetricConversion,
+  ImperialMetricConversion,
   lbsToKg,
   kgToLbs,
   ftToCm,
   cmToFt,
-} from '@/utils/EmpiricalMetricConversion.js';
+} from '@/utils/ImperialMetricConversion.js';
 import getUserProfileData from '@/lib/getUserProfileData.js';
 import deepPickBy from '@/utils/deepPickBy.js';
 //!
@@ -104,9 +104,7 @@ export default function ProfileForm() {
   // check if the form values match the user data, if they do, don't submit the form
   // do the check only for age and gender
   const isAgeGenderSame = (formData) => {
-    logger.info(
-      '\n\n\n\nChecking if the form data is the same as the user data'
-    );
+    logger.debug('Checking if the form data is the same as the user data');
     const stateAge = userProfileData?.profile?.age;
     const stateGender = userProfileData?.profile?.gender;
     const formAge = formData.profile.age;
@@ -136,7 +134,6 @@ export default function ProfileForm() {
   const isFormDataEmpty = (formData) => {
     for (const key in formData.profile) {
       // log the form data
-      logger.info(`Form data: ${key} : ${formData.profile[key]} | `);
       if (formData.profile[key]) {
         return false;
       }
@@ -163,10 +160,7 @@ export default function ProfileForm() {
   };
 
   const onSubmit = async (data) => {
-    if (isAgeGenderSame(data)) {
-      logger.info('in the same age');
-    }
-    if (isFormDataEmpty(data)) {
+    if (isFormDataEmpty(data) || isAgeGenderSame(data)) {
       logger.info(
         'Form data is empty / user data is the same as the form data'
       );
@@ -174,11 +168,11 @@ export default function ProfileForm() {
     }
 
     // Data is saved in metric format by default in the db
-    // first check if the selected tab is empirical
-    if (selectedTab === 'empirical') {
+    // first check if the selected tab is imperial
+    if (selectedTab === 'imperial') {
       logger.info('Converting form data to metric before submission');
       // if it is, convert the form data to metric
-      const convertedData = EmpiricalMetricConversion(
+      const convertedData = ImperialMetricConversion(
         'metric',
         data.profile.weight,
         data.profile.height
@@ -194,7 +188,7 @@ export default function ProfileForm() {
         data.profile.height = convertedData.height;
       }
 
-      logger.info('Converted Data: \n', convertedData);
+      logger.debug('Converted Data: \n', convertedData);
     }
     try {
       const response = await fetch('/api/profile', {
@@ -259,7 +253,7 @@ export default function ProfileForm() {
       logger.info('Theres no data to convert');
     } else {
       // if not empty, convert the form data
-      const convertedData = EmpiricalMetricConversion(
+      const convertedData = ImperialMetricConversion(
         newTab,
         formData.profile.weight,
         formData.profile.height
@@ -315,12 +309,17 @@ export default function ProfileForm() {
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        defaultValue={userProfileData?.profile?.gender.toString() || ''}
+                        defaultValue={
+                          userProfileData?.profile?.gender.toString() || ''
+                        }
                         placeholder={
                           userProfileData?.profile?.gender
-                            ?.toString().charAt(0)
+                            ?.toString()
+                            .charAt(0)
                             .toUpperCase() +
-                            userProfileData?.profile?.gender?.toString().slice(1) || ''
+                            userProfileData?.profile?.gender
+                              ?.toString()
+                              .slice(1) || ''
                         }
                       />
                     </SelectTrigger>
@@ -410,15 +409,15 @@ export default function ProfileForm() {
               </FormItem>
             )}
           />
-          {/* metric or empirical tab */}
+          {/* metric or imperial tab */}
           <Tabs
             defaultValue="metric"
             value={selectedTab}
             onValueChange={(value) => handleTabChange(value)}
           >
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger className="px-10" value="empirical">
-                Empirical
+              <TabsTrigger className="px-10" value="imperial">
+                Imperial
               </TabsTrigger>
               <TabsTrigger className="px-10" value="metric">
                 Metric

@@ -1,13 +1,15 @@
-const { EmpiricalMetricConversion } = require('../src/utils/EmpiricalMetricConversion');
+const {
+  EmpiricalMetricConversion,
+} = require('../src/utils/ImperialMetricConversion');
 
 describe('EmpiricalMetricConversion', () => {
-  test('should correctly convert string weight and height to empirical units', () => {
-    const result = EmpiricalMetricConversion('empirical', '70', '170');
+  test('should correctly convert string weight and height to imperial units', () => {
+    const result = EmpiricalMetricConversion('imperial', '70', '170');
     expect(result).toEqual({ weight: '154.32', height: '5.58' });
   });
 
-  test('should correctly convert number weight and height to empirical units', () => {
-    const result = EmpiricalMetricConversion('empirical', 70, 170);
+  test('should correctly convert number weight and height to imperial units', () => {
+    const result = EmpiricalMetricConversion('imperial', 70, 170);
     expect(result).toEqual({ weight: '154.32', height: '5.58' });
   });
 
@@ -22,18 +24,18 @@ describe('EmpiricalMetricConversion', () => {
   });
 
   test('should return null values when weight or height are undefined', () => {
-    let result = EmpiricalMetricConversion('empirical', '70', undefined);
+    let result = EmpiricalMetricConversion('imperial', '70', undefined);
     expect(result).toEqual({ weight: '154.32', height: null });
 
-    result = EmpiricalMetricConversion('empirical', undefined, '170.08');
+    result = EmpiricalMetricConversion('imperial', undefined, '170.08');
     expect(result).toEqual({ weight: null, height: '5.58' });
   });
 
   test('should return null values when weight or height are not numbers', () => {
-    let result = EmpiricalMetricConversion('empirical', '70', 'not a number');
+    let result = EmpiricalMetricConversion('imperial', '70', 'not a number');
     expect(result).toEqual({ weight: '154.32', height: null });
 
-    result = EmpiricalMetricConversion('empirical', 'not a number', '170.08');
+    result = EmpiricalMetricConversion('imperial', 'not a number', '170.08');
     expect(result).toEqual({ weight: null, height: '5.58' });
   });
 });

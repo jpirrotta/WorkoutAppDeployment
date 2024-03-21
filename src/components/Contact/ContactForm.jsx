@@ -1,5 +1,6 @@
 import emailjs from '@emailjs/browser';
 
+import { useToast } from '@/components/ui/use-toast';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -24,6 +25,9 @@ const contactFormSchema = z.object({
 
 
 export default function ContactForm() {
+  const { toast } = useToast();
+
+
   // define the form
   const initialFormState = {
     name: '',
@@ -48,9 +52,19 @@ export default function ContactForm() {
       .then(() => {
         console.log('SUCCESS!');
         form.reset(initialFormState);
+        toast({
+            title: 'Message sent',
+            description: 'Your message has been successfully sent.',
+        });
       })
       .catch((error) => {
         console.log('FAILED...', error.text);
+        toast({
+            variant: 'destructive',
+            title: 'Uh oh! Something went wrong.',
+            description:
+              'There was a problem sending your message. Please try again later.',
+          });
       })
   }
 

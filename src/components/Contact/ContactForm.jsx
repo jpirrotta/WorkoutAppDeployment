@@ -25,8 +25,16 @@ const contactFormSchema = z.object({
 
 export default function ContactForm() {
   // define the form
+  const initialFormState = {
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  };
+
   const form = useForm({
-    resolver: zodResolver(contactFormSchema)
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: initialFormState
   });
 
 
@@ -39,6 +47,7 @@ export default function ContactForm() {
     emailjs.send(serviceID, testmplateID, emailData, publicKey)
       .then(() => {
         console.log('SUCCESS!');
+        form.reset(initialFormState);
       })
       .catch((error) => {
         console.log('FAILED...', error.text);
@@ -47,7 +56,7 @@ export default function ContactForm() {
 
 
   return (
-    <section className="flex flex-col w-full light: text-foreground">
+    <section className="flex flex-col w-full bg-white p-6 border-2 rounded-lg border-gray-300 dark:border-gray-800 dark:bg-transparent light: text-foreground">
       <h2 className="pb-2 text-4xl font-bold italic text-primary">Contact Request</h2>
       <Form {...form} className="flex justify-center">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

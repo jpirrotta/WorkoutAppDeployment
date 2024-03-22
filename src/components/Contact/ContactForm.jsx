@@ -1,5 +1,6 @@
 import emailjs from '@emailjs/browser';
 
+import { useToast } from '@/components/ui/use-toast';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -24,9 +25,20 @@ const contactFormSchema = z.object({
 
 
 export default function ContactForm() {
+  const { toast } = useToast();
+
+
   // define the form
+  const initialFormState = {
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  };
+
   const form = useForm({
-    resolver: zodResolver(contactFormSchema)
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: initialFormState
   });
 
 
@@ -39,15 +51,26 @@ export default function ContactForm() {
     emailjs.send(serviceID, testmplateID, emailData, publicKey)
       .then(() => {
         console.log('SUCCESS!');
+        form.reset(initialFormState);
+        toast({
+            title: 'Message sent',
+            description: 'Your message has been successfully sent.',
+        });
       })
       .catch((error) => {
         console.log('FAILED...', error.text);
+        toast({
+            variant: 'destructive',
+            title: 'Uh oh! Something went wrong.',
+            description:
+              'There was a problem sending your message. Please try again later.',
+          });
       })
   }
 
 
   return (
-    <section className="flex flex-col w-full light: text-foreground">
+    <section className="flex flex-col w-full bg-white p-6 border-2 rounded-lg border-gray-300 dark:border-gray-800 dark:bg-transparent light: text-foreground">
       <h2 className="pb-2 text-4xl font-bold italic text-primary">Contact Request</h2>
       <Form {...form} className="flex justify-center">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

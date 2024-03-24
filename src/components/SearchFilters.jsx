@@ -14,7 +14,7 @@ export default function SearchFilters() {
       <DropdownMenuTrigger asChild>
         <Button variant="outline">Search by...</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-auto bg-slate-900 border-primary">
+      <DropdownMenuContent className="w-auto bg-background border-primary">
         <DropdownMenuGroup>
           <DropdownMenuItem>Body Part</DropdownMenuItem>
           <DropdownMenuItem>Name</DropdownMenuItem>

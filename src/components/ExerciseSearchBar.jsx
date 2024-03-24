@@ -34,7 +34,7 @@ export default function ExercisesSearchBar() {
             name="search"
             render={({ field }) => (
               <FormItem>
-                <FormControl className="relative">
+                <FormControl className="relative border-2 border-border rounded-lg">
                   <div>
                     <Input
                       type="string"

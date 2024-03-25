@@ -7,18 +7,31 @@ const HEIGHT_CONVERSION_TO_CM = 30.48;
 const HEIGHT_CONVERSION_TO_FT = 0.0328084;
 
 const lbsToKg = (weight) => {
+  // weight is NaN or undefined return nothing
+  if (isNaN(weight) || weight === undefined) {
+    return;
+  }
   return (weight * WEIGHT_CONVERSION_TO_KG).toFixed(2);
 };
 
 const kgToLbs = (weight) => {
+  if (isNaN(weight) || weight === undefined) {
+    return;
+  }
   return (weight * WEIGHT_CONVERSION_TO_LBS).toFixed(2);
 };
 
 const ftToCm = (height) => {
+  if (isNaN(height) || height === undefined) {
+    return;
+  }
   return (height * HEIGHT_CONVERSION_TO_CM).toFixed(2);
 };
 
 const cmToFt = (height) => {
+  if (isNaN(height) || height === undefined) {
+    return;
+  }
   return (height * HEIGHT_CONVERSION_TO_FT).toFixed(2);
 };
 

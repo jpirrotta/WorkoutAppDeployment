@@ -3,12 +3,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import logger from '@/lib/logger.js';
-import { profileFormSchema } from '@/models/ProfileFormSchema.js';
-import { useToast } from '@/components/ui/use-toast';
 import _ from 'lodash';
 //!
 
 // utils
+import { profileFormSchema } from '@/models/ProfileFormSchema.js';
 import { useUser } from '@clerk/clerk-react';
 import {
   ImperialMetricConversion,
@@ -24,14 +23,16 @@ import deepPickBy from '@/utils/deepPickBy.js';
 // State
 import { useAtom } from 'jotai';
 import { measurementAtom, profileDataAtom } from '../../../store.js';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 //!
 
 // UI components
-import BMICard from '@/components/BMICard.jsx';
+import Spinner from '@/components/svgs/Spinner.svg';
+import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import DeleteProfileData from '@/components/Profile/DeleteProfileData';
+import ProfileBMI from '@/components/Profile/ProfileBMI';
 import {
   Select,
   SelectContent,
@@ -54,6 +55,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 //!
 
 export default function ProfileForm() {
+  const [isLoading, setIsLoading] = useState(true);
   // use the useToast hook to show toast messages
   const { toast } = useToast();
   // state to manage the selected tab imperial or metric
@@ -65,20 +67,28 @@ export default function ProfileForm() {
   // critical default values
   const userId = user?.id;
   const userName = user?.fullName;
+  // get the user profile data from the store for easy access
+  const stateUserId = userProfileData?.userId;
+  const stateUserName = userProfileData?.userName;
+  const stateAge = userProfileData?.profile?.age;
+  const stateGender = userProfileData?.profile?.gender;
+  const stateWeight = userProfileData?.profile?.weight;
+  const stateHeight = userProfileData?.profile?.height;
+  const stateBodyFat = userProfileData?.profile?.bodyFat;
   //
 
   // define the form and its default values
   const form = useForm({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      userId: userProfileData?.userId || userId,
-      name: userProfileData?.name || userName,
+      userId: stateUserId || userId,
+      name: stateUserName || userName,
       profile: {
-        age: userProfileData?.profile?.age?.toString() || '',
-        gender: userProfileData?.profile?.gender?.toString() || '',
-        weight: userProfileData?.profile?.weight?.toString() || '',
-        height: userProfileData?.profile?.height?.toString() || '',
-        bodyFat: userProfileData?.profile?.bodyFat?.toString() || '',
+        age: stateAge?.toString() || '',
+        gender: stateGender?.toString() || '',
+        weight: stateWeight?.toString() || '',
+        height: stateHeight?.toString() || '',
+        bodyFat: stateBodyFat?.toString() || '',
       },
     },
   });
@@ -93,26 +103,36 @@ export default function ProfileForm() {
       if (!userProfileData) {
         logger.info('Fetched from the server');
         const data = await getUserProfileData(userId);
-        setUserProfileData(data);
+        if (data) {
+          setUserProfileData(data);
+          logger.info('User has no profile data');
+        }
+
+        setIsLoading(false);
       } else {
+        setIsLoading(false);
         logger.info('Fetched from the store / cache');
       }
     }
     fetchData();
-  }, [userProfileData, userId, setUserProfileData]);
+    // cleanup the form when the component is unmounted
+    handleOnReset();
+  }, [userId, setUserProfileData, selectedTab]);
 
   // check if the form values match the user data, if they do, don't submit the form
   // do the check only for age and gender
   const isAgeGenderSame = (formData) => {
-    if (!userProfileData) {
+    const formAge = formData.profile.age;
+    const formGender = formData.profile.gender;
+    const formWeight = formData.profile.weight;
+    const formHeight = formData.profile.height;
+    const formBodyFat = formData.profile.bodyFat;
+
+    if (!userProfileData || !stateAge || !stateGender) {
       logger.info('User data is not available');
       return false;
     }
     logger.debug('Checking if the form data is the same as the user data');
-    const stateAge = userProfileData?.profile?.age;
-    const stateGender = userProfileData?.profile?.gender;
-    const formAge = formData.profile.age;
-    const formGender = formData.profile.gender;
 
     // 1. if the age is the same but the form gender is empty
     if (stateAge === formAge && !formGender) {
@@ -129,6 +149,17 @@ export default function ProfileForm() {
       logger.info('Both age and gender are the same');
       return true;
     }
+    // 4. if the weight and height are the same as the user data
+    if (stateWeight === formWeight && stateHeight === formHeight) {
+      logger.info('Both weight and height are the same');
+      return true;
+    }
+    // 5. if the body fat is the same as the user data
+    if (stateBodyFat === formBodyFat) {
+      logger.info('Body fat is the same');
+      return true;
+    }
+
     logger.info('Form data is different from the user data');
     return false;
   };
@@ -137,8 +168,8 @@ export default function ProfileForm() {
   // checks if the form data is totally empty or the same as the user data
   const isFormDataEmpty = (formData) => {
     for (const key in formData.profile) {
-      // log the form data
       if (formData.profile[key]) {
+        logger.info('Form data is not empty');
         return false;
       }
     }
@@ -271,8 +302,16 @@ export default function ProfileForm() {
   };
   //
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Spinner className="text-primary text-3xl" />
+      </div>
+    );
+  }
+
   return (
-    <section className="flex flex-col w-full xl:w-[80%] light: text-foreground">
+    <section className="flex-1 flex-col w-full xl:w-[80%] light: text-foreground">
       <h2 className="pb-2 text-4xl font-bold italic text-primary">Profile</h2>
       <p className="pb-4 text:md text-slate-400">Hi there {userName} 👋</p>
       <Form {...form} className="flex justify-center">
@@ -281,15 +320,13 @@ export default function ProfileForm() {
           <FormField
             control={form.control}
             name="profile.age"
-            defaultValue={userProfileData?.profile?.age}
+            defaultValue={stateAge}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Age</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={
-                      userProfileData?.profile?.age?.toString() || ''
-                    }
+                    placeholder={stateAge?.toString() || ''}
                     min={0}
                     type="number"
                     {...field}
@@ -308,22 +345,15 @@ export default function ProfileForm() {
                 <FormLabel>Gender</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  placeholder={userProfileData?.profile?.gender?.toString()}
+                  placeholder={stateGender?.toString()}
                 >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        defaultValue={
-                          userProfileData?.profile?.gender?.toString() || ''
-                        }
+                        defaultValue={stateGender?.toString() || ''}
                         placeholder={
-                          userProfileData?.profile?.gender
-                            ?.toString()
-                            .charAt(0)
-                            .toUpperCase() +
-                            userProfileData?.profile?.gender
-                              ?.toString()
-                              .slice(1) || ''
+                          stateGender?.toString().charAt(0).toUpperCase() +
+                            stateGender?.toString().slice(1) || ''
                         }
                       />
                     </SelectTrigger>
@@ -352,10 +382,8 @@ export default function ProfileForm() {
                     <Input
                       placeholder={
                         selectedTab === 'metric'
-                          ? userProfileData?.profile?.weight?.toString()
-                          : kgToLbs(
-                              userProfileData?.profile?.weight
-                            )?.toString()
+                          ? stateWeight?.toString()
+                          : kgToLbs(stateWeight)?.toString()
                       }
                       min="0"
                       step="any"
@@ -380,8 +408,8 @@ export default function ProfileForm() {
                     <Input
                       placeholder={
                         selectedTab === 'metric'
-                          ? userProfileData?.profile?.height?.toString()
-                          : cmToFt(userProfileData?.profile?.height)?.toString()
+                          ? stateHeight?.toString()
+                          : cmToFt(stateHeight)?.toString()
                       }
                       min="0"
                       step="any"
@@ -403,7 +431,7 @@ export default function ProfileForm() {
                 <FormLabel>Body Fat %</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={userProfileData?.profile?.bodyFat?.toString()}
+                    placeholder={stateBodyFat?.toString()}
                     min={0}
                     type="number"
                     {...field}
@@ -429,6 +457,7 @@ export default function ProfileForm() {
             </TabsList>
           </Tabs>
           {/*! End of Tab  !*/}
+          {/* Form Buttons */}
           <div className="flex justify-center gap-3 md:justify-start">
             <Button type="submit">Submit</Button>
             <Button type="reset" variant="outline" onClick={handleOnReset}>
@@ -437,14 +466,17 @@ export default function ProfileForm() {
           </div>
         </form>
       </Form>
-      {/* if there is some profile data saved show the calculated BMI and DELETE option */}
-      {userProfileData?.profile?.weight && userProfileData?.profile?.height && (
-        <BMICard
-          weight={userProfileData?.profile?.weight}
-          height={userProfileData?.profile?.height}
-        />
+      {/* Show the BMI card if the user has saved data 
+      otherwise it will show and alert*/}
+      <ProfileBMI
+        weight={userProfileData?.profile?.weight}
+        height={userProfileData?.profile?.height}
+      />
+
+      {/* if the user has saved data, show the delete btn */}
+      {userProfileData && (
+        <DeleteProfileData resetForm={handleOnReset} userId={userId} />
       )}
-      {userProfileData && <DeleteProfileData userId={userId} />}
     </section>
   );
 }

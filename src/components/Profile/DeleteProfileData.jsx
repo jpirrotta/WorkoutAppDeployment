@@ -22,7 +22,7 @@ import { useAtom, atom } from 'jotai';
 import { profileDataAtom } from '../../../store.js';
 
 const loadingAtom = atom(false);
-export default function DeleteProfileData({ userId }) {
+export default function DeleteProfileData({ userId, resetForm }) {
   const [, setProfileData] = useAtom(profileDataAtom);
   const [loading, setLoading] = useAtom(loadingAtom); // Add this line
 
@@ -41,6 +41,7 @@ export default function DeleteProfileData({ userId }) {
       // refresh the form page
       // window.location.reload();
       //
+      resetForm(); // Reset the form after the operation finishes
       logger.info('Profile data deleted');
     } catch (error) {
       logger.error(error);

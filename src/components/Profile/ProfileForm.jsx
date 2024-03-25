@@ -67,20 +67,28 @@ export default function ProfileForm() {
   // critical default values
   const userId = user?.id;
   const userName = user?.fullName;
+  // get the user profile data from the store for easy access
+  const stateUserId = userProfileData?.userId;
+  const stateUserName = userProfileData?.userName;
+  const stateAge = userProfileData?.profile?.age;
+  const stateGender = userProfileData?.profile?.gender;
+  const stateWeight = userProfileData?.profile?.weight;
+  const stateHeight = userProfileData?.profile?.height;
+  const stateBodyFat = userProfileData?.profile?.bodyFat;
   //
 
   // define the form and its default values
   const form = useForm({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      userId: userProfileData?.userId || userId,
-      name: userProfileData?.name || userName,
+      userId: stateUserId || userId,
+      name: stateUserName || userName,
       profile: {
-        age: userProfileData?.profile?.age?.toString() || '',
-        gender: userProfileData?.profile?.gender?.toString() || '',
-        weight: userProfileData?.profile?.weight?.toString() || '',
-        height: userProfileData?.profile?.height?.toString() || '',
-        bodyFat: userProfileData?.profile?.bodyFat?.toString() || '',
+        age: stateAge?.toString() || '',
+        gender: stateGender?.toString() || '',
+        weight: stateWeight?.toString() || '',
+        height: stateHeight?.toString() || '',
+        bodyFat: stateBodyFat?.toString() || '',
       },
     },
   });
@@ -95,35 +103,36 @@ export default function ProfileForm() {
       if (!userProfileData) {
         logger.info('Fetched from the server');
         const data = await getUserProfileData(userId);
-        setUserProfileData(data);
-        // } else {
-        // logger.info('Fetched from the store / cache');
-        // }
-        // wait 2 secionds before setting the loading state to false
-        // to give the user some time to see the skeleton loader
-        // before the data is displayed
-        const timer = setTimeout(() => {
-          setIsLoading(false);
-        }, 2000);
-      }
+        if (data) {
+          setUserProfileData(data);
+          logger.info('User has no profile data');
+        }
 
-      return () => clearTimeout(timer);
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        logger.info('Fetched from the store / cache');
+      }
     }
     fetchData();
+    // cleanup the form when the component is unmounted
+    handleOnReset();
   }, [userId, setUserProfileData, selectedTab]);
 
   // check if the form values match the user data, if they do, don't submit the form
   // do the check only for age and gender
   const isAgeGenderSame = (formData) => {
-    if (!userProfileData) {
+    const formAge = formData.profile.age;
+    const formGender = formData.profile.gender;
+    const formWeight = formData.profile.weight;
+    const formHeight = formData.profile.height;
+    const formBodyFat = formData.profile.bodyFat;
+
+    if (!userProfileData || !stateAge || !stateGender) {
       logger.info('User data is not available');
       return false;
     }
     logger.debug('Checking if the form data is the same as the user data');
-    const stateAge = userProfileData?.profile?.age;
-    const stateGender = userProfileData?.profile?.gender;
-    const formAge = formData.profile.age;
-    const formGender = formData.profile.gender;
 
     // 1. if the age is the same but the form gender is empty
     if (stateAge === formAge && !formGender) {
@@ -140,6 +149,17 @@ export default function ProfileForm() {
       logger.info('Both age and gender are the same');
       return true;
     }
+    // 4. if the weight and height are the same as the user data
+    if (stateWeight === formWeight && stateHeight === formHeight) {
+      logger.info('Both weight and height are the same');
+      return true;
+    }
+    // 5. if the body fat is the same as the user data
+    if (stateBodyFat === formBodyFat) {
+      logger.info('Body fat is the same');
+      return true;
+    }
+
     logger.info('Form data is different from the user data');
     return false;
   };
@@ -148,8 +168,8 @@ export default function ProfileForm() {
   // checks if the form data is totally empty or the same as the user data
   const isFormDataEmpty = (formData) => {
     for (const key in formData.profile) {
-      // log the form data
       if (formData.profile[key]) {
+        logger.info('Form data is not empty');
         return false;
       }
     }
@@ -300,15 +320,13 @@ export default function ProfileForm() {
           <FormField
             control={form.control}
             name="profile.age"
-            defaultValue={userProfileData?.profile?.age}
+            defaultValue={stateAge}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Age</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={
-                      userProfileData?.profile?.age?.toString() || ''
-                    }
+                    placeholder={stateAge?.toString() || ''}
                     min={0}
                     type="number"
                     {...field}
@@ -327,22 +345,15 @@ export default function ProfileForm() {
                 <FormLabel>Gender</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  placeholder={userProfileData?.profile?.gender?.toString()}
+                  placeholder={stateGender?.toString()}
                 >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue
-                        defaultValue={
-                          userProfileData?.profile?.gender?.toString() || ''
-                        }
+                        defaultValue={stateGender?.toString() || ''}
                         placeholder={
-                          userProfileData?.profile?.gender
-                            ?.toString()
-                            .charAt(0)
-                            .toUpperCase() +
-                            userProfileData?.profile?.gender
-                              ?.toString()
-                              .slice(1) || ''
+                          stateGender?.toString().charAt(0).toUpperCase() +
+                            stateGender?.toString().slice(1) || ''
                         }
                       />
                     </SelectTrigger>
@@ -371,10 +382,8 @@ export default function ProfileForm() {
                     <Input
                       placeholder={
                         selectedTab === 'metric'
-                          ? userProfileData?.profile?.weight?.toString()
-                          : kgToLbs(
-                              userProfileData?.profile?.weight
-                            )?.toString()
+                          ? stateWeight?.toString()
+                          : kgToLbs(stateWeight)?.toString()
                       }
                       min="0"
                       step="any"
@@ -399,8 +408,8 @@ export default function ProfileForm() {
                     <Input
                       placeholder={
                         selectedTab === 'metric'
-                          ? userProfileData?.profile?.height?.toString()
-                          : cmToFt(userProfileData?.profile?.height)?.toString()
+                          ? stateHeight?.toString()
+                          : cmToFt(stateHeight)?.toString()
                       }
                       min="0"
                       step="any"
@@ -422,7 +431,7 @@ export default function ProfileForm() {
                 <FormLabel>Body Fat %</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={userProfileData?.profile?.bodyFat?.toString()}
+                    placeholder={stateBodyFat?.toString()}
                     min={0}
                     type="number"
                     {...field}
@@ -465,7 +474,9 @@ export default function ProfileForm() {
       />
 
       {/* if the user has saved data, show the delete btn */}
-      {userProfileData && <DeleteProfileData userId={userId} />}
+      {userProfileData && (
+        <DeleteProfileData resetForm={handleOnReset} userId={userId} />
+      )}
     </section>
   );
 }

@@ -3,12 +3,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import logger from '@/lib/logger.js';
-import { profileFormSchema } from '@/models/ProfileFormSchema.js';
-import { useToast } from '@/components/ui/use-toast';
 import _ from 'lodash';
 //!
 
 // utils
+import { profileFormSchema } from '@/models/ProfileFormSchema.js';
 import { useUser } from '@clerk/clerk-react';
 import {
   ImperialMetricConversion,
@@ -24,14 +23,15 @@ import deepPickBy from '@/utils/deepPickBy.js';
 // State
 import { useAtom } from 'jotai';
 import { measurementAtom, profileDataAtom } from '../../../store.js';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 //!
 
 // UI components
-import BMICard from '@/components/BMICard.jsx';
+import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import DeleteProfileData from '@/components/Profile/DeleteProfileData';
+import ProfileBMI from '@/components/Profile/ProfileBMI';
 import {
   Select,
   SelectContent,
@@ -54,6 +54,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 //!
 
 export default function ProfileForm() {
+  const [isLoading, setIsLoading] = useState(true);
   // use the useToast hook to show toast messages
   const { toast } = useToast();
   // state to manage the selected tab imperial or metric
@@ -94,12 +95,21 @@ export default function ProfileForm() {
         logger.info('Fetched from the server');
         const data = await getUserProfileData(userId);
         setUserProfileData(data);
-      } else {
-        logger.info('Fetched from the store / cache');
+        // } else {
+        // logger.info('Fetched from the store / cache');
+        // }
+        // wait 2 secionds before setting the loading state to false
+        // to give the user some time to see the skeleton loader
+        // before the data is displayed
+        const timer = setTimeout(() => {
+          setIsLoading(false);
+        }, 2000);
       }
+
+      return () => clearTimeout(timer);
     }
     fetchData();
-  }, [userProfileData, userId, setUserProfileData]);
+  }, [userId, setUserProfileData, selectedTab]);
 
   // check if the form values match the user data, if they do, don't submit the form
   // do the check only for age and gender
@@ -271,8 +281,12 @@ export default function ProfileForm() {
   };
   //
 
+  if (isLoading) {
+    console.log('loading');
+  }
+
   return (
-    <section className="flex flex-col w-full xl:w-[80%] light: text-foreground">
+    <section className="flex-1 flex-col w-full xl:w-[80%] light: text-foreground">
       <h2 className="pb-2 text-4xl font-bold italic text-primary">Profile</h2>
       <p className="pb-4 text:md text-slate-400">Hi there {userName} 👋</p>
       <Form {...form} className="flex justify-center">
@@ -429,6 +443,7 @@ export default function ProfileForm() {
             </TabsList>
           </Tabs>
           {/*! End of Tab  !*/}
+          {/* Form Buttons */}
           <div className="flex justify-center gap-3 md:justify-start">
             <Button type="submit">Submit</Button>
             <Button type="reset" variant="outline" onClick={handleOnReset}>
@@ -437,13 +452,14 @@ export default function ProfileForm() {
           </div>
         </form>
       </Form>
-      {/* if there is some profile data saved show the calculated BMI and DELETE option */}
-      {userProfileData?.profile?.weight && userProfileData?.profile?.height && (
-        <BMICard
-          weight={userProfileData?.profile?.weight}
-          height={userProfileData?.profile?.height}
-        />
-      )}
+      {/* Show the BMI card if the user has saved data 
+      otherwise it will show and alert*/}
+      <ProfileBMI
+        weight={userProfileData?.profile?.weight}
+        height={userProfileData?.profile?.height}
+      />
+
+      {/* if the user has saved data, show the delete btn */}
       {userProfileData && <DeleteProfileData userId={userId} />}
     </section>
   );

@@ -27,6 +27,7 @@ import { useEffect, useState } from 'react';
 //!
 
 // UI components
+import Spinner from '@/components/svgs/Spinner.svg';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -282,7 +283,11 @@ export default function ProfileForm() {
   //
 
   if (isLoading) {
-    console.log('loading');
+    return (
+      <div className="flex items-center justify-center">
+        <Spinner className="text-primary text-3xl" />
+      </div>
+    );
   }
 
   return (

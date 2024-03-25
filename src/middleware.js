@@ -18,6 +18,11 @@ export default authMiddleware({
       logger.info(`User is logged in and trying to access a protected route`);
       return NextResponse.next();
     }
+    // user is not logged in and trying to access a protected route
+    else if (!auth.userId && !auth.isPublicRoute) {
+      logger.info(`User is not logged in and trying to access a protected route`);
+      return NextResponse.redirect(new URL('/sign-in', req.url))
+    }
     // Allow users visiting public routes to access them
     logger.info(`User is visiting a public route`);
     return NextResponse.next();

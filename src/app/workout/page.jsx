@@ -48,7 +48,12 @@ const workout = {
   ],
 };
 
-const workoutId = '660252f6978de2a29d3ac103';
+// note that this workoutId is hardcoded for demonstration purposes
+// if you delete and create an new workout, the workoutId will not be changed
+// to match the new workout _id from the db
+const workoutId = '660311711dfc7e1c5755da09';
+
+const testComment = 'Great workout!';
 
 export default function Page() {
   // use the useUser hook to get the current user
@@ -62,9 +67,9 @@ export default function Page() {
     workout: workout,
   };
 
-  const handleAddWorkout = () => {
+  const handleAddWorkout = async () => {
     console.log('Add Workout');
-    const response = fetch('/api/workout', {
+    const response =  await fetch('/api/workout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -73,9 +78,9 @@ export default function Page() {
     });
   };
 
-  const handleDeleteWorkouts = () => {
+  const handleDeleteWorkouts = async () => {
     console.log('Delete Workout');
-    const response = fetch('/api/workout', {
+    const response = await fetch('/api/workout', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -84,9 +89,9 @@ export default function Page() {
     });
   };
 
-  const handleLikeWorkout = () => {
+  const handleLikeWorkout = async () => {
     console.log('Like Workout');
-    const response = fetch('/api/workout/like', {
+    const response = await fetch('/api/workout/like', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -95,14 +100,25 @@ export default function Page() {
     });
   };
 
-  const handleCommentWorkout = () => {
-    console.log('Comment Workout');
-    const response = fetch('/api/workout/comment', {
+  const handleUnlikeWorkout = async () => {
+    console.log('Unlike Workout');
+    const response = await fetch('/api/workout/unlike', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId: userId }),
+      body: JSON.stringify({ userId: userId, workoutId: workoutId }),
+    });
+  }
+
+  const handleCommentWorkout = async () => {
+    console.log('Comment Workout');
+    const response = await fetch('/api/workout/comment', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: userId, comment: testComment, workoutId: workoutId}),
     });
   };
 

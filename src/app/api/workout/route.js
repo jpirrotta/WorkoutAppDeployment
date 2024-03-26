@@ -36,9 +36,12 @@ export async function POST(req, res) {
     // if the user is found create a new workout
     logger.info('User found, creating new workout');
 
-    if (!workout || !workout.name) {
-      logger.error('Workout name is required');
-    }
+    //? probably not needed as the workout name is required in the schema
+    // ? and it will throw an error if it is not there
+    // if (!workout || !workout.name) {
+    //   logger.error('Workout name is required');
+    // }
+
     // create the array of exercises
     const exercises = [];
     workout.exercises.forEach((exercise) => {

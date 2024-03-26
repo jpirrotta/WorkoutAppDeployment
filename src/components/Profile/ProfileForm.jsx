@@ -111,9 +111,9 @@ export default function ProfileForm() {
       // otherwise the data is already available and we don't need to fetch it again
       // userProfileData is saved in the store and will persist even if the component is unmounted
       if (!userProfileData) {
-        logger.info('Fetched from the server');
+        logger.info('Fetching from the server');
         const data = await getUserProfileData(userId);
-        logger.info('User data: \n', data);
+        logger.info('Returned User data: \n', data);
         if (data) {
           setUserProfileData((value) => {
             return {
@@ -130,7 +130,6 @@ export default function ProfileForm() {
       }
     }
     fetchData();
-    console.log('\n\nxxxxx\n\n', userProfileData);
     // cleanup the form when the component is unmounted
     handleOnReset();
   }, []);

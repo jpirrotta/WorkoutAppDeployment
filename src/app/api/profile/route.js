@@ -79,7 +79,10 @@ export async function GET(req, res) {
       });
     } else {
       logger.info(`GET User found`);
-      return new Response(JSON.stringify({ message: 'OK' }), {
+      const retProfile = {
+        profile: user.profile,
+      }
+      return new Response(JSON.stringify(retProfile), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });

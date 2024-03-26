@@ -67,6 +67,16 @@ export default function ProfileForm() {
   // critical default values
   const userId = user?.id;
   const userName = user?.fullName;
+  setUserProfileData((value) => {
+    if (!value) {
+      return {
+        userId: userId,
+        userName: userName,
+        profile: {},
+      };
+    }
+    return value;
+  });
   // get the user profile data from the store for easy access
   const stateUserId = userProfileData?.userId;
   const stateUserName = userProfileData?.userName;
@@ -103,11 +113,16 @@ export default function ProfileForm() {
       if (!userProfileData) {
         logger.info('Fetched from the server');
         const data = await getUserProfileData(userId);
+        logger.info('User data: \n', data);
         if (data) {
-          setUserProfileData(data);
+          setUserProfileData((value) => {
+            return {
+              ...value,
+              profile: { ...data.profile },
+            };
+          });
           logger.info('User has no profile data');
         }
-
         setIsLoading(false);
       } else {
         setIsLoading(false);
@@ -115,9 +130,10 @@ export default function ProfileForm() {
       }
     }
     fetchData();
+    console.log('\n\nxxxxx\n\n', userProfileData);
     // cleanup the form when the component is unmounted
     handleOnReset();
-  }, [userId, setUserProfileData, selectedTab]);
+  }, []);
 
   // check if the form values match the user data, if they do, don't submit the form
   // do the check only for age and gender

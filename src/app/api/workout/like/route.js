@@ -29,13 +29,13 @@ export async function PUT(req, res) {
 
     // find who liked the workout
     // kelvin
-    let user = await User.findOne({ _id: '65ee62ab31b43889d4a39d8c' });
+    let user = await User.findOne({ userId: 'user_2dOFzDbFGGG6oec9fRSltH7aGJY' });
 
     logger.info(`Like User found: ${user.name + ' | ' + user._id}`);
 
     // If the workoutOwner is not found return an error
     if (!workoutOwner) {
-      logger.error('User not found');
+      logger.error(`User with this workout id ${workoutId} not found`);
       return new Response('User not found', { status: 404 });
     }
 
@@ -43,8 +43,15 @@ export async function PUT(req, res) {
     logger.info(`the workout owner is User found: ${workoutOwner.name}`);
 
     // add a like from the userID to the workoutOwner specific workout id
-    const result = workoutOwner.workouts.id(workoutId).likes;
-    result.push(user._id);
+    const result = await User.updateOne(
+      {
+        _id: workoutOwner._id,
+        workouts: { $elemMatch: { _id: workoutId } },
+      },
+      {
+        $addToSet: { 'workouts.$.likes': user._id },
+      }
+    );
 
     console.log(result); // prints the number of documents modified
     logger.info('Workout liked');

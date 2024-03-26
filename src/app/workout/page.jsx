@@ -51,7 +51,7 @@ const workout = {
 // note that this workoutId is hardcoded for demonstration purposes
 // if you delete and create an new workout, the workoutId will not be changed
 // to match the new workout _id from the db
-const workoutId = '660311711dfc7e1c5755da09';
+const workoutId = '66032d10495c0daf70845b3d';
 
 const testComment = 'Great workout!';
 
@@ -69,7 +69,7 @@ export default function Page() {
 
   const handleAddWorkout = async () => {
     console.log('Add Workout');
-    const response =  await fetch('/api/workout', {
+    const response = await fetch('/api/workout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -91,8 +91,8 @@ export default function Page() {
 
   const handleLikeWorkout = async () => {
     console.log('Like Workout');
-    const response = await fetch('/api/workout/like', {
-      method: 'PUT',
+    const response = await fetch('/api/workout/likes', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -102,14 +102,14 @@ export default function Page() {
 
   const handleUnlikeWorkout = async () => {
     console.log('Unlike Workout');
-    const response = await fetch('/api/workout/unlike', {
-      method: 'PUT',
+    const response = await fetch('/api/workout/likes', {
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ userId: userId, workoutId: workoutId }),
     });
-  }
+  };
 
   const handleCommentWorkout = async () => {
     console.log('Comment Workout');
@@ -118,7 +118,11 @@ export default function Page() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId: userId, comment: testComment, workoutId: workoutId}),
+      body: JSON.stringify({
+        userId: userId,
+        comment: testComment,
+        workoutId: workoutId,
+      }),
     });
   };
 
@@ -128,6 +132,7 @@ export default function Page() {
       <Button onClick={handleAddWorkout}>add workout</Button>
       <Button onClick={handleDeleteWorkouts}>delete workouts</Button>
       <Button onClick={handleLikeWorkout}>like workout</Button>
+      <Button onClick={handleUnlikeWorkout}>unlike workout</Button>
       <Button onClick={handleCommentWorkout}>comment workout</Button>
     </div>
   );

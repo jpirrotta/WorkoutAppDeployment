@@ -1,9 +1,11 @@
 // src/models/userWorkouts.js
 // schema for userWorkouts
 
-import { Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const exerciseSchema = new Schema({
+  // this the id that comes form the api
+  // mongo will create its own _id
   id: {
     type: String,
     required: [true, 'ID is required'],
@@ -46,6 +48,35 @@ const workoutSchema = new Schema({
     max: [100, 'Workout name cannot be greater than 100 characters'],
   },
   exercises: [exerciseSchema],
+  public: {
+    type: Boolean,
+    default: false,
+  },
+  likes: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  comments: [
+    {
+      text: String,
+      postedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    },
+  ],
+  saves: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
 });
+
+
+export const Workout =
+  mongoose.models.Workout || mongoose.model('Workout', workoutSchema);
+
+export const Exercise =
+  mongoose.models.Exercise || mongoose.model('Exercise', exerciseSchema);
 
 export default workoutSchema;

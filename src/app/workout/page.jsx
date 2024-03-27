@@ -51,9 +51,9 @@ const workout = {
 // note that this workoutId is hardcoded for demonstration purposes
 // if you delete and create an new workout, the workoutId will not be changed
 // to match the new workout _id from the db
-const workoutId = '66032d10495c0daf70845b3d';
-
+const testWorkoutId = '66032d10495c0daf70845b3d';
 const testComment = 'Great workout!';
+const testCommentId = '660346da495c0daf70845dea';
 
 export default function Page() {
   // use the useUser hook to get the current user
@@ -91,38 +91,99 @@ export default function Page() {
 
   const handleLikeWorkout = async () => {
     console.log('Like Workout');
-    const response = await fetch('/api/workout/likes', {
+    const response = await fetch('/api/workout/like', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId: userId, workoutId: workoutId }),
+      body: JSON.stringify({ userId: userId, workoutId: testWorkoutId }),
     });
   };
 
   const handleUnlikeWorkout = async () => {
     console.log('Unlike Workout');
-    const response = await fetch('/api/workout/likes', {
+    const response = await fetch('/api/workout/like', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId: userId, workoutId: workoutId }),
+      body: JSON.stringify({ userId: userId, workoutId: testWorkoutId }),
     });
   };
 
   const handleCommentWorkout = async () => {
     console.log('Comment Workout');
     const response = await fetch('/api/workout/comment', {
-      method: 'PUT',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         userId: userId,
         comment: testComment,
-        workoutId: workoutId,
+        workoutId: testWorkoutId,
       }),
+    });
+  };
+
+  const handleDeleteComment = async () => {
+    console.log('Delete Comment');
+    const response = await fetch('/api/workout/comment', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: userId,
+        commentId: testCommentId,
+        workoutId: testWorkoutId,
+      }),
+    });
+  };
+  const handlePublishWorkout = async () => {
+    console.log('Publish Workout');
+    const response = await fetch('/api/workout/public', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: userId, workoutId: testWorkoutId, isPublic: true }),
+    });
+  };
+  
+  const handleUnpublishWorkout = async () => {
+    console.log('Unpublish Workout');
+    const response = await fetch('/api/workout/public', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: userId, workoutId: testWorkoutId, isPublic: false }),
+    });
+  };
+
+  // return the most recent public workouts first
+  const handleGetAllPublicWorkouts = async (page, itemsPerPage) => {
+    console.log('Get All Public Workouts');
+    const response = await fetch(`/api/public-workouts?page=${page}&itemsPerPage=${itemsPerPage}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(await response.json());
+  }
+  //! TODO CONTINUE HERE ONCE THE UI IS READY
+  // this handler is responsible for saving a workout from the social feed
+  // from different user -> currently logged in user
+  const handleSaveWorkout = async () => {
+    console.log('Save Workout');
+    const response = await fetch('/api/workout/save', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId: userId, workoutId: testWorkoutId }),
     });
   };
 
@@ -134,6 +195,13 @@ export default function Page() {
       <Button onClick={handleLikeWorkout}>like workout</Button>
       <Button onClick={handleUnlikeWorkout}>unlike workout</Button>
       <Button onClick={handleCommentWorkout}>comment workout</Button>
+      <Button onClick={handleDeleteComment}>delete comment</Button>
+      <Button onClick={handlePublishWorkout}>publish workout</Button>
+      <Button onClick={handleUnpublishWorkout}>unpublish workout</Button>
+      <Button onClick={() => handleGetAllPublicWorkouts(1, 3)}>get all public workouts</Button>
+      <Button onClick={handleSaveWorkout}>save workout</Button>
+      
+
     </div>
   );
 }

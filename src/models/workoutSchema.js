@@ -4,44 +4,79 @@
 import mongoose, { Schema } from 'mongoose';
 
 const exerciseSchema = new Schema({
+  // this the id that comes form the api
+  // mongo will create its own _id
+  id: {
+    type: String,
+    required: [true, 'ID is required'],
+    max: [100, 'ID cannot be greater than 100 characters'],
+  },
   bodyPart: {
     type: String,
-    required: [false, 'Body Part is required'],
+    required: [true, 'Body Part is required'],
     max: [100, 'Body Part cannot be greater than 100 characters'],
   },
   equipment: {
     type: String,
-    required: [false, 'Equipment is required'],
+    required: [true, 'Equipment is required'],
     max: [100, 'Equipment cannot be greater than 100 characters'],
-  },
-  id: {
-    type: String,
-    required: [false, 'ID is required'],
-    max: [100, 'ID cannot be greater than 100 characters'],
   },
   name: {
     type: String,
-    required: [false, 'Name is required'],
+    required: [true, 'Name is required'],
     max: [100, 'Name cannot be greater than 100 characters'],
   },
   target: {
     type: String,
-    required: [false, 'Target is required'],
+    required: [true, 'Target is required'],
     max: [100, 'Target cannot be greater than 100 characters'],
   },
   secondaryMuscles: {
     type: [String],
-    required: [false, 'Secondary Muscles are required'],
+    required: [true, 'Secondary Muscles are required'],
   },
   instructions: {
     type: [String],
-    required: [false, 'Instructions are required'],
+    required: [true, 'Instructions are required'],
   },
 });
 
 const workoutSchema = new Schema({
+  name: {
+    type: String,
+    required: [true, 'Workout name is required'],
+    max: [100, 'Workout name cannot be greater than 100 characters'],
+  },
   exercises: [exerciseSchema],
+  public: {
+    type: Boolean,
+    default: false,
+  },
+  likes: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
+  comments: [
+    {
+      text: String,
+      postedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    },
+  ],
+  saves: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  ],
 });
 
+
+export const Workout =
+  mongoose.models.Workout || mongoose.model('Workout', workoutSchema);
+
+export const Exercise =
+  mongoose.models.Exercise || mongoose.model('Exercise', exerciseSchema);
 
 export default workoutSchema;

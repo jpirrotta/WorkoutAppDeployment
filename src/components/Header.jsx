@@ -7,10 +7,10 @@ import { UserButton, SignInButton } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 
 // Current auth state
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from '@clerk/nextjs';
 
 // Light/Dark Mode theme decider import
-import { useTheme } from "next-themes"
+import { useTheme } from 'next-themes';
 
 // Icon imports
 import { StyledIcon } from './StyledIcon';
@@ -24,13 +24,12 @@ export default function Header() {
   const { isSignedIn } = useAuth();
   // State vars
   // State var for opening and closing of navbar Menu
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   // State var for mounting particular theme (light/dark) during CSR
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
 
   // Handle root theme of our webApp
-  const { theme, setTheme } = useTheme()
-
+  const { theme, setTheme } = useTheme();
 
   // Avoid Hydration Mismatch: useEffect only runs on the client, so now we can safely show the UI
   // Refer for more info: https://github.com/pacocoursey/next-themes?tab=readme-ov-file#avoid-hydration-mismatch
@@ -122,9 +121,7 @@ export default function Header() {
             <SignInButton mode="modal" className={buttonVariants()} />
           )}
         </div>
-
-
-      </div >
+      </div>
       {/* Navbar Menu for responsiveness (for smaller screens) */}
       <div id="mobile-menu" className="hidden md:hidden bg-background py-4">
         <ul className="flex flex-col items-center">
@@ -148,6 +145,6 @@ export default function Header() {
           </li>
         </ul>
       </div>
-    </header >
+    </header>
   );
 }

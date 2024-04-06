@@ -3,6 +3,7 @@ import { dbConnect } from '@/lib/dbConnect';
 import User from '@/models/userSchema';
 import { Workout, Exercise } from '@/models/workoutSchema';
 import logger from '@/lib/logger';
+// import { useUser } from '@clerk/clerk-react';
 
 export async function POST(req, res) {
   logger.info('\n\nPOST Workout API called');
@@ -30,7 +31,7 @@ export async function POST(req, res) {
     // If the user is not found return an error
     if (!user) {
       logger.error('User not found');
-      return new Response('User not found', { status: 404 });
+      return new Response(JSON.stringify('User not found', { status: 404 }));
     }
 
     // if the user is found create a new workout
@@ -99,7 +100,7 @@ export async function DELETE(req, res) {
     // If the user is not found return an error
     if (!user) {
       logger.error('User not found');
-      return new Response('User not found', { status: 404 });
+      return new Response(JSON.stringify('User not found', { status: 404 }));
     }
 
     // if the user has no workouts return a message
@@ -127,6 +128,53 @@ export async function DELETE(req, res) {
     });
   } catch (error) {
     logger.error(`DELETE Workout API error: ${error}`);
+    return new Response(error.message, { status: 500 });
+  }
+}
+
+// GET /api/workout - get all workouts for current user
+export async function GET(req, res) {
+  logger.info('\n\nGET User Workout API called');
+
+  // use the useUser hook to get the current user
+  // const { user } = useUser();
+  // critical default values
+  // const userId = user?.id;
+  try {
+    const { searchParams } = new URL(req.url);
+    // Get the userId from the query parameters
+    const userId = searchParams.get('userId');
+    
+    // logs
+    logger.info(`User with ID [${JSON.stringify(userId)}] requested their workouts`);
+    //
+
+    // Connect to the database
+    await dbConnect();
+
+    // Find the user by their userId
+    let curUser = await User.findOne({ userId: userId });
+
+    // If the user is not found return an error
+    if (!curUser) {
+      logger.error('User not found');
+      return new Response(JSON.stringify('User not found', { status: 404 }));
+    }
+
+    // If the user is found, return their workouts
+    logger.info('User found, returning workouts');
+    const workouts = curUser.workouts;
+
+    //logging user workouts
+    logger.info(`Workouts: ${JSON.stringify(workouts)}`);
+
+    // send the response with workouts
+    return new Response(JSON.stringify({ workouts }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    logger.error(`GET Workout API error: ${error}`);
     return new Response(error.message, { status: 500 });
   }
 }

@@ -49,6 +49,6 @@ export async function GET(req, res) {
     return new Response(JSON.stringify(retData), { status: 200 });
   } catch (error) {
     logger.error(error);
-    return new Response('Internal server error', { status: 500 });
+    return new Response(JSON.stringify('Internal server error', { status: 500 }));
   }
 }

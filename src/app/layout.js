@@ -27,23 +27,23 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased',
+          'h-screen bg-background font-sans antialiased',
           fontSans.variable
         )}
       >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={true}
-            disableTransitionOnChange
-            >
-            <AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={true}
+          disableTransitionOnChange
+        >
+          <AuthProvider>
             <Header />
             {children}
             <Toaster />
             <Footer />
-        </AuthProvider>
-          </ThemeProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

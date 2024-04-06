@@ -67,8 +67,8 @@ export default function Header() {
           <Link href="/" className={buttonVariants()}>
             Home
           </Link>
-          <Link href="/about-us" className={buttonVariants()}>
-            About Us
+          <Link href="/workout" className={buttonVariants()}>
+            Workout
           </Link>
         </div>
         {/* end of links */}

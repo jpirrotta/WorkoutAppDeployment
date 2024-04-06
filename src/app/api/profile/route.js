@@ -1,4 +1,4 @@
-// pages/api/profile.js
+// src/app/api/profile.js
 import { dbConnect } from '@/lib/dbConnect';
 import User from '@/models/userSchema';
 import logger from '@/lib/logger';
@@ -37,7 +37,7 @@ export async function POST(req, res) {
       }
     }
 
-    // add the weight to the weight history and 
+    // add the weight to the weight history and
     // the body fat to the body fat history
     if (profile.weight) {
       user.weightHistory.push({ value: profile.weight });
@@ -45,15 +45,15 @@ export async function POST(req, res) {
     if (profile.bodyFat) {
       user.bodyFatHistory.push({ value: profile.bodyFat });
     }
-    // 
-    
+    //
+
     logger.info(`User being saved`);
     // Save the user (either updated or new)
     await user.save();
     logger.info(`User saved: ${user}`);
 
     // send the response
-    return new Response(JSON.stringify(user), {
+    return new Response(JSON.stringify({ message: 'OK' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -74,10 +74,15 @@ export async function GET(req, res) {
     const user = await User.findOne({ userId: userId });
     if (!user) {
       logger.info('GET User not found / has not saved data yet');
-      return new Response('User not found / has not saved data yet', { status: 404 });
+      return new Response(JSON.stringify('User not found / has not saved data yet', {
+        status: 404,
+      }));
     } else {
       logger.info(`GET User found`);
-      return new Response(JSON.stringify(user), {
+      const retProfile = {
+        profile: user.profile,
+      }
+      return new Response(JSON.stringify(retProfile), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -99,12 +104,12 @@ export async function DELETE(req, res) {
     const user = await User.findOne({ userId: userId });
     if (!user) {
       logger.info('DELETE User not found');
-      return new Response('User not found', { status: 404 });
+      return new Response(JSON.stringify('User not found', { status: 404 }));
     } else {
       logger.info(`DELETE User found`);
       await user.deleteOne();
       logger.info(`DELETE User deleted`);
-      return new Response('User deleted', { status: 200 });
+      return new Response(JSON.stringify('User deleted', { status: 200 }));
     }
   } catch (error) {
     logger.error(`DELETE Error deleting profile: ${error}`);

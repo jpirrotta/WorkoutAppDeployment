@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/Input';
 import MagnifyingGlass from '@/components/svgs/MagnifyingGlass.svg';
-import SearchFilters from '@/components/SearchFilters';
+import { Button } from './ui/Button';
 
 import {
   Form,
@@ -18,11 +18,19 @@ const searchBarFormSchema = z.object({
   search: z.string().optional(),
 });
 
-export default function ExercisesSearchBar() {
-  const form = useForm({ resolver: zodResolver(searchBarFormSchema) });
+export default function ExercisesSearchBar({ onSearch }) {
+  const form = useForm({
+    resolver: zodResolver(searchBarFormSchema),
+    shouldUnregister: false,
+  });
 
   const onSubmit = (data) => {
-    console.log(data);
+    if (!data.search) {
+      return onSearch('');
+    }
+
+    const searchedExercise = data.search.toLowerCase();
+    onSearch(encodeURIComponent(searchedExercise));
   };
 
   return (
@@ -39,6 +47,7 @@ export default function ExercisesSearchBar() {
                     <Input
                       type="string"
                       placeholder="Find an exercise"
+                      className="border border-black dark:border-input"
                       {...field}
                     />
                     <MagnifyingGlass
@@ -53,9 +62,6 @@ export default function ExercisesSearchBar() {
           />
         </form>
       </Form>
-      <div className="mt-2">
-        <SearchFilters />
-      </div>
     </section>
   );
 }

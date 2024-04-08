@@ -17,7 +17,7 @@ import {
     TabsContent,
     TabsList,
     TabsTrigger,
-} from "../ui/tabs"
+} from "../ui/Tabs"
 import { ScrollArea } from "../ui/scroll-area"
 import { Separator } from "../ui/separator"
 import { Label } from '../ui/Label';

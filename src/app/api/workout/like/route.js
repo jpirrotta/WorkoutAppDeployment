@@ -24,9 +24,8 @@ export async function POST(req, res) {
     });
 
     // find who liked the workout
-    //! using Kelvin as for testing, change to userId later
     let user = await User.findOne({
-      userId: 'user_2dOFzDbFGGG6oec9fRSltH7aGJY',
+      userId: userId,
     });
 
     logger.info(
@@ -96,7 +95,7 @@ export async function DELETE(req, res) {
 
     // find who liked the workout
     let user = await User.findOne({
-      userId: 'user_2dOFzDbFGGG6oec9fRSltH7aGJY',
+      userId: userId,
     });
 
     logger.info(

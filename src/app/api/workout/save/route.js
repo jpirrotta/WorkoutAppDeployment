@@ -7,8 +7,52 @@ import { dbConnect } from '@/lib/dbConnect';
 import User from '@/models/userSchema';
 import logger from '@/lib/logger';
 //! TODO CONTINUE HERE ONCE THE UI IS READY
+
+
+
+export async function POST(req, res) {
+  logger.info('\n\nPOST Like Workout API called');
+  try {
+    // Get the request data
+    const data = await req.json();
+    const { userId, workoutId } = data;
+    //
+
+    //logs
+    logger.info(`Request data: ${JSON.stringify(data)}`);
+    //
+
+    // Connect to the database
+    await dbConnect();
+
+    // find who saved the workout
+    let user = await User.findOne({
+      userId: userId,
+    });
+
+    logger.info(
+      `User who saved the workout found: ${user.name + ' | ' + user._id}`
+    );
+
+    const result = await User.updateOne(
+      { $addToSet: { savedWorkouts: workoutId } }
+    );
+
+    // logs the number of documents modified
+    logger.info(result);
+
+    return new Response("Workout saved", { status: 200 });
+  } catch (error) {
+    logger.error(`Error: ${error}`);
+    return new Response('Error', { status: 500 });
+  }
+}
+
+
+/*
 export async function POST(req, res) {
   logger.info('\n\nPOST Save Workout from feed API called');
+
   try {
     // Get the request data
     const data = await req.json();
@@ -26,7 +70,7 @@ export async function POST(req, res) {
 
     // Find the user by their userId
     let user = await User.findOne({ userId: userId });
-
+    
     // If the user is not found return an error
     if (!user) {
       logger.error('User not found');
@@ -36,25 +80,31 @@ export async function POST(req, res) {
     // if the user is found save the workout
     logger.info('User found, saving workout');
 
-    // check if the workout is already saved
-    const savedWorkoutIndex = user.savedWorkouts.findIndex(
-      (workout) => workout.workoutId === workoutId
+
+
+    const result = await User.updateOne(
+      {
+        $addToSet: { 'savedWorkouts': workoutId },
+      }
     );
 
-    if (savedWorkoutIndex === -1) {
+    if (user) {
       // if the workout is not already saved, save it
-      user.savedWorkouts.push({ workoutId: workoutId });
+      user.savedWorkouts.push({ workoutId });
     } else {
+      const savedWorkoutIndex = user.savedWorkouts.findIndex(
+        (workout) => workout.workoutId === workoutId
+      );
       // if the workout is already saved, remove it
       user.savedWorkouts.splice(savedWorkoutIndex, 1);
     }
 
     // save the user
-    await user.save();
+    //await user.save();
 
     return new Response('Workout saved', { status: 200 });
   } catch (error) {
     logger.error(error);
     return new Response('Internal server error', { status: 500 });
   }
-}
+}*/

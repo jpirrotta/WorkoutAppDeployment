@@ -200,8 +200,6 @@ export default function Page() {
       <Button onClick={handleUnpublishWorkout}>unpublish workout</Button>
       <Button onClick={() => handleGetAllPublicWorkouts(1, 3)}>get all public workouts</Button>
       <Button onClick={handleSaveWorkout}>save workout</Button>
-      
-
     </div>
   );
 }

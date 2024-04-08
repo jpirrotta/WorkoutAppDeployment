@@ -51,6 +51,7 @@ const userSchema = new Schema({
   weightHistory: [historySchema],
   bodyFatHistory: [historySchema],
   workouts: [workoutSchema],
+  /*savedWorkouts: [ObjectID],*/
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);

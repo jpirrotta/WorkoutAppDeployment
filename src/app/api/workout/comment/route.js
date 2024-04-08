@@ -4,6 +4,44 @@ import { dbConnect } from '@/lib/dbConnect';
 import User from '@/models/userSchema';
 import logger from '@/lib/logger';
 
+
+export async function GET(req, res) {
+  logger.info('\n\nGET Comments API called');
+  try {
+    // Get the workoutId from the query parameters
+    const { searchParams } = new URL(req.url);
+
+    const workoutId = searchParams.get('workoutId');
+    logger.info(`GET Request workoutId: ${workoutId}`);
+
+    await dbConnect();
+
+    logger.info(workoutId)
+
+    let user = await User.findOne({
+      workouts: { $elemMatch: { _id: workoutId } },
+    });
+
+    let commentList = user.workouts[0].comments;
+
+    if (!commentList) {
+      logger.info('GET Workout not found');
+      return new Response('Workout not found', {
+        status: 404,
+      });
+    } else {
+      logger.info(`GET comments found`);
+      return new Response(JSON.stringify(commentList), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+  } catch (error) {
+    logger.error(`GET Error getting comments: ${error}`);
+    return new Response(error.message, { status: 500 });
+  }
+}
+
 export async function POST(req, res) {
   logger.info('\n\nPOST Comment Workout API called');
   try {
@@ -24,10 +62,11 @@ export async function POST(req, res) {
       workouts: { $elemMatch: { _id: workoutId } },
     });
 
+    console.log("Workout owner", workoutOwner);
+
     // find who commented the workout
-    //! using Kelvin as for testing, change to userId later
     let user = await User.findOne({
-      userId: 'user_2dOFzDbFGGG6oec9fRSltH7aGJY',
+      userId: userId,
     });
 
     logger.info(
@@ -97,7 +136,7 @@ export async function DELETE(req, res) {
     // find who wants to remove his comment on workout
     //! using Kelvin as for testing, change to userId later
     let user = await User.findOne({
-      userId: 'user_2dOFzDbFGGG6oec9fRSltH7aGJY',
+      userId: userId,
     });
 
     logger.info(

@@ -1,18 +1,18 @@
 'use client';
 import * as React from 'react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '../../components/ui/Button';
 import { useUser } from '@clerk/clerk-react';
 import { useState, useEffect } from 'react';
-import { Separator } from '@/components/ui/Separator';
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import Spinner from '@/components/svgs/Spinner.svg';
+import { Separator } from '../../components/ui/Separator';
+import { ScrollArea, ScrollBar } from "../../components/ui/scroll-area"
+import Spinner from '../../components/svgs/Spinner.svg';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
-import MyWorkout from '@/components/workout/MyWorkout';
+} from "../../components/ui/tabs"
+import MyWorkout from '../../components/workout/MyWorkout';
 import CreateWorkout from '../../components/workout/CreateWorkout';
 
 const workout = {

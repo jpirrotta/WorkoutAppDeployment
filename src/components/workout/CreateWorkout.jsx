@@ -17,12 +17,12 @@ import {
     TabsContent,
     TabsList,
     TabsTrigger,
-} from "@/components/ui/tabs"
+} from "../ui/tabs"
 import { ScrollArea } from "../ui/scroll-area"
 import { Separator } from "../ui/Separator"
 import { Label } from '../ui/Label';
 import { Switch } from '../ui/Switch';
-import Spinner from '@/components/svgs/Spinner.svg';
+import Spinner from '../svgs/Spinner.svg';
 import { useUser } from '@clerk/clerk-react';
 import logger from '@/lib/logger';
 

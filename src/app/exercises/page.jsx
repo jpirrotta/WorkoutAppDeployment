@@ -12,18 +12,45 @@ import { useAtom } from 'jotai';
 import { limitAtom } from '../../../store';
 
 export default function ExercisePage() {
+  const [searching, setSearching] = useState(false);
   const [limit, setLimit] = useAtom(limitAtom);
+  const [url, setUrl] = useState(
+    `https://exercisedb.p.rapidapi.com/exercises?limit=${limit}`
+  );
 
-  let url = `https://exercisedb.p.rapidapi.com/exercises?limit=${limit}`;
   const fetcher = (url) => fetchData(url, ExerciseOptions);
 
   const { data: exercises, error } = useSWR(url, fetcher);
 
   const loadMore = () => {
     setLimit(limit + 6);
+    setUrl(`https://exercisedb.p.rapidapi.com/exercises?limit=${limit}`);
+  };
+
+  const handleSearch = (data) => {
+    setSearching((prevState) => {
+      if (data) {
+        setUrl(`https://exercisedb.p.rapidapi.com/exercises/name/${data}`);
+        return true;
+      } else {
+        setUrl(`https://exercisedb.p.rapidapi.com/exercises?limit=${limit}`);
+        return false;
+      }
+    });
   };
 
   if (error) return <div>Failed to load exercises</div>;
+
+  if (exercises && exercises.length === 0) {
+    return (
+      <div className="bg-background min-h-screen flex flex-col justify-start items-center pt-4">
+        <ExercisesSearchBar onSearch={handleSearch} />
+        <h1 className="text-primary italic font-semibold text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4">
+          No exercises found!
+        </h1>
+      </div>
+    );
+  }
 
   if (!exercises)
     return (
@@ -38,7 +65,7 @@ export default function ExercisePage() {
         Our Exercises!
       </h1>
 
-      <ExercisesSearchBar />
+      <ExercisesSearchBar onSearch={handleSearch} />
 
       <ExerciseCards exercises={exercises} />
       <Button

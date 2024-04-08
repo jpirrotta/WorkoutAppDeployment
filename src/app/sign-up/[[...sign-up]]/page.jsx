@@ -4,7 +4,7 @@ export default function Page() {
   return (
     <div className="flex items-center justify-center flex-col gap-10">
       <div className="mt-10">
-        <SignUp />
+        <SignUp mode="modal"/>
       </div>
     </div>
   );

@@ -10,8 +10,9 @@ import {
 import { useState } from 'react';
 import Image from 'next/image';
 import { Button } from './ui/Button';
+import CreateWorkout from './workout/CreateWorkout';
 
-export default function ExerciseCard({ exercise }) {
+export default function ExerciseCard({ exercise, skip = false}) {
   const [showDemo, setShowDemo] = useState(true);
 
   const ImageToggler = () => {
@@ -29,7 +30,7 @@ export default function ExerciseCard({ exercise }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {showDemo ? (
+        {!skip && showDemo ? (
           <div className="flex justify-center items-center flex-col">
             <Image
               src={exercise.gifUrl}
@@ -56,9 +57,14 @@ export default function ExerciseCard({ exercise }) {
           <br />
         </CardDescription>
         <br />
-        <Button className="px-0" variant="link">
-          Add To Workout
-        </Button>
+        <CreateWorkout
+          triggerEle={
+            <Button className="px-0" variant="link">
+              Add To Workout
+            </Button>}
+          exercise={exercise}
+          defaultTab={'existing'}
+        />
       </CardContent>
       <CardFooter className="capitalize text-secondary">
         <strong>Secondary Muscles:&nbsp;</strong>

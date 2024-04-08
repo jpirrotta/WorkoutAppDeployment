@@ -136,11 +136,11 @@ export default function Header() {
           </li>
           <li>
             <Link
-              href="/about-us"
+              href="/workout"
               className="px-4 cursor-pointer capitalize py-6 text text-white"
               style={{ color: '#e11d48' }}
             >
-              About Us
+              Workout
             </Link>
           </li>
         </ul>

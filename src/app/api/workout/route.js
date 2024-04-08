@@ -106,7 +106,7 @@ export async function DELETE(req, res) {
     // if the user has no workouts return a message
     if (user.workouts.length === 0) {
       logger.info('User Found but has no workouts');
-      return new Response(JSON.stringify({ message: 'OK' }), {
+      return new Response(JSON.stringify({ message: 'No workouts Found!' }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -164,6 +164,15 @@ export async function GET(req, res) {
     // If the user is found, return their workouts
     logger.info('User found, returning workouts');
     const workouts = curUser.workouts;
+
+    //if no workouts found then return a message notifying
+    if (workouts.length === 0) {
+      logger.info('No workouts found');
+      return new Response(JSON.stringify({ message: 'No workouts found!' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     //logging user workouts
     logger.info(`Workouts: ${JSON.stringify(workouts)}`);

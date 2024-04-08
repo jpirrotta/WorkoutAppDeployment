@@ -21,7 +21,7 @@ export default function Footer() {
     },
     {
       id: 2,
-      title: 'Workout',
+      title: 'Workouts',
       link: 'workout',
     },
     {

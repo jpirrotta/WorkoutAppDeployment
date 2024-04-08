@@ -5,7 +5,7 @@ import { Inter as FontSans } from 'next/font/google';
 
 // components
 import Header from '../components/Header';
-import Footer from '../components/footer';
+import Footer from '../components/Footer';
 import AuthProvider from '../components/AuthProvider';
 import { Toaster } from '../components/ui/Toaster';
 import { ThemeProvider } from '../components/Theme-provider';

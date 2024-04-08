@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Button } from '../../components/ui/Button';
 import { useUser } from '@clerk/clerk-react';
 import { useState, useEffect } from 'react';
-import { Separator } from '../../components/ui/Separator';
+import { Separator } from '../../components/ui/separator';
 import { ScrollArea, ScrollBar } from "../../components/ui/scroll-area"
 import Spinner from '../../components/svgs/Spinner.svg';
 import {
@@ -11,7 +11,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../../components/ui/tabs"
+} from "../../components/ui/Tabs"
 import MyWorkout from '../../components/workout/MyWorkout';
 import CreateWorkout from '../../components/workout/CreateWorkout';
 

@@ -19,9 +19,9 @@ import {
     TabsTrigger,
 } from "../ui/tabs"
 import { ScrollArea } from "../ui/scroll-area"
-import { Separator } from "../ui/Separator"
+import { Separator } from "../ui/separator"
 import { Label } from '../ui/Label';
-import { Switch } from '../ui/Switch';
+import { Switch } from '../ui/switch';
 import Spinner from '../svgs/Spinner.svg';
 import { useUser } from '@clerk/clerk-react';
 import logger from '@/lib/logger';

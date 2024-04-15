@@ -107,10 +107,12 @@ export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 
             console.log(`Response: ${JSON.stringify(data.message)}`);
 
             // Show the toast
-            toast({
-                title: 'Workout created',
-                description: `Your workout "${workoutData.workout.name}" has been successfully created.`,
-            });
+            if (response.ok) {
+                toast({
+                    title: 'Workout created',
+                    description: `Your workout "${workoutData.workout.name}" has been successfully created.`,
+                });
+            }
         } catch (error) {
             logger.error(`Error: ${error}`);
             return new Response(JSON.stringify('Error creating workout.', { status: 500 }));

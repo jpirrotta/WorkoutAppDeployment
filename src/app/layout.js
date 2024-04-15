@@ -5,7 +5,7 @@ import { Inter as FontSans } from 'next/font/google';
 
 // components
 import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Footer from '../components/footer';
 import AuthProvider from '../components/AuthProvider';
 import { Toaster } from '../components/ui/Toaster';
 import { ThemeProvider } from '../components/Theme-provider';
@@ -27,23 +27,23 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased',
+          'h-screen bg-background font-sans antialiased',
           fontSans.variable
         )}
       >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem={true}
-            disableTransitionOnChange
-            >
-            <AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={true}
+          disableTransitionOnChange
+        >
+          <AuthProvider>
             <Header />
             {children}
             <Toaster />
             <Footer />
-        </AuthProvider>
-          </ThemeProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

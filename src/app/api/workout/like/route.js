@@ -35,7 +35,7 @@ export async function POST(req, res) {
     // If the workoutOwner is not found return an error
     if (!workoutOwner) {
       logger.error(`User with this workout id ${workoutId} not found`);
-      return new Response('User not found', { status: 404 });
+      return new Response(JSON.stringify('User not found', { status: 404 }));
     }
 
     //log the workoutOwner name
@@ -69,7 +69,7 @@ export async function POST(req, res) {
     return new Response(JSON.stringify(likesCount), { status: 200 });
   } catch (error) {
     logger.error(`Error: ${error}`);
-    return new Response('Error', { status: 500 });
+    return new Response(JSON.stringify('Error', { status: 500 }));
   }
 }
 
@@ -104,7 +104,7 @@ export async function DELETE(req, res) {
     // If the workoutOwner is not found return an error
     if (!workoutOwner) {
       logger.error(`User with this workout id ${workoutId} not found`);
-      return new Response('User not found', { status: 404 });
+      return new Response(JSON.stringify('User not found', { status: 404 }));
     }
 
     //log the workoutOwner name
@@ -138,6 +138,6 @@ export async function DELETE(req, res) {
     return new Response(JSON.stringify(likesCount), { status: 200 });
   } catch (error) {
     logger.error(`Error: ${error}`);
-    return new Response('Error', { status: 500 });
+    return new Response(JSON.stringify('Error', { status: 500 }));
   }
 }

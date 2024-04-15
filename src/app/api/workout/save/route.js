@@ -74,11 +74,11 @@ export async function POST(req, res) {
     // If the user is not found return an error
     if (!user) {
       logger.error('User not found');
-      return new Response('User not found', { status: 404 });
+      return new Response(JSON.stringify('User not found', { status: 404 }));
     }
 
     // if the user is found save the workout
-    logger.info('User found, saving workout');
+    logger.info(`User found [${user.name}], saving workout`);
 
 
 
@@ -102,9 +102,9 @@ export async function POST(req, res) {
     // save the user
     //await user.save();
 
-    return new Response('Workout saved', { status: 200 });
+    return new Response(JSON.stringify('Workout saved', { status: 200 }));
   } catch (error) {
     logger.error(error);
-    return new Response('Internal server error', { status: 500 });
+    return new Response(JSON.stringify('Internal server error', { status: 500 }));
   }
 }*/

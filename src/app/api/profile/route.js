@@ -74,9 +74,9 @@ export async function GET(req, res) {
     const user = await User.findOne({ userId: userId });
     if (!user) {
       logger.info('GET User not found / has not saved data yet');
-      return new Response('User not found / has not saved data yet', {
+      return new Response(JSON.stringify('User not found / has not saved data yet', {
         status: 404,
-      });
+      }));
     } else {
       logger.info(`GET User found`);
       const retProfile = {
@@ -104,12 +104,12 @@ export async function DELETE(req, res) {
     const user = await User.findOne({ userId: userId });
     if (!user) {
       logger.info('DELETE User not found');
-      return new Response('User not found', { status: 404 });
+      return new Response(JSON.stringify('User not found', { status: 404 }));
     } else {
       logger.info(`DELETE User found`);
       await user.deleteOne();
       logger.info(`DELETE User deleted`);
-      return new Response('User deleted', { status: 200 });
+      return new Response(JSON.stringify('User deleted', { status: 200 }));
     }
   } catch (error) {
     logger.error(`DELETE Error deleting profile: ${error}`);

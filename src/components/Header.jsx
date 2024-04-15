@@ -67,8 +67,8 @@ export default function Header() {
           <Link href="/" className={buttonVariants()}>
             Home
           </Link>
-          <Link href="/about-us" className={buttonVariants()}>
-            About Us
+          <Link href="/workout" className={buttonVariants()}>
+            Workout
           </Link>
         </div>
         {/* end of links */}
@@ -136,11 +136,11 @@ export default function Header() {
           </li>
           <li>
             <Link
-              href="/about-us"
+              href="/workout"
               className="px-4 cursor-pointer capitalize py-6 text text-white"
               style={{ color: '#e11d48' }}
             >
-              About Us
+              Workout
             </Link>
           </li>
         </ul>

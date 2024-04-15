@@ -25,7 +25,7 @@ export async function PUT(req, res) {
     // If the workoutOwner is not found return an error
     if (!workoutOwner) {
       logger.error(`User with this workout id ${workoutId} not found`);
-      return new Response('User not found', { status: 404 });
+      return new Response(JSON.stringify('User not found', { status: 404 }));
     }
 
     //log the workoutOwner name
@@ -45,6 +45,6 @@ export async function PUT(req, res) {
     return new Response(message, { status: 200 });
   } catch (error) {
     logger.error(error);
-    return new Response('Internal server error', { status: 500 });
+    return new Response(JSON.stringify('Internal server error', { status: 500 }));
   }
 }

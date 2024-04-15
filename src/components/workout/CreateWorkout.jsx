@@ -28,6 +28,7 @@ import logger from '@/lib/logger';
 // import { stringify } from 'flatted';
 // import { set } from 'lodash';
 import { useRef } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 'create' }) {
     //state vars
@@ -37,6 +38,9 @@ export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 
     const [selectedWorkoutId, setSelectedWorkoutId] = useState('');
     const [isInputEmpty, setIsInputEmpty] = useState(true);
     const workoutNameRef = useRef();
+
+    // toast for notifying creating of a workout
+    const { toast } = useToast();
 
     // use the useUser hook to get the current user
     const { user } = useUser();
@@ -100,7 +104,15 @@ export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 
                 body: JSON.stringify(workoutData)
             });
             const data = await response.json();
-            console.log(`Response: ${JSON.stringify(data)}`);
+            console.log(`Response: ${JSON.stringify(data.message)}`);
+
+            // Show the toast
+            if (response.ok) {
+                toast({
+                    title: 'Workout created',
+                    description: `Your workout "${workoutData.workout.name}" has been successfully created.`,
+                });
+            }
         } catch (error) {
             logger.error(`Error: ${error}`);
             return new Response(JSON.stringify('Error creating workout.', { status: 500 }));

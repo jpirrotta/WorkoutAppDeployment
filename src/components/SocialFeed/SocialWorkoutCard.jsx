@@ -169,8 +169,8 @@ export default function SocialWorkoutCard({ _id, userId, author, workout }) {
             <div className = "flex flex-row w-full gap-2">
               <h1 className = "font-bold">Exercises:</h1>
               {workout.exercises && workout.exercises.map((exercise, index) => (
-                <div>
-                  <p key={index}>{exercise.name}{workout.exercises.length === index + 1 ? null : ','}</p>
+                <div key={index}>
+                  <p>{exercise.name}{workout.exercises.length === index + 1 ? null : ','}</p>
                 </div>
               ))}
             </div>

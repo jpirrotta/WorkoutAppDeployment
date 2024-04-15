@@ -25,32 +25,37 @@ import { Switch } from '../ui/switch';
 import Spinner from '../svgs/Spinner.svg';
 import { useUser } from '@clerk/clerk-react';
 import logger from '@/lib/logger';
-
+// import { stringify } from 'flatted';
+// import { set } from 'lodash';
+import { useRef } from 'react';
 
 export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 'create' }) {
     //state vars
     const [workouts, setWorkouts] = useState([]);
-    const [newWorkoutName, setNewWorkoutName] = useState('');
+    // const [newWorkoutName, setNewWorkoutName] = useState('some workout');
     const [isPublic, setIsPublic] = useState(false);
     const [selectedWorkoutId, setSelectedWorkoutId] = useState('');
-    const workout = {
-        name: newWorkoutName,
-        exercises: []
-    }
+    const [isInputEmpty, setIsInputEmpty] = useState(true);
+    const workoutNameRef = useRef();
 
     // use the useUser hook to get the current user
     const { user } = useUser();
     // critical default values
     const userId = user?.id;
     const userName = user?.fullName;
-
-    const workoutData = {
-        userId: userId,
-        name: userName,
-        workout: workout,
-    };
+    let workoutData = {};
 
     useEffect(() => {
+        // const workout = {
+        //     name: newWorkoutName,
+        //     exercises: []
+        // }
+
+        // const shellWorkout = {
+        //     userId: userId,
+        //     name: userName,
+        //     workout: workout,
+        // };
         handleGetWorkouts().then(userWorkouts => {
             console.log('getting modal workouts: ', userWorkouts.workouts);
             setWorkouts(userWorkouts.workouts);
@@ -74,8 +79,18 @@ export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 
 
     //handle create workout
     const handleCreateWorkout = async () => {
+        const newWorkoutName = workoutNameRef.current.value;
+        workoutData = {
+            userId: userId,
+            name: userName,
+            workout: {
+                name: newWorkoutName,
+                exercises: [],
+                public: isPublic
+            }
+        };
         console.log('Creating new Workout...');
-        console.log(`BodyData: ${workoutData}`);
+        console.log(`BodyData: ${JSON.stringify(workoutData)}`);
         try {
             const response = await fetch(`/api/workout`, {
                 method: 'POST',
@@ -161,12 +176,12 @@ export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 
                             <DialogTitle>Create a new Workout</DialogTitle>
                             <div className="flex flex-col space-y-4 mt-5">
                                 <Label htmlFor="workout-name">Enter Workout Name:</Label>
-                                <Input type="text" id="workout-name" placeholder="Workout Name" onChange={setNewWorkoutName} />
+                                <Input type="text" id="workoutName" placeholder="Workout Name" ref={workoutNameRef} onInput={() => setIsInputEmpty(!workoutNameRef.current.value)} />
                                 <div className="flex items-center justify-between">
                                     <Label htmlFor="workout-name">Public:</Label>
                                     <Switch id="airplane-mode" checked={isPublic} onCheckedChange={() => setIsPublic(!isPublic)} />
                                 </div>
-                                <Button onClick={handleCreateWorkout} disabled>+ Create</Button>
+                                <Button onClick={handleCreateWorkout} disabled={isInputEmpty}>+ Create</Button>
                             </div>
                         </TabsContent>
                     </Tabs>

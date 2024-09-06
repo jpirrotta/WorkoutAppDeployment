@@ -1,9 +1,12 @@
+'use client';
+
 import Hero from '@/components/Hero';
 import Services from '@/components/services/Services';
 import CallToActionSection from '@/components/CallToActionSection';
 import Testimonials from '@/components/Testimonials/Testimonials';
 
 export default function Home() {
+
   return (
     <main className="flex flex-col items-center justify-between">
       <Hero />

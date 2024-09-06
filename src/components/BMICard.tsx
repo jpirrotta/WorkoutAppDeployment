@@ -12,7 +12,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover.jsx';
+} from '@/components/ui/popover';
 import { BadgeHelp } from 'lucide-react';
 //
 
@@ -20,12 +20,12 @@ import Link from 'next/link.js';
 
 // helpers
 import logger from '@/lib/logger';
-import { calculateBMI, getBMICategory } from '@/utils/BMICalculator.js';
+import { calculateBMI, getBMICategory } from '@/utils/BMICalculator';
 //
 
 // state management
 import { useAtom } from 'jotai';
-import { userBMI } from '@/store.js';
+import { userBMI } from '@/store';
 import { useEffect, useCallback } from 'react';
 //
 

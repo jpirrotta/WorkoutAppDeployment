@@ -2,7 +2,7 @@
 // Libs
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import logger from '@/lib/logger.js';
+import logger from '@/lib/logger';
 import _ from 'lodash';
 
 // utils
@@ -71,12 +71,11 @@ export default function ProfileForm() {
   const userId = user?.id ?? '';
   const userName = user?.fullName ?? '';
 
-  // TODO - Refactor this
   setUserProfileData((value) => {
     if (!value) {
       return {
         userId: userId,
-        userName: userName,
+        name: userName,
         profile: {},
       };
     }
@@ -84,7 +83,7 @@ export default function ProfileForm() {
   });
 
   const stateUserId = userProfileData?.userId;
-  const stateUserName = userProfileData?.userName;
+  const stateUserName = userProfileData?.name;
   const stateAge = userProfileData?.profile?.age;
   const stateGender = userProfileData?.profile?.gender;
   const stateWeight = userProfileData?.profile?.weight;
@@ -116,6 +115,9 @@ export default function ProfileForm() {
         logger.info('Returned User data: \n', data);
         if (data) {
           setUserProfileData((value) => {
+            if (!value) {
+              return data;
+            }
             return {
               ...value,
               profile: { ...data.profile },
@@ -146,7 +148,7 @@ export default function ProfileForm() {
     }
     logger.debug('Checking if the form data is the same as the user data');
 
-    if (stateAge === formAge && !formGender) {
+    if (stateAge.toString() === formAge && !formGender) {
       logger.info('Age is the same but the form gender is empty');
       return true;
     }
@@ -154,15 +156,18 @@ export default function ProfileForm() {
       logger.info('gender is the same but the form age is empty');
       return true;
     }
-    if (stateAge === formAge && stateGender === formGender) {
+    if (stateAge.toString() === formAge && stateGender === formGender) {
       logger.info('Both age and gender are the same');
       return true;
     }
-    if (stateWeight === formWeight && stateHeight === formHeight) {
+    if (
+      stateWeight?.toString() === formWeight &&
+      stateHeight?.toString() === formHeight
+    ) {
       logger.info('Both weight and height are the same');
       return true;
     }
-    if (stateBodyFat === formBodyFat) {
+    if (stateBodyFat?.toString() === formBodyFat) {
       logger.info('Body fat is the same');
       return true;
     }
@@ -305,7 +310,7 @@ export default function ProfileForm() {
           <FormField
             control={form.control}
             name="profile.age"
-            defaultValue={stateAge}
+            defaultValue={stateAge?.toString() || undefined}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Age</FormLabel>
@@ -337,8 +342,10 @@ export default function ProfileForm() {
                       <SelectValue
                         defaultValue={stateGender?.toString() || ''}
                         placeholder={
-                          stateGender?.toString().charAt(0).toUpperCase() +
-                            stateGender?.toString().slice(1) || ''
+                          stateGender
+                            ? stateGender.toString().charAt(0).toUpperCase() +
+                              stateGender.toString().slice(1)
+                            : ''
                         }
                       />
                     </SelectTrigger>
@@ -365,10 +372,14 @@ export default function ProfileForm() {
                   </FormLabel>
                   <FormControl>
                     <Input
+                      // TODO: Fix this: kgToLbs(stateWeight).toString() ?? ''
+
                       placeholder={
                         selectedTab === 'metric'
-                          ? stateWeight?.toString()
-                          : kgToLbs(stateWeight)?.toString()
+                          ? stateWeight?.toString() ?? ''
+                          : stateWeight !== undefined
+                          ? kgToLbs(stateWeight)!.toString()
+                          : ''
                       }
                       min="0"
                       step="any"
@@ -391,10 +402,11 @@ export default function ProfileForm() {
                   </FormLabel>
                   <FormControl>
                     <Input
+                      // TODO: Fix this: cmToFt(stateHeight)?.toString()
                       placeholder={
                         selectedTab === 'metric'
                           ? stateHeight?.toString()
-                          : cmToFt(stateHeight)?.toString()
+                          : cmToFt(stateHeight!)!.toString()
                       }
                       min="0"
                       step="any"
@@ -430,7 +442,9 @@ export default function ProfileForm() {
           <Tabs
             defaultValue="metric"
             value={selectedTab}
-            onValueChange={(value) => handleTabChange(value)}
+            onValueChange={(value) =>
+              handleTabChange(value as typeof selectedTab)
+            }
           >
             <TabsList className="grid w-full grid-cols-2 light: bg-background light: border-border light: border-2">
               <TabsTrigger className="px-10" value="imperial">
@@ -452,8 +466,8 @@ export default function ProfileForm() {
         </form>
       </Form>
       <ProfileBMI
-        weight={userProfileData?.profile?.weight}
-        height={userProfileData?.profile?.height}
+        weight={userProfileData?.profile?.weight?.toString() ?? ''}
+        height={userProfileData?.profile?.height?.toString() ?? ''}
       />
       {userProfileData && (
         <DeleteProfileData resetForm={handleOnReset} userId={userId} />

@@ -1,11 +1,10 @@
-import { Scale } from 'lucide-react';
+import { Scale, BadgeHelp } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import HelpIcon from '@/components/svgs/HelpIcon.svg';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 
@@ -21,7 +20,7 @@ export default function ProfileBMIAlert() {
           Get BMI Insights!{' '}
           <Popover>
             <PopoverTrigger className="max-w-[50%]">
-              <HelpIcon className="w-4 h-4 active:text-primary" />
+              <BadgeHelp className="w-4 h-4 active:text-primary" />
             </PopoverTrigger>
             <PopoverContent>
               {bmiTooltipDesc}

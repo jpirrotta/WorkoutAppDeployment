@@ -1,6 +1,6 @@
 // src/components/Profile/DeleteProfileData.tsx
 'use client';
-import logger from '@/lib/logger.js';
+import logger from '@/lib/logger';
 
 // ui components
 import { Button } from '@/components/ui/button';

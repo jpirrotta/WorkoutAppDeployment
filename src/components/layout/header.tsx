@@ -112,7 +112,7 @@ export default function Header() {
               // TODO deal with afterSignOutUrl being deprecated soon
               afterSignOutUrl="/"
               userProfileMode="navigation"
-              userProfileUrl="/user-profile"
+              userProfileUrl="/profile"
             />
           ) : (
             <SignInButton mode="modal" />

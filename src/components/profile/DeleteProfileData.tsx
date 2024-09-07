@@ -18,7 +18,7 @@ import {
 
 // states
 import { useAtom, atom } from 'jotai';
-import { profileDataAtom } from '@/store';
+import { userAtom } from '@/store';
 
 // TODO Look at this crap
 const loadingAtom = atom(false);
@@ -32,7 +32,7 @@ export default function DeleteProfileData({
   userId,
   resetForm,
 }: DeleteProfileDataProps) {
-  const [, setProfileData] = useAtom(profileDataAtom);
+  const [, setProfileData] = useAtom(userAtom);
   const [loading, setLoading] = useAtom(loadingAtom);
 
   const handleDeleteProfile = async (id: string) => {

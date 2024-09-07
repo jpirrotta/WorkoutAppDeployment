@@ -2,8 +2,8 @@ import ProfileBMIAlert from '@/components/profile/ProfileBMIAlert';
 import BMICard from '@/components/BMICard';
 
 type ProfileBMIProps = Readonly<{
-  weight: string;
-  height: string;
+  weight: number | undefined;
+  height: number | undefined;
 }>;
 
 export default function ProfileBMI({ weight, height }: ProfileBMIProps) {

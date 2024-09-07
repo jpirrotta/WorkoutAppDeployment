@@ -6,11 +6,11 @@ import { UserSearch } from 'lucide-react';
 
 export default function UserProfilePage() {
   return (
-    <UserProfile path="/user-profile" routing="path">
+    <UserProfile path="/profile" routing="path">
       <UserProfile.Page
-        label="Profile"
+        label="fdfd"
         url="profile"
-        labelIcon={<UserSearch />}
+        labelIcon={<UserSearch className='size-4' />}
       >
         <Profile />
       </UserProfile.Page>

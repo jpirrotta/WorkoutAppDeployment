@@ -1,7 +1,7 @@
 import { Workout } from '@/types';
 
 export type BMI = {
-  score: string;
+  score: number;
   category: string;
 };
 

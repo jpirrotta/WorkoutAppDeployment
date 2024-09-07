@@ -84,42 +84,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
-  logger.info('\n\nGET Profile API called');
-  try {
-    const { searchParams } = new URL(req.url);
-    // Get the userId from the query parameters
-    const userId = searchParams.get('userId');
-    logger.info(`GET Request userId: ${userId}`);
-    await dbConnect();
-    const user: UserDocument | null = await UserModel.findOne({
-      userId: userId,
-    });
-    if (!user) {
-      logger.info('GET User not found / has not saved data yet');
-      return new NextResponse('User not found / has not saved data yet', {
-        status: 404,
-      });
-    } else {
-      logger.info(`GET User found`);
-      const retProfile = {
-        profile: user.profile,
-      };
-      return new NextResponse(JSON.stringify(retProfile), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      logger.error(`GET Error getting profile: ${error.message}`);
-      return new NextResponse(error.message, { status: 500 });
-    }
-    logger.error(`GET Error getting profile: ${error}`);
-    return new NextResponse('Internal server error', { status: 500 });
-  }
-}
-
 export async function DELETE(req: NextRequest): Promise<NextResponse> {
   logger.info('\n\nDELETE Profile API called');
   try {

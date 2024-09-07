@@ -35,7 +35,7 @@ export default function Footer() {
     {
       id: 3,
       title: 'My Account',
-      link: 'user-profile',
+      link: 'profile',
     },
     {
       id: 5,
@@ -60,7 +60,7 @@ export default function Footer() {
         </div>
         <div className="p-5 text-center xl:w-4/6 md:w-3/6 border-indigoTouch">
           <h3 className="uppercase font-bold text-xl text-indigoTouch mb-4">
-            Componentity
+            Component
           </h3>
           <p className="text-sm mb-10">
             Thinking of adding a Input area for User{"'"}s Email Address to

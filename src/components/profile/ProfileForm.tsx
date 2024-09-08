@@ -2,7 +2,7 @@
 // Libs
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import _ from 'lodash';
+import { useEffect } from 'react';
 
 // utils
 import { profileFormSchema } from '@/models/ProfileFormSchema';
@@ -11,10 +11,10 @@ import { ImperialMetricConversion } from '@/utils/ImperialMetricConversion';
 // State
 import { useAtom, useSetAtom } from 'jotai';
 import { measurementAtom, userAtom } from '@/store';
+import { useUser } from '@clerk/clerk-react';
 
 // UI components
 import { LoaderCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import DeleteProfileData from '@/components/profile/DeleteProfileData';
@@ -39,23 +39,23 @@ import {
 } from '@/components/ui/form';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { z } from 'zod';
+import { toast } from 'sonner';
 
-import useUserData from '@/hooks/user/useUserData';
-// Utility function to capitalize the first letter
-function capitalizeFirstLetter(str: string): string {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
+import useUserProfile from '@/hooks/user/useUserProfile';
+import useUserProfileMutate from '@/hooks/user/useUserProfileMutate';
 
 export default function ProfileForm() {
-  const { toast } = useToast();
+  const { user } = useUser();
   const [selectedTab, setSelectedTab] = useAtom(measurementAtom);
+  const mutation = useUserProfileMutate('update');
+  // ? see profile form re-render issues
   const setUserProfileData = useSetAtom(userAtom);
   const {
     data: userData,
     error: userDataError,
     isLoading: userDataLoading,
-  } = useUserData();
+    isSuccess: userDataSuccess,
+  } = useUserProfile();
 
   const defaultMeasurement =
     selectedTab === 'imperial'
@@ -69,21 +69,16 @@ export default function ProfileForm() {
           height: userData?.profile?.height,
         };
 
-  if (userDataError) {
-    toast({
-      title: 'Error',
-      description: userDataError.message,
-    });
-  }
-
-  if (userData) {
-    console.log(userData);
-    setUserProfileData(userData);
-  }
+  useEffect(() => {
+    if (userData && userDataSuccess) {
+      console.log(userData);
+      setUserProfileData(userData);
+    }
+  }, [userData, setUserProfileData, userDataSuccess]);
 
   const defaultValues = {
-    userId: userData?.userId,
-    name: userData?.name,
+    userId: userData?.userId ?? user?.id ?? '',
+    name: userData?.name ?? user?.fullName ?? '',
     profile: {
       age: userData?.profile?.age,
       gender: userData?.profile?.gender,
@@ -99,13 +94,13 @@ export default function ProfileForm() {
   });
 
   // Watch the weight and height fields
-  const watchedWeight = form.watch('profile.weight');
-  const watchedHeight = form.watch('profile.height');
+  // const watchedWeight = form.watch('profile.weight');
+  // const watchedHeight = form.watch('profile.height');
 
   const isFormDataEmpty = (
     values: z.infer<typeof profileFormSchema>
   ): boolean => {
-    const isEmpty = _.isEqual(defaultValues, values);
+    const isEmpty = JSON.stringify(defaultValues) === JSON.stringify(values);
     if (!isEmpty) {
       console.info('Form data has changed from the default values');
     }
@@ -133,13 +128,24 @@ export default function ProfileForm() {
 
   const onSubmit = async (values: z.infer<typeof profileFormSchema>) => {
     if (isFormDataEmpty(form.getValues())) {
-      toast({
-        title: 'No changes',
+      toast.info('No changes', {
         description: 'You have not made any changes to your profile',
       });
-      console.log('xxxx:', values);
+      console.log('formData: ', values);
+    } else {
+      mutation.mutate(values);
+      console.log('formData: ', values);
     }
   };
+
+  if (userData === null || userDataError) {
+    toast.info('Hi! Your Profile Data is Empty', {
+      description:
+        userData === null
+          ? 'Please fill it up to get started'
+          : userDataError?.message ?? 'please try again',
+    });
+  }
 
   if (userDataLoading) {
     return (
@@ -273,10 +279,8 @@ export default function ProfileForm() {
           </div>
         </form>
       </Form>
-      <ProfileBMI weight={watchedWeight} height={watchedHeight} />
-      {userData?.userId && (
-        <DeleteProfileData resetForm={handleOnReset} userId={userData.userId} />
-      )}
+      {/* <ProfileBMI weight={watchedWeight} height={watchedHeight} /> */}
+      {userData?.userId && <DeleteProfileData user={userData} />}
     </section>
   );
 }

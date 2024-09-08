@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import AuthProvider from '@/auth/AuthProvider';
-import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/Theme-provider';
 import ReactQueryClientProvider from '@/lib/ReactQueryClientProvider';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: 'FitConnect | Your Fitness goto App',
@@ -42,9 +42,14 @@ export default function RootLayout({
             <AuthProvider>
               <Header />
               {children}
-              <Toaster />
               <Footer />
             </AuthProvider>
+            <Toaster
+              richColors
+              closeButton
+              visibleToasts={50}
+              duration={5000}
+            />
           </ReactQueryClientProvider>
         </ThemeProvider>
       </body>

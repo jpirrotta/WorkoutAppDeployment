@@ -3,7 +3,7 @@
 import mongoose, { Mongoose } from 'mongoose';
 import logger from './logger';
 
-const MONGODB_URI = process.env.MONGODB_URI ?? "http://localhost:27017";
+const MONGODB_URI = process.env.MONGODB_URI ?? 'http://localhost:27017';
 
 if (!MONGODB_URI || MONGODB_URI.trim() === '') {
   throw new Error('Please define the MONGODB_URI environment variable');

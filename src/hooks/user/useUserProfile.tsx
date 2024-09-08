@@ -2,16 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { getUserData } from '@/actions/profile';
 import { useUser } from '@clerk/clerk-react';
 
-const useUserData = () => {
+const useUserProfile = () => {
   const { user } = useUser();
   const userId = user?.id ?? '';
   return useQuery({
-    queryKey: ['userProfile', userId],
-    queryFn: async ()  => {
-      return await getUserData(userId)
-    },
+    queryKey: ['profile', userId],
+    queryFn: async () => await getUserData(userId),
     enabled: !!userId,
+    retry: false,
   });
 };
 
-export default useUserData;
+export default useUserProfile;

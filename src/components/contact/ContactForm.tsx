@@ -1,5 +1,5 @@
 import emailjs from '@emailjs/browser';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@ks/use-toast';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -16,11 +16,23 @@ import {
 } from '@/components/ui/form';
 
 // Define the schema using zod
+const required_error = "This field is required";
 const contactFormSchema = z.object({
-  name: z.string(),
+  name: z
+    .string()
+    .min(1, {message: required_error})
+    .max(40, "Name must be less than 40 characters"),
   email: z.string().email(),
-  subject: z.string(),
-  message: z.string(),
+  subject: z
+    .string()
+    .min(1, {message: required_error})
+    .max(150, "Subject must be less than 150 characters")
+    .regex(/.*[a-zA-Z]+.*/, "Subject must contain letters"),
+  message: z
+    .string()
+    .min(1, {message: required_error})
+    .max(1000, "Message must be less than 1000 characters")
+    .regex(/.*[a-zA-Z]+.*/, "Message must contain letters")
 });
 
 // Define the form data type
@@ -62,7 +74,7 @@ export default function ContactForm() {
         console.log('FAILED...', error.message || error);
         toast({
           variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
+          title: 'Something went wrong.',
           description:
             'There was a problem sending your message. Please try again later.',
         });
@@ -88,7 +100,7 @@ export default function ContactForm() {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter your name" {...field} />
+                      <Textarea placeholder="First and last name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -123,7 +135,7 @@ export default function ContactForm() {
               <FormItem>
                 <FormLabel>Subject</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="message subject" {...field} />
+                  <Input type="text" placeholder="Message header" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -139,7 +151,7 @@ export default function ContactForm() {
                 <FormControl>
                   <Textarea
                     className="text-left h-40 w-full"
-                    placeholder="message"
+                    placeholder="Write your message"
                     {...field}
                   />
                 </FormControl>

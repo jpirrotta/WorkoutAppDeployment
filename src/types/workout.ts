@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export type Exercise = {
   id: string;
@@ -10,8 +10,8 @@ export type Exercise = {
   instructions: string[];
 };
 
-export type Workout = {
-  _id: mongoose.Types.ObjectId;
+export type Workout = Document & {
+  _id: mongoose.Types.ObjectId & string;
   name: string;
   exercises: Exercise[];
   public: boolean;

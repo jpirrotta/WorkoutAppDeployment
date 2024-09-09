@@ -1,4 +1,5 @@
 import { Workout } from '@/types';
+import { Document } from 'mongoose';
 
 export type BMI = {
   score: string;
@@ -25,6 +26,6 @@ export type User = {
   bmi?: BMI;
   weightHistory?: WorkoutHistory[];
   bodyFatHistory?: WorkoutHistory[];
-  workouts?: Workout[];
+  workouts?: (Workout[] & Document);
   savedWorkouts?: { workoutId: string }[];
 };

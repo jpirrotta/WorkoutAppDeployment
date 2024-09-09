@@ -102,88 +102,6 @@ export default function Page() {
     });
   };
 
-  const handleLikeWorkout = async () => {
-    console.log('Like Workout');
-    const response = await fetch('/api/workout/like', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId, workoutId: testWorkoutId }),
-    });
-  };
-
-  const handleUnlikeWorkout = async () => {
-    console.log('Unlike Workout');
-    const response = await fetch('/api/workout/like', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId, workoutId: testWorkoutId }),
-    });
-  };
-
-  const handleCommentWorkout = async () => {
-    console.log('Comment Workout');
-    const response = await fetch('/api/workout/comment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        comment: testComment,
-        workoutId: testWorkoutId,
-      }),
-    });
-  };
-
-  const handleDeleteComment = async () => {
-    console.log('Delete Comment');
-    const response = await fetch('/api/workout/comment', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        commentId: testCommentId,
-        workoutId: testWorkoutId,
-      }),
-    });
-  };
-
-  const handlePublishWorkout = async () => {
-    console.log('Publish Workout');
-    const response = await fetch('/api/workout/public', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        workoutId: testWorkoutId,
-        isPublic: true,
-      }),
-    });
-  };
-
-  const handleUnpublishWorkout = async () => {
-    console.log('Unpublish Workout');
-    const response = await fetch('/api/workout/public', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        workoutId: testWorkoutId,
-        isPublic: false,
-      }),
-    });
-  };
-
   const handleGetAllPublicWorkouts = async (
     page: number,
     itemsPerPage: number
@@ -220,12 +138,6 @@ export default function Page() {
       <h1>Workout Page</h1>
       <Button onClick={handleAddWorkout}>add workout</Button>
       <Button onClick={handleDeleteWorkouts}>delete workouts</Button>
-      <Button onClick={handleLikeWorkout}>like workout</Button>
-      <Button onClick={handleUnlikeWorkout}>unlike workout</Button>
-      <Button onClick={handleCommentWorkout}>comment workout</Button>
-      <Button onClick={handleDeleteComment}>delete comment</Button>
-      <Button onClick={handlePublishWorkout}>publish workout</Button>
-      <Button onClick={handleUnpublishWorkout}>unpublish workout</Button>
       <Button onClick={() => handleGetAllPublicWorkouts(1, 3)}>
         get all public workouts
       </Button>

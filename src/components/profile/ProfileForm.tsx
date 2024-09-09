@@ -54,8 +54,22 @@ export default function ProfileForm() {
     data: userData,
     error: userDataError,
     isLoading: userDataLoading,
-    isSuccess: userDataSuccess,
   } = useUserProfile();
+
+  useEffect(() => {
+    if (userDataError) {
+      toast.info('Hi! Your Profile Data is Empty', {
+        description: userDataError.message,
+      });
+    }
+  }, [userDataError]);
+
+  useEffect(() => {
+    if (userData) {
+      console.log(userData);
+      setUserProfileData(userData);
+    }
+  }, [userData, setUserProfileData]);
 
   const defaultMeasurement =
     selectedTab === 'imperial'
@@ -68,13 +82,6 @@ export default function ProfileForm() {
           weight: userData?.profile?.weight,
           height: userData?.profile?.height,
         };
-
-  useEffect(() => {
-    if (userData && userDataSuccess) {
-      console.log(userData);
-      setUserProfileData(userData);
-    }
-  }, [userData, setUserProfileData, userDataSuccess]);
 
   const defaultValues = {
     userId: userData?.userId ?? user?.id ?? '',
@@ -94,8 +101,8 @@ export default function ProfileForm() {
   });
 
   // Watch the weight and height fields
-  // const watchedWeight = form.watch('profile.weight');
-  // const watchedHeight = form.watch('profile.height');
+  const watchedWeight = form.watch('profile.weight');
+  const watchedHeight = form.watch('profile.height');
 
   const isFormDataEmpty = (
     values: z.infer<typeof profileFormSchema>
@@ -137,15 +144,6 @@ export default function ProfileForm() {
       console.log('formData: ', values);
     }
   };
-
-  if (userData === null || userDataError) {
-    toast.info('Hi! Your Profile Data is Empty', {
-      description:
-        userData === null
-          ? 'Please fill it up to get started'
-          : userDataError?.message ?? 'please try again',
-    });
-  }
 
   if (userDataLoading) {
     return (
@@ -279,7 +277,7 @@ export default function ProfileForm() {
           </div>
         </form>
       </Form>
-      {/* <ProfileBMI weight={watchedWeight} height={watchedHeight} /> */}
+      <ProfileBMI weight={watchedWeight} height={watchedHeight} />
       {userData?.userId && <DeleteProfileData user={userData} />}
     </section>
   );

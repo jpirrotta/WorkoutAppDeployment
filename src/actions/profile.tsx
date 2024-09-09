@@ -6,63 +6,6 @@ import UserModel from '@/models/userSchema';
 import { User } from '@/types';
 import logger from '@/lib/logger';
 
-//? if used elsewhere, this function should be moved to utils folder
-/**
- * Cleans the user object by removing sensitive fields.
- *
- * @param {any} obj - The user object to clean.
- * @returns {any} - The cleaned user object.
- */
-function cleanObject(obj: any): any {
-  delete obj?._id;
-  delete obj?.__v;
-  return obj;
-}
-
-/**
- * Fetches user data from the database.
- *
- * @param {string} userId - The ID of the user to fetch data for.
- * @returns {Promise<User>} - A promise that resolves to the user data.
- * @throws {Error} - Throws an error if the user data cannot be fetched.
- */
-export async function getUserData(userId: string): Promise<User | null> {
-  logger.info('getProfile server action called');
-  try {
-    logger.debug(`userId: ${userId}`);
-    await dbConnect();
-    const user = await UserModel.findOne({ userId: userId })
-      .select(
-        'userId name profile.age profile.gender profile.weight profile.height profile.bodyFat'
-      )
-      .lean();
-
-    if (!user) {
-      logger.info('GET User not found / has not saved data yet');
-      // ? see profile form re-render issues
-      return null;
-    } else {
-      logger.info(`GET User found: ${JSON.stringify(user)}`);
-      /* Ideally because the use on lean we will only need return the user object as
-        is converts it to a plain object. 
-        Currently this function is buggy with nested documents/arrays/objects
-        see https://github.com/Automattic/mongoose/issues/13772
-        thats why i use this workaround */
-      cleanObject(user); // remove _id and __v this is temporary until the lean bug is fixed
-      return JSON.parse(JSON.stringify(user)); // Serialize the user data workaround
-    }
-  } catch (error) {
-    if (error instanceof Error) {
-      logger.error(`GET Error getting profile: ${error.message}`);
-      throw new Error(error.message);
-    }
-    logger.error(`Internal server error, GET Error getting profile: ${error}`);
-    throw new Error(
-      'Something went wrong on our end. Please try again later or contact support if the issue persists.'
-    );
-  }
-}
-
 /**
  * Updates or creates user profile data.
  *

@@ -1,17 +1,6 @@
 'use client';
 import ExerciseCard from './ExerciseCard';
-
-// TODO see the Exercise type in src/types/workout.ts
-// combine them somehow
-interface Exercise {
-  id: string;
-  name: string;
-  gifUrl: string;
-  target: string;
-  equipment: string;
-  bodyPart: string;
-  secondaryMuscles: string[];
-}
+import { Exercise } from '@/types';
 
 interface ExerciseCardsProps {
   readonly exercises: Exercise[];

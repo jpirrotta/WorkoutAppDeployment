@@ -3,6 +3,7 @@ import mongoose, { Document } from 'mongoose';
 export type Exercise = {
   id: string;
   bodyPart: string;
+  gifUrl: string;
   equipment: string;
   name: string;
   target: string;

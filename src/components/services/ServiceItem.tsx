@@ -29,12 +29,14 @@ export default function ServiceItem({
         reverse ? 'sm:flex-row-reverse' : ''
       }`}
     >
-      <div className="sm:w-32 sm:h-32 h-20 w-20 sm:mr-10 inline-flex items-center justify-center rounded-full bg-slate-800 flex-shrink-0 hover:ring-4 hover:ring-primary">
+      <div className="text-primary sm:w-32 sm:h-32 h-20 w-20 sm:mr-10 inline-flex items-center justify-center rounded-full bg-slate-800 flex-shrink-0 hover:ring-4 hover:ring-primary">
         {svg}
       </div>
       <div className="flex-grow sm:text-left text-center mt-6 sm:mt-0">
-        <h2 className="text-lg title-font font-medium mb-2">{title}</h2>
-        <p className="leading-relaxed text-base">{description}</p>
+        <h2 className="text-lg text-primary font-medium mb-2">{title}</h2>
+        <p className="text-card-foreground leading-relaxed text-base">
+          {description}
+        </p>
 
         <Link
           href={linkHref}

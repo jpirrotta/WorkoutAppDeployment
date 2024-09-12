@@ -77,7 +77,7 @@ export default function ContactForm() {
   };
 
   return (
-    <section className="flex flex-col w-full bg-white p-6 border-2 rounded-lg border-gray-300 dark:border-gray-800 dark:bg-transparent light: text-foreground">
+    <section className="flex flex-col w-full bg-accent p-6 border-2 rounded-lg border-border light:text-foreground">
       <h2 className="pb-2 text-4xl font-bold italic text-primary">
         Contact Request
       </h2>

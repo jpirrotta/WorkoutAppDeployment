@@ -16,11 +16,23 @@ import {
 } from '@/components/ui/form';
 
 // Define the schema using zod
+const required_error = "This field is required";
 const contactFormSchema = z.object({
-  name: z.string(),
+  name: z
+    .string()
+    .min(1, {message: required_error})
+    .max(40, "Name must be less than 40 characters"),
   email: z.string().email(),
-  subject: z.string(),
-  message: z.string(),
+  subject: z
+    .string()
+    .min(1, {message: required_error})
+    .max(150, "Subject must be less than 150 characters")
+    .regex(/.*[a-zA-Z]+.*/, "Subject must contain letters"),
+  message: z
+    .string()
+    .min(1, {message: required_error})
+    .max(1000, "Message must be less than 1000 characters")
+    .regex(/.*[a-zA-Z]+.*/, "Message must contain letters")
 });
 
 // Define the form data type
@@ -57,7 +69,7 @@ export default function ContactForm() {
       })
       .catch((error: Error) => {
         console.log('FAILED...', error.message || error);
-        toast.error('Uh oh! Something went wrong.', {
+        toast.error('Something went wrong.', {
           description:
             'There was a problem sending your message. Please try again later.',
         });
@@ -65,7 +77,7 @@ export default function ContactForm() {
   };
 
   return (
-    <section className="flex flex-col w-full bg-white p-6 border-2 rounded-lg border-gray-300 dark:border-gray-800 dark:bg-transparent light: text-foreground">
+    <section className="flex flex-col w-full bg-accent p-6 border-2 rounded-lg border-border light:text-foreground">
       <h2 className="pb-2 text-4xl font-bold italic text-primary">
         Contact Request
       </h2>
@@ -74,77 +86,81 @@ export default function ContactForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-8 flex justify-center"
         >
-          <div className="flex gap-5 w-full justify-between">
-            <div className="flex-grow">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Enter your name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <div className="flex flex-col gap-5 w-full justify-between">
+            
+            <div className="flex gap-5 w-full justify-between">
+              <div className="flex-grow">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="First and last name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex-grow">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="example@gmail.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
-            <div className="flex-grow">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="example@gmail.com"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
+            <FormField
+              control={form.control}
+              name="subject"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Subject</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="Message header" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Message</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="text-left h-40 w-full"
+                      placeholder="Write your message"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-center">
+              <Button type="submit">Submit</Button>
             </div>
-          </div>
 
-          <FormField
-            control={form.control}
-            name="subject"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Subject</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="message subject" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Message</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="text-left h-40 w-full"
-                    placeholder="message"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="flex justify-center">
-            <Button type="submit">Submit</Button>
           </div>
         </form>
       </Form>

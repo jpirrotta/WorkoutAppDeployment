@@ -69,7 +69,7 @@ export default function Footer() {
             </li>
             <li className="my-3">
               <Link className="hover:text-gray-300" href="/contact-us">
-                contact@company.com
+                FitConnectCA@company.com
               </Link>
             </li>
           </ul>

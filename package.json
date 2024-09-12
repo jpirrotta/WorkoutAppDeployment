@@ -1,12 +1,15 @@
 {
-  "name": "capstone-ts",
+  "name": "fit-connect",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "cross-env next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest -c jest.config.js --runInBand --",
+    "test:watch": "jest -c jest.config.js --runInBand --watch --",
+    "coverage": "jest -c jest.config.js --runInBand --coverage"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.7.0",
@@ -22,7 +25,6 @@
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
-    "@radix-ui/react-toast": "^1.2.1",
     "@radix-ui/react-tooltip": "^1.1.2",
     "@tanstack/react-query": "^5.55.0",
     "class-variance-authority": "^0.7.0",
@@ -42,20 +44,26 @@
     "react-dom": "^18",
     "react-hook-form": "^7.53.0",
     "sharp": "^0.33.5",
+    "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.53.0",
+    "@types/jest": "^29.5.12",
     "@types/lodash": "^4.17.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
     "eslint": "^8",
     "eslint-config-next": "14.2.7",
+    "jest": "^29.7.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.2"
   }
 }

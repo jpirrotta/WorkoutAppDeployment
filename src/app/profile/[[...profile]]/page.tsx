@@ -8,9 +8,9 @@ export default function UserProfilePage() {
   return (
     <UserProfile path="/profile" routing="path">
       <UserProfile.Page
-        label="fdfd"
+        label="Profile"
         url="profile"
-        labelIcon={<UserSearch className='size-4' />}
+        labelIcon={<UserSearch className="size-4" />}
       >
         <Profile />
       </UserProfile.Page>

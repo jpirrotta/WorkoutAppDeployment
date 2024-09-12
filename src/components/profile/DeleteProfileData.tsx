@@ -1,6 +1,5 @@
 // src/components/Profile/DeleteProfileData.tsx
 'use client';
-import logger from '@/lib/logger';
 
 // ui components
 import { Button } from '@/components/ui/button';
@@ -17,45 +16,18 @@ import {
 } from '@/components/ui/alert-dialog';
 
 // states
-import { useAtom, atom } from 'jotai';
-import { userAtom } from '@/store';
+import useUserProfileMutate from '@/hooks/user/useUserProfileMutate';
+import { User } from '@/types';
 
-// TODO Look at this crap
-const loadingAtom = atom(false);
 
 type DeleteProfileDataProps = Readonly<{
-  userId: string;
-  resetForm: () => void;
+  user: User;
 }>;
 
-export default function DeleteProfileData({
-  userId,
-  resetForm,
-}: DeleteProfileDataProps) {
-  const [, setProfileData] = useAtom(userAtom);
-  const [loading, setLoading] = useAtom(loadingAtom);
+export default function DeleteProfileData({ user }: DeleteProfileDataProps) {
+  const mutation = useUserProfileMutate('delete');
 
-  const handleDeleteProfile = async (id: string) => {
-    setLoading(true);
-    logger.info('Deleting profile data');
-    try {
-      const res = await fetch(`/api/profile?userId=${id}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        throw new Error(res.statusText);
-      }
-      setProfileData(undefined);
-      resetForm();
-      logger.info('Profile data deleted');
-    } catch (error) {
-      logger.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (mutation.isPending) {
     return <div>Loading...</div>;
   }
 
@@ -81,7 +53,7 @@ export default function DeleteProfileData({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleDeleteProfile(userId)}>
+            <AlertDialogAction onClick={() => mutation.mutate(user)}>
               Confirm
             </AlertDialogAction>
           </AlertDialogFooter>

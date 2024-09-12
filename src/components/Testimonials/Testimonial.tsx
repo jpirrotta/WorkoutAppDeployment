@@ -47,10 +47,8 @@ export default function Testimonial({
       )}
 
       <div className="w-full px-3 lg:w-8/12 flex-shrink-0 flex-grow-0">
-        <h5 className="my-2 text-lg text-primary font-bold">{name}</h5>
-        {type && (
-          <p className="mb-2 font-medium text-secondary-foreground">{type}</p>
-        )}
+        <p className="my-2 text-lg text-primary font-bold">{name}</p>
+        {type && <p className="mb-2 font-medium text-secondary">{type}</p>}
         <p className="text-muted-foreground w-[80%] mx-auto">
           {textWithoutLastWord + ' '}
           <span className="inline-flex items-baseline">

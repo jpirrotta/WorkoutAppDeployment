@@ -2,10 +2,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 type CallToActionSectionProps = Readonly<{
-  title: string,
-  text: string,
-  buttonText: string,
-  buttonLink: string,
+  title: string;
+  text: string;
+  buttonText: string;
+  buttonLink: string;
 }>;
 
 export default function CallToActionSection({

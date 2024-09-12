@@ -2,7 +2,7 @@
 const nextConfig = {
   experimental: {
     esmExternals: 'loose',
-    serverComponentsExternalPackages: ['mongoose', 'pino'], // <-- needed external packages for server components
+    serverComponentsExternalPackages: ['mongoose', 'pino', 'pino-pretty'], // <-- needed external packages for server components
   },
   images: {
     remotePatterns: [

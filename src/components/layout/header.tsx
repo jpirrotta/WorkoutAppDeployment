@@ -5,9 +5,7 @@ import Link from 'next/link';
 import { buttonVariants, Button } from '@/components/ui/button';
 import { UserButton, SignInButton, useAuth } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
-// Light/Dark Mode theme decider import
-import { useTheme } from 'next-themes';
-
+import { ThemeToggle } from '../theme-toggle';
 // Icon imports
 import { StyledIcon } from '@/components/StyledIcon';
 import logger from '@/lib/logger';
@@ -15,14 +13,10 @@ import { Menu, X, Sun, Moon } from 'lucide-react';
 
 export default function Header() {
   const { isSignedIn } = useAuth();
-  // State vars
   // State var for opening and closing of navbar Menu
   const [isOpen, setIsOpen] = useState<boolean>(false);
   // State var for mounting particular theme (light/dark) during CSR
   const [mounted, setMounted] = useState<boolean>(false);
-
-  // Handle root theme of our webApp
-  const { theme, setTheme } = useTheme();
 
   // Avoid Hydration Mismatch: useEffect only runs on the client, so now we can safely show the UI
   // Refer for more info: https://github.com/pacocoursey/next-themes?tab=readme-ov-file#avoid-hydration-mismatch
@@ -34,16 +28,6 @@ export default function Header() {
   if (!mounted) {
     return null;
   }
-
-  // checking for dark mode on every render
-  const isDarkMode = theme === 'dark';
-
-  // Change Mode
-  const handleMode = () => {
-    const newMode = isDarkMode ? 'light' : 'dark';
-    logger.info(`Changing Theme Mode to ${newMode}`);
-    setTheme(newMode);
-  };
 
   // handle toggling of Navbar Menu (for Responsive design)
   const toggleMenu = () => {
@@ -85,25 +69,7 @@ export default function Header() {
         </div>
         {/* Switching between Light/Dark Mode */}
         <div className="theme-toggle flex basis-1/3 justify-center">
-          <Button
-            variant="ghost"
-            onClick={handleMode}
-            aria-label="Toggle theme"
-          >
-            {isDarkMode ? (
-              <StyledIcon
-                Icon={Sun}
-                w={'2rem'}
-                className="text-primary hover:cursor-pointer"
-              />
-            ) : (
-              <StyledIcon
-                Icon={Moon}
-                w={'2rem'}
-                className="text-primary hover:cursor-pointer"
-              />
-            )}
-          </Button>
+          <ThemeToggle />
         </div>
         {/* Check if the user is signed in and show their profile */}
         <div className="pr-2 basis-1/3 flex justify-end">

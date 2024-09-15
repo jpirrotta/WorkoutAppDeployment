@@ -1,16 +1,14 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-const inter = Inter({ subsets: ['latin'] });
 import { cn } from '@/lib/utils';
-
-import Header from '@/components/layout/header';
-import Footer from '@/components/layout/footer';
 import AuthProvider from '@/auth/AuthProvider';
 import { ThemeProvider } from '@/components/Theme-provider';
 import ReactQueryClientProvider from '@/lib/ReactQueryClientProvider';
 import { Toaster } from '@/components/ui/sonner';
+import { Provider } from 'jotai';
 
+const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'FitConnect | Your Fitness goto App',
   description:
@@ -32,26 +30,24 @@ export default function RootLayout({
           inter.className
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={true}
-          disableTransitionOnChange
-        >
-          <ReactQueryClientProvider>
-            <AuthProvider>
-              <Header />
-              {children}
-              <Footer />
-            </AuthProvider>
-            <Toaster
-              richColors
-              closeButton
-              visibleToasts={50}
-              duration={5000}
-            />
-          </ReactQueryClientProvider>
-        </ThemeProvider>
+        <Provider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={true}
+            disableTransitionOnChange
+          >
+            <ReactQueryClientProvider>
+              <AuthProvider>{children}</AuthProvider>
+              <Toaster
+                richColors
+                closeButton
+                visibleToasts={50}
+                duration={5000}
+              />
+            </ReactQueryClientProvider>
+          </ThemeProvider>
+        </Provider>
       </body>
     </html>
   );

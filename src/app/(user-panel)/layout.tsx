@@ -1,12 +1,11 @@
 import LandingPage from '@/components/LandingPage';
+import AdminPanelLayout from '@/components/user-panel/admin-panel-layout';
 import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-
-export default function Home({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const { userId } = auth();
 
   if (userId) {
-    return redirect('/dashboard');
+    return <AdminPanelLayout>{children}</AdminPanelLayout>;
   }
 
   return (

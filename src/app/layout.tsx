@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import AuthProvider from '@/auth/AuthProvider';
-import { ThemeProvider } from '@/components/Theme-provider';
+import { ThemeProvider } from '@/lib/Theme-provider';
 import ReactQueryClientProvider from '@/lib/ReactQueryClientProvider';
 import { Toaster } from '@/components/ui/sonner';
 import { Provider } from 'jotai';

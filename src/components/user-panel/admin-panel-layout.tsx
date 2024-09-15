@@ -22,6 +22,7 @@ export default function AdminPanelLayout({
       <Sidebar />
       <main
         className={cn(
+          // TODO Change colors to theme colors
           'min-h-[calc(100vh_-_56px)] bg-zinc-50 dark:bg-zinc-900 transition-[margin-left] ease-in-out duration-300',
           !sidebarIsOpen ? 'lg:ml-[90px]' : 'lg:ml-72'
         )}
@@ -34,7 +35,8 @@ export default function AdminPanelLayout({
           !sidebarIsOpen === false ? 'lg:ml-[90px]' : 'lg:ml-72'
         )}
       >
-        <Footer />
+        {/* not used for now  */}
+        {/* <Footer /> */}
       </footer>
     </>
   );

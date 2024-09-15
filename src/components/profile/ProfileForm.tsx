@@ -155,8 +155,7 @@ export default function ProfileForm() {
 
   return (
     <section className="flex-1 flex-col w-full xl:w-[80%] light: text-foreground">
-      <h2 className="pb-2 text-4xl font-bold italic text-primary">Profile</h2>
-      <p className="pb-4 text:md text-slate-400">
+      <p className="pb-2 text-2xl font-bold italic text-primary">
         Hi there {userData?.name ?? ''} 👋
       </p>
       <Form {...form}>

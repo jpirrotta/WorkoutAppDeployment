@@ -2,32 +2,23 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { buttonVariants, Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { UserButton, SignInButton, useAuth } from '@clerk/nextjs';
-import { useState, useEffect } from 'react';
-import { ThemeToggle } from '../theme-toggle';
+import { useState } from 'react';
+import { ThemeToggle } from '@/components/theme-toggle';
 // Icon imports
 import { StyledIcon } from '@/components/StyledIcon';
-import logger from '@/lib/logger';
-import { Menu, X, Sun, Moon } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import { useHasMounted } from '@/hooks/useHasMounted';
 
 export default function Header() {
   const { isSignedIn } = useAuth();
   // State var for opening and closing of navbar Menu
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  // State var for mounting particular theme (light/dark) during CSR
-  const [mounted, setMounted] = useState<boolean>(false);
 
-  // Avoid Hydration Mismatch: useEffect only runs on the client, so now we can safely show the UI
-  // Refer for more info: https://github.com/pacocoursey/next-themes?tab=readme-ov-file#avoid-hydration-mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // return nothing until UI is not mounted on client side
-  if (!mounted) {
-    return null;
-  }
+  // Check if the component has mounted
+  const hasMounted = useHasMounted();
+  if (!hasMounted) return null;
 
   // handle toggling of Navbar Menu (for Responsive design)
   const toggleMenu = () => {

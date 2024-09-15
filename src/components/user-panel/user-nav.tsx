@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { LayoutGrid, LogOut, User } from 'lucide-react';
-
+import { useAuth } from '@clerk/nextjs';
+import { useUser } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -21,7 +22,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+const getInitials = (name: string | undefined | null) => {
+  if (!name) return '';
+  const [firstName, lastName] = name.split(' ');
+  console.log(firstName, lastName);
+  return `${firstName[0]}${lastName[0]}`;
+};
+
 export function UserNav() {
+  const auth = useAuth();
+  const { user } = useUser();
+  const fullName = user?.fullName;
+  const initials = getInitials(fullName);
+  const userImage = user?.imageUrl;
+  const email = user?.emailAddresses[0].emailAddress ?? '';
+
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
@@ -30,25 +45,27 @@ export function UserNav() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="relative h-8 w-8 rounded-full"
+                className="relative size-8 rounded-full"
               >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="#" alt="Avatar" />
-                  <AvatarFallback className="bg-transparent">JD</AvatarFallback>
+                <Avatar className="size-8">
+                  <AvatarImage src={userImage ?? ''} alt="Avatar" />
+                  <AvatarFallback className="bg-transparent">
+                    {initials}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Profile</TooltipContent>
+          <TooltipContent side="bottom">Account</TooltipContent>
         </Tooltip>
       </TooltipProvider>
 
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">John Doe</p>
+            <p className="text-sm font-medium leading-none">{fullName}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              johndoe@example.com
+              {email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -68,7 +85,12 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
+        <DropdownMenuItem
+          className="hover:cursor-pointer"
+          onClick={() => {
+            auth.signOut();
+          }}
+        >
           <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
           Sign out
         </DropdownMenuItem>

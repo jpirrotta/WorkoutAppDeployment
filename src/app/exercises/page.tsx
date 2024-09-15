@@ -1,46 +1,44 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import ExerciseCards from '@/components/ExerciseCards';
-import { ExerciseOptions, fetchData } from '@/utils/fetchData';
-import useSWR from 'swr';
+import { useExercises } from '@/utils/fetchData';
+
+import { LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExercisesSearchBar from '@/components/ExerciseSearchBar';
-import { LoaderCircle } from 'lucide-react';
 
 import { useAtom } from 'jotai';
 import { limitAtom } from '@/store';
 
-interface Exercise {
-  id: string;
-  name: string;
-  gifUrl: string;
-  target: string;
-  equipment: string;
-  bodyPart: string;
-  secondaryMuscles: string[];
-}
-
 export default function ExercisePage() {
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [limit, setLimit] = useAtom(limitAtom);
 
-  const url = `https://exercisedb.p.rapidapi.com/exercises?limit=${limit}`;
-  const fetcher = (url: string) => fetchData(url, ExerciseOptions);
+  // TODO ADD ERROR HANDLING
+  const { data: exercises, error, isLoading } = useExercises(searchQuery);
 
-  const { data: exercises, error } = useSWR<Exercise[]>(url, fetcher);
-
-  const loadMore = () => {
-    setLimit(limit + 6);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    console.log('Search query:', query);
   };
 
-  if (error) return <div>Failed to load exercises</div>;
+  const handleShowMore = () => {
+    console.log('Show more clicked');
+    setLimit((prev) => prev + 6);
+  };
 
-  if (!exercises)
+  if (exercises) {
+    console.log(exercises);
+  }
+
+  if (isLoading) {
     return (
-      <div className="bg-background min-h-screen p-4 flex items-center justify-center">
+      <div className="flex justify-center items-center h-screen">
         <LoaderCircle className="text-primary text-6xl animate-spin" />
       </div>
     );
+  }
 
   return (
     <div className="bg-background min-h-screen flex flex-col justify-between">
@@ -48,13 +46,13 @@ export default function ExercisePage() {
         Our Exercises!
       </h1>
 
-      <ExercisesSearchBar />
+      <ExercisesSearchBar onSearch={handleSearch} />
 
       <ExerciseCards exercises={exercises} />
       <Button
         className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
         variant="link"
-        onClick={loadMore}
+        onClick={handleShowMore}
       >
         Show More
       </Button>

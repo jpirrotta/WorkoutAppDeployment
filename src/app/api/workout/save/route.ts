@@ -8,7 +8,6 @@ import logger from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 
 //! TODO CONTINUE HERE ONCE THE UI IS READY
-
 interface RequestData {
   userId: string;
   workoutId: string;

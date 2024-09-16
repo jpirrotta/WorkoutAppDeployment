@@ -2,7 +2,7 @@ import { Workout } from '@/types';
 import { Document } from 'mongoose';
 
 export type BMI = {
-  score: string;
+  score: number;
   category: string;
 };
 

@@ -1,31 +1,20 @@
 'use client';
 // Libs
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import logger from '@/lib/logger';
-import _ from 'lodash';
+import { useForm } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
 
 // utils
 import { profileFormSchema } from '@/models/ProfileFormSchema';
-import { useUser } from '@clerk/clerk-react';
-import {
-  ImperialMetricConversion,
-  lbsToKg,
-  kgToLbs,
-  ftToCm,
-  cmToFt,
-} from '@/utils/ImperialMetricConversion';
-import getUserProfileData from '@/lib/getUserProfileData';
-import deepPickBy from '@/utils/deepPickBy';
+import { ImperialMetricConversion } from '@/utils/ImperialMetricConversion';
 
 // State
-import { useAtom } from 'jotai';
-import { measurementAtom, profileDataAtom } from '@/store';
-import { useEffect, useState } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
+import { measurementAtom, userAtom } from '@/store';
+import { useUser } from '@clerk/clerk-react';
 
 // UI components
 import { LoaderCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import DeleteProfileData from '@/components/profile/DeleteProfileData';
@@ -48,248 +37,125 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { z } from 'zod';
+import { toast } from 'sonner';
 
-interface ProfileFormData {
-  userId: string;
-  name: string;
-  profile: {
-    age: string;
-    gender: string;
-    weight: string;
-    height: string;
-    bodyFat: string;
-  };
-}
+import useUserProfile from '@/hooks/user/useUserProfile';
+import useUserProfileMutate from '@/hooks/user/useUserProfileMutate';
 
 export default function ProfileForm() {
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
-  const [selectedTab, setSelectedTab] = useAtom(measurementAtom);
-  const [userProfileData, setUserProfileData] = useAtom(profileDataAtom);
   const { user } = useUser();
-  const userId = user?.id ?? '';
-  const userName = user?.fullName ?? '';
+  const [selectedTab, setSelectedTab] = useAtom(measurementAtom);
+  const mutation = useUserProfileMutate('update');
+  // ? see profile form re-render issues
+  const setUserProfileData = useSetAtom(userAtom);
+  const {
+    data: userData,
+    error: userDataError,
+    isLoading: userDataLoading,
+  } = useUserProfile();
 
-  setUserProfileData((value) => {
-    if (!value) {
-      return {
-        userId: userId,
-        name: userName,
-        profile: {},
-      };
-    }
-    return value;
-  });
-
-  const stateUserId = userProfileData?.userId;
-  const stateUserName = userProfileData?.name;
-  const stateAge = userProfileData?.profile?.age;
-  const stateGender = userProfileData?.profile?.gender;
-  const stateWeight = userProfileData?.profile?.weight;
-  const stateHeight = userProfileData?.profile?.height;
-  const stateBodyFat = userProfileData?.profile?.bodyFat;
-
-  const form = useForm<ProfileFormData>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues: {
-      userId: stateUserId || userId,
-      name: stateUserName || userName,
-      profile: {
-        age: stateAge?.toString() || '',
-        gender: stateGender?.toString() || '',
-        weight: stateWeight?.toString() || '',
-        height: stateHeight?.toString() || '',
-        bodyFat: stateBodyFat?.toString() || '',
-      },
-    },
-  });
-
-  // TODO - Refactor this
   useEffect(() => {
-    logger.info('Fetching user profile data');
-    async function fetchData() {
-      if (!userProfileData) {
-        logger.info('Fetching from the server');
-        const data = await getUserProfileData(userId);
-        logger.info('Returned User data: \n', data);
-        if (data) {
-          setUserProfileData((value) => {
-            if (!value) {
-              return data;
-            }
-            return {
-              ...value,
-              profile: { ...data.profile },
-            };
-          });
-          logger.info('User has no profile data');
-        }
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        logger.info('Fetched from the store / cache');
-      }
-    }
-    fetchData();
-    handleOnReset();
-  }, []);
-
-  const isAgeGenderSame = (formData: ProfileFormData) => {
-    const formAge = formData.profile.age;
-    const formGender = formData.profile.gender;
-    const formWeight = formData.profile.weight;
-    const formHeight = formData.profile.height;
-    const formBodyFat = formData.profile.bodyFat;
-
-    if (!userProfileData || !stateAge || !stateGender) {
-      logger.info('User data is not available');
-      return false;
-    }
-    logger.debug('Checking if the form data is the same as the user data');
-
-    if (stateAge.toString() === formAge && !formGender) {
-      logger.info('Age is the same but the form gender is empty');
-      return true;
-    }
-    if (stateGender === formGender && !formAge) {
-      logger.info('gender is the same but the form age is empty');
-      return true;
-    }
-    if (stateAge.toString() === formAge && stateGender === formGender) {
-      logger.info('Both age and gender are the same');
-      return true;
-    }
-    if (
-      stateWeight?.toString() === formWeight &&
-      stateHeight?.toString() === formHeight
-    ) {
-      logger.info('Both weight and height are the same');
-      return true;
-    }
-    if (stateBodyFat?.toString() === formBodyFat) {
-      logger.info('Body fat is the same');
-      return true;
-    }
-
-    logger.info('Form data is different from the user data');
-    return false;
-  };
-
-  const isFormDataEmpty = (formData: ProfileFormData) => {
-    for (const key in formData.profile) {
-      if (formData.profile[key as keyof typeof formData.profile]) {
-        logger.info('Form data is not empty');
-        return false;
-      }
-    }
-    return true;
-  };
-
-  const handleOnReset = () => {
-    if (isFormDataEmpty(form.getValues())) {
-      return;
-    }
-    logger.info(`gender: ${userProfileData?.profile?.gender}`);
-    logger.info('Form reset');
-    if (form.getValues('profile.age')) form.setValue('profile.age', '');
-    if (form.getValues('profile.gender')) form.setValue('profile.gender', '');
-    if (form.getValues('profile.weight')) form.setValue('profile.weight', '');
-    if (form.getValues('profile.height')) form.setValue('profile.height', '');
-    if (form.getValues('profile.bodyFat')) form.setValue('profile.bodyFat', '');
-
-    logger.debug('RESET FORM User data: \n', userProfileData);
-  };
-
-  const onSubmit: SubmitHandler<ProfileFormData> = async (data) => {
-    if (isFormDataEmpty(data) || isAgeGenderSame(data)) {
-      logger.info(
-        'Form data is empty / user data is the same as the form data'
-      );
-      return;
-    }
-
-    if (selectedTab === 'imperial') {
-      logger.info('Converting form data to metric before submission');
-      const convertedData = ImperialMetricConversion(
-        'metric',
-        data.profile.weight,
-        data.profile.height
-      );
-      if (convertedData.weight) {
-        form.setValue('profile.weight', convertedData.weight);
-        data.profile.weight = convertedData.weight;
-      }
-      if (convertedData.height) {
-        form.setValue('profile.height', convertedData.height);
-        data.profile.height = convertedData.height;
-      }
-
-      logger.debug('Converted Data: \n', convertedData);
-    }
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        logger.info(`Profile updated for user: ${userId} | ${userName}`);
-        toast({
-          title: 'Profile updated',
-          description: 'Your profile has been updated successfully.',
-        });
-      } else {
-        logger.error(
-          `Server error on profile update for user: ${userId} | ${userName}`
-        );
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description:
-            'There was a problem updating your profile. Please try again later.',
-        });
-      }
-    } catch (error) {
-      logger.error('Error updating profile: ', error);
-      toast({
-        variant: 'destructive',
-        title: 'Uh oh! There is a Network Error',
-        description: 'Unable to process profile update. Check your connection.',
+    if (userDataError) {
+      toast.info('Hi! Your Profile Data is Empty', {
+        description: userDataError.message,
       });
     }
-    setUserProfileData((value) => {
-      const validData = deepPickBy(
-        data,
-        (val) => !isNaN(val) && val !== undefined
-      );
-      return _.merge(value, validData);
-    });
-    logger.debug('User data: \n', userProfileData);
-    handleOnReset();
+  }, [userDataError]);
+
+  useEffect(() => {
+    if (userData) {
+      console.log(userData);
+      setUserProfileData(userData);
+    }
+  }, [userData, setUserProfileData]);
+
+  const defaultMeasurement = useMemo(() => {
+    return selectedTab === 'imperial'
+      ? ImperialMetricConversion(
+          selectedTab,
+          userData?.profile?.weight,
+          userData?.profile?.height
+        )
+      : {
+          weight: userData?.profile?.weight,
+          height: userData?.profile?.height,
+        };
+  }, [selectedTab, userData?.profile?.weight, userData?.profile?.height]);
+
+  const defaultValues = useMemo(
+    () => ({
+      userId: userData?.userId ?? user?.id ?? '',
+      name: userData?.name ?? user?.fullName ?? '',
+      profile: {
+        age: userData?.profile?.age,
+        gender: userData?.profile?.gender,
+        weight: defaultMeasurement.weight,
+        height: defaultMeasurement.height,
+        bodyFat: userData?.profile?.bodyFat,
+      },
+    }),
+    [userData, defaultMeasurement, user?.id, user?.fullName]
+  );
+
+  const form = useForm<z.infer<typeof profileFormSchema>>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues,
+  });
+
+  useEffect(() => {
+    if (userData) {
+      form.reset(defaultValues);
+    }
+  }, [userData, defaultValues, form]);
+
+  // Watch the weight and height fields
+  const watchedWeight = form.watch('profile.weight');
+  const watchedHeight = form.watch('profile.height');
+
+  const isFormDataEmpty = (
+    values: z.infer<typeof profileFormSchema>
+  ): boolean => {
+    const isEmpty = JSON.stringify(defaultValues) === JSON.stringify(values);
+    if (!isEmpty) {
+      console.info('Form data has changed from the default values');
+    }
+    return isEmpty;
   };
 
   const handleTabChange = (newTab: 'imperial' | 'metric') => {
     setSelectedTab(newTab);
-    const formData = form.getValues();
+    const convertedData = ImperialMetricConversion(
+      newTab,
+      form.getValues('profile.weight'),
+      form.getValues('profile.height')
+    );
 
-    if (!formData.profile.weight && !formData.profile.height) {
-      logger.info('Theres no data to convert');
-    } else {
-      const convertedData = ImperialMetricConversion(
-        newTab,
-        formData.profile.weight,
-        formData.profile.height
-      );
-      form.setValue('profile.weight', convertedData?.weight ?? '');
-      form.setValue('profile.height', convertedData?.height ?? '');
+    form.setValue('profile.weight', convertedData.weight);
+    form.setValue('profile.height', convertedData.height);
+  };
+
+  const handleOnReset = () => {
+    if (!isFormDataEmpty(form.getValues())) {
+      form.reset();
+      console.info('Form has been reset');
     }
   };
 
-  if (isLoading) {
+  const onSubmit = async (values: z.infer<typeof profileFormSchema>) => {
+    if (isFormDataEmpty(form.getValues())) {
+      toast.info('No changes', {
+        description: 'You have not made any changes to your profile',
+      });
+      console.log('formData: ', values);
+    } else {
+      mutation.mutate(values);
+      console.log('formData: ', values);
+    }
+  };
+
+  if (userDataLoading) {
     return (
       <div className="flex items-center justify-center">
         <LoaderCircle className="text-primary text-3xl animate-spin" />
@@ -299,28 +165,23 @@ export default function ProfileForm() {
 
   return (
     <section className="flex-1 flex-col w-full xl:w-[80%] light: text-foreground">
-      <h2 className="pb-2 text-4xl font-bold italic text-primary">Profile</h2>
-      <p className="pb-4 text:md text-slate-400">Hi there {userName} 👋</p>
+      <p className="pb-2 text-2xl font-bold italic text-primary">
+        Hi there {userData?.name ?? ''} 👋
+      </p>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex justify-center space-y-8"
+          className="justify-center space-y-8"
         >
           {/* Age */}
           <FormField
             control={form.control}
             name="profile.age"
-            defaultValue={stateAge?.toString() || undefined}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Age</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder={stateAge?.toString() || ''}
-                    min={0}
-                    type="number"
-                    {...field}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -333,21 +194,10 @@ export default function ProfileForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Gender</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  // placeholder={stateGender.toString() ?? ''}
-                >
+                <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue
-                        defaultValue={stateGender?.toString() || ''}
-                        placeholder={
-                          stateGender
-                            ? stateGender.toString().charAt(0).toUpperCase() +
-                              stateGender.toString().slice(1)
-                            : ''
-                        }
-                      />
+                      <SelectValue />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -360,6 +210,25 @@ export default function ProfileForm() {
               </FormItem>
             )}
           />
+
+          {/* metric or imperial tab */}
+          <Tabs
+            value={selectedTab}
+            onValueChange={(value) =>
+              handleTabChange(value as typeof selectedTab)
+            }
+          >
+            <TabsList className="grid w-full grid-cols-2 light: bg-background">
+              <TabsTrigger className="px-10" value="imperial">
+                Imperial
+              </TabsTrigger>
+              <TabsTrigger className="px-10" value="metric">
+                Metric
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          {/*! End of Tab  !*/}
+
           {/* Weight */}
           <div className="flex gap-5 w-full">
             <FormField
@@ -371,21 +240,7 @@ export default function ProfileForm() {
                     Weight {selectedTab === 'metric' ? '(kg)' : '(lbs)'}
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      // TODO: Fix this: kgToLbs(stateWeight).toString() ?? ''
-
-                      placeholder={
-                        selectedTab === 'metric'
-                          ? stateWeight?.toString() ?? ''
-                          : stateWeight !== undefined
-                          ? kgToLbs(stateWeight)!.toString()
-                          : ''
-                      }
-                      min="0"
-                      step="any"
-                      type="number"
-                      {...field}
-                    />
+                    <Input min="1" step="any" type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -401,18 +256,7 @@ export default function ProfileForm() {
                     Height {selectedTab === 'metric' ? '(cm)' : '(ft)'}
                   </FormLabel>
                   <FormControl>
-                    <Input
-                      // TODO: Fix this: cmToFt(stateHeight)?.toString()
-                      placeholder={
-                        selectedTab === 'metric'
-                          ? stateHeight?.toString()
-                          : cmToFt(stateHeight!)!.toString()
-                      }
-                      min="0"
-                      step="any"
-                      type="number"
-                      {...field}
-                    />
+                    <Input min="1" step="any" type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -427,35 +271,12 @@ export default function ProfileForm() {
               <FormItem>
                 <FormLabel>Body Fat %</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder={stateBodyFat?.toString()}
-                    min={0}
-                    type="number"
-                    {...field}
-                  />
+                  <Input placeholder="0" min={0} type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          {/* metric or imperial tab */}
-          <Tabs
-            defaultValue="metric"
-            value={selectedTab}
-            onValueChange={(value) =>
-              handleTabChange(value as typeof selectedTab)
-            }
-          >
-            <TabsList className="grid w-full grid-cols-2 light: bg-background light: border-border light: border-2">
-              <TabsTrigger className="px-10" value="imperial">
-                Imperial
-              </TabsTrigger>
-              <TabsTrigger className="px-10" value="metric">
-                Metric
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          {/*! End of Tab  !*/}
           {/* Form Buttons */}
           <div className="flex justify-center gap-3 md:justify-start">
             <Button type="submit">Submit</Button>
@@ -465,13 +286,8 @@ export default function ProfileForm() {
           </div>
         </form>
       </Form>
-      <ProfileBMI
-        weight={userProfileData?.profile?.weight?.toString() ?? ''}
-        height={userProfileData?.profile?.height?.toString() ?? ''}
-      />
-      {userProfileData && (
-        <DeleteProfileData resetForm={handleOnReset} userId={userId} />
-      )}
+      <ProfileBMI weight={watchedWeight} height={watchedHeight} />
+      {userData?.userId && <DeleteProfileData user={userData} />}
     </section>
   );
 }

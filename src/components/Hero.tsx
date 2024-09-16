@@ -16,7 +16,7 @@ export default function Hero() {
           <br />
           Community.
         </h1>
-        <p className="mt-2 font-normal text-base text-secondary-foreground max-w-lg text-center mx-auto">
+        <p className="mt-2 font-normal text-base max-w-lg text-center mx-auto">
           Track Workouts, Share Routines, and Learn Together.
         </p>
         <div className="flex justify-center mt-8">

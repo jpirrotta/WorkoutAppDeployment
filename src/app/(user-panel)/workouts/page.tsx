@@ -13,6 +13,7 @@ import MyWorkout from '@/components/workout/MyWorkout';
 import { Workout } from '@/types';
 import mongoose from 'mongoose';
 import logger from '@/lib/logger';
+import { ContentLayout } from '@/components/user-panel/content-layout';
 
 // const workout: Workout = {
 //   _id: new mongoose.Types.ObjectId,

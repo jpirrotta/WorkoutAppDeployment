@@ -19,13 +19,13 @@ import { BadgeHelp } from 'lucide-react';
 import Link from 'next/link.js';
 
 // helpers
-import logger from '@/lib/logger';
 import { calculateBMI, getBMICategory } from '@/utils/BMICalculator';
+import { ImperialMetricConversion } from '@/utils/ImperialMetricConversion';
 //
 
 // state management
-import { useAtom } from 'jotai';
-import { userBMI } from '@/store';
+import { useAtom, useAtomValue } from 'jotai';
+import { measurementAtom, userBMI } from '@/store';
 import { useEffect, useCallback } from 'react';
 //
 
@@ -46,21 +46,21 @@ const setStatusColor = (bmi: string) => {
 };
 
 const bmiTooltipDesc =
-  'Body mass index (BMI) is a person’s weight in kilograms divided by the square of height in meters. BMI is an inexpensive and easy screening method for weight category—underweight, healthy weight, overweight, and obesity.BMI does not measure body fat directly, but BMI is moderately correlated with more direct measures of body fat';
+  "Body mass index (BMI) is a person's weight in kilograms divided by the square of height in meters. BMI is an inexpensive and easy screening method for weight category—underweight, healthy weight, overweight, and obesity.BMI does not measure body fat directly, but BMI is moderately correlated with more direct measures of body fat";
 
 type BMICardProps = Readonly<{
-  weight: string;
-  height: string;
+  weight: number;
+  height: number;
 }>;
 
 export default function BMICard({ weight, height }: BMICardProps) {
   const [bmi, setBmi] = useAtom(userBMI);
+  const selectedMetric = useAtomValue(measurementAtom);
   const statusTextColor = setStatusColor(bmi?.category ?? '');
-  logger.debug(`Weight: ${weight}, Height: ${height}`);
 
   // Calculate BMI
   const newBMI = useCallback(
-    (weight: string, height: string) => {
+    (weight: number, height: number) => {
       const bmiScore = calculateBMI(weight, height);
       const bmiCategory = getBMICategory(bmiScore);
       const newBMI = {
@@ -73,10 +73,14 @@ export default function BMICard({ weight, height }: BMICardProps) {
   );
   //
   useEffect(() => {
-    newBMI(weight, height);
-  }, [weight, height, newBMI]);
-  //
-  logger.debug(`BMI: ${bmi}`);
+    // we always convert to metric before any calculation
+    const convertedData =
+      selectedMetric === 'imperial'
+        ? ImperialMetricConversion('metric', weight, height)
+        : { weight, height };
+
+    newBMI(convertedData.weight!, convertedData.height!);
+  }, [weight, height, newBMI, selectedMetric]);
   return (
     <Card className="my-6 bg-transparent">
       <CardHeader>

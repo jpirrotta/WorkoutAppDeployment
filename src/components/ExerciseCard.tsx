@@ -53,6 +53,7 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
               width={350}
               height={125}
               className="rounded-md"
+              unoptimized
             />
             <Button className="px-0" variant="link" onClick={ImageToggler}>
               Hide Demo

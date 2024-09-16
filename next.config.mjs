@@ -2,13 +2,18 @@
 const nextConfig = {
   experimental: {
     esmExternals: 'loose',
-    serverComponentsExternalPackages: ['mongoose', 'pino'], // <-- needed external packages for server components
+    serverComponentsExternalPackages: ['mongoose', 'pino', 'pino-pretty'], // <-- needed external packages for server components
   },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'v2.exercisedb.io',
+        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'assets.aceternity.com',
         port: '',
       },
     ],

@@ -17,7 +17,7 @@ export default function ProfileBMIAlert() {
       <Alert>
         <Scale className="h-4 w-4" />
         <AlertTitle>
-          Get BMI Insights!{' '}
+          Get BMI Insights!
           <Popover>
             <PopoverTrigger className="max-w-[50%]">
               <BadgeHelp className="w-4 h-4 active:text-primary" />

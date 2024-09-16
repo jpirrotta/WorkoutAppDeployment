@@ -1,12 +1,12 @@
 import {
-  Tag,
-  Users,
+  Scale,
   Settings,
-  Bookmark,
-  SquarePen,
+  BicepsFlexed,
   LayoutGrid,
   LucideIcon,
   UserCog,
+  Newspaper,
+  Dumbbell,
 } from 'lucide-react';
 
 type Submenu = {
@@ -46,36 +46,43 @@ export function getMenuList(pathname: string): Group[] {
       groupLabel: 'Contents',
       menus: [
         {
+          href: '/feed',
+          label: 'Feed',
+          active: pathname.includes('/feed'),
+          icon: Newspaper,
+          submenus: [],
+        },
+        {
+          href: '/workouts',
+          label: 'Workouts',
+          active: pathname.includes('/workouts'),
+          icon: Dumbbell,
+          submenus: [],
+        },
+        {
+          href: '/exercises',
+          label: 'Exercises',
+          active: pathname.includes('/exercises'),
+          icon: BicepsFlexed,
+          submenus: [],
+        },
+        {
           href: '',
-          label: 'Posts',
-          active: pathname.includes('/posts'),
-          icon: SquarePen,
+          label: 'Calculators',
+          active: pathname.includes('/calculators'),
+          icon: Scale,
           submenus: [
             {
-              href: '/posts',
-              label: 'All Posts',
-              active: pathname === '/posts',
+              href: '/calculators/bmi',
+              label: 'BMI Calculator',
+              active: pathname.includes('/calculators/bmi'),
             },
             {
-              href: '/posts/new',
-              label: 'New Post',
-              active: pathname === '/posts/new',
+              href: '/calculators/calories',
+              label: 'Calories',
+              active: pathname.includes('/calculators/calories'),
             },
           ],
-        },
-        {
-          href: '/categories',
-          label: 'Categories',
-          active: pathname.includes('/categories'),
-          icon: Bookmark,
-          submenus: [],
-        },
-        {
-          href: '/tags',
-          label: 'Tags',
-          active: pathname.includes('/tags'),
-          icon: Tag,
-          submenus: [],
         },
       ],
     },

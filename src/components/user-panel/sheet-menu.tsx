@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { MenuIcon, PanelsTopLeft } from 'lucide-react';
+import { Dumbbell } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Menu } from '@/components/user-panel/menu';
@@ -27,8 +28,8 @@ export function SheetMenu() {
             asChild
           >
             <Link href="/dashboard" className="flex items-center gap-2">
-              <PanelsTopLeft className="w-6 h-6 mr-1" />
-              <SheetTitle className="font-bold text-lg">Brand</SheetTitle>
+              <Dumbbell className="size-6 mr-1" />
+              <SheetTitle className="font-bold text-lg">FitConnect</SheetTitle>
             </Link>
           </Button>
         </SheetHeader>

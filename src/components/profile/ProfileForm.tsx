@@ -2,7 +2,7 @@
 // Libs
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 // utils
 import { profileFormSchema } from '@/models/ProfileFormSchema';
@@ -71,8 +71,8 @@ export default function ProfileForm() {
     }
   }, [userData, setUserProfileData]);
 
-  const defaultMeasurement =
-    selectedTab === 'imperial'
+  const defaultMeasurement = useMemo(() => {
+    return selectedTab === 'imperial'
       ? ImperialMetricConversion(
           selectedTab,
           userData?.profile?.weight,
@@ -82,23 +82,33 @@ export default function ProfileForm() {
           weight: userData?.profile?.weight,
           height: userData?.profile?.height,
         };
+  }, [selectedTab, userData?.profile?.weight, userData?.profile?.height]);
 
-  const defaultValues = {
-    userId: userData?.userId ?? user?.id ?? '',
-    name: userData?.name ?? user?.fullName ?? '',
-    profile: {
-      age: userData?.profile?.age,
-      gender: userData?.profile?.gender,
-      weight: defaultMeasurement.weight,
-      height: defaultMeasurement.height,
-      bodyFat: userData?.profile?.bodyFat,
-    },
-  };
+  const defaultValues = useMemo(
+    () => ({
+      userId: userData?.userId ?? user?.id ?? '',
+      name: userData?.name ?? user?.fullName ?? '',
+      profile: {
+        age: userData?.profile?.age,
+        gender: userData?.profile?.gender,
+        weight: defaultMeasurement.weight,
+        height: defaultMeasurement.height,
+        bodyFat: userData?.profile?.bodyFat,
+      },
+    }),
+    [userData, defaultMeasurement, user?.id, user?.fullName]
+  );
 
   const form = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
   });
+
+  useEffect(() => {
+    if (userData) {
+      form.reset(defaultValues);
+    }
+  }, [userData, defaultValues, form]);
 
   // Watch the weight and height fields
   const watchedWeight = form.watch('profile.weight');

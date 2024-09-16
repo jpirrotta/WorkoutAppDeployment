@@ -2,7 +2,7 @@ import LandingPage from '@/components/LandingPage';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 
-export default function Home({ children }: { children: React.ReactNode }) {
+export default function Home() {
   const { userId } = auth();
 
   if (userId) {
@@ -10,8 +10,6 @@ export default function Home({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <main className="flex flex-col items-center justify-between">
       <LandingPage />
-    </main>
   );
 }

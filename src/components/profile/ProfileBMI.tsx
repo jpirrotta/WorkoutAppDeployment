@@ -1,5 +1,5 @@
 import ProfileBMIAlert from '@/components/profile/ProfileBMIAlert';
-import BMICard from '@/components/BMICard';
+import BMICard from '@/components/calculators/BMICard';
 
 type ProfileBMIProps = Readonly<{
   weight: number | undefined;

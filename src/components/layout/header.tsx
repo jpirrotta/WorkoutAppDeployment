@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
-import { UserButton, SignInButton, useAuth } from '@clerk/nextjs';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { UserButton, SignInButton, useUser } from '@clerk/nextjs';
 import { useState } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 // Icon imports
@@ -12,7 +12,7 @@ import { Menu, X } from 'lucide-react';
 import { useHasMounted } from '@/hooks/useHasMounted';
 
 export default function Header() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn } = useUser();
   // State var for opening and closing of navbar Menu
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -72,7 +72,9 @@ export default function Header() {
               userProfileUrl="/profile"
             />
           ) : (
-            <SignInButton mode="modal" />
+            <Button asChild>
+              <SignInButton mode="modal" />
+            </Button>
           )}
         </div>
       </div>

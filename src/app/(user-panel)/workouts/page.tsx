@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@clerk/clerk-react';
+import { ContentLayout } from '@/components/user-panel/content-layout';
 
 // Define types for workout and its properties
 type Exercise = {
@@ -216,20 +217,22 @@ export default function Page() {
   };
 
   return (
-    <div className="py-10">
-      <h1>Workout Page</h1>
-      <Button onClick={handleAddWorkout}>add workout</Button>
-      <Button onClick={handleDeleteWorkouts}>delete workouts</Button>
-      <Button onClick={handleLikeWorkout}>like workout</Button>
-      <Button onClick={handleUnlikeWorkout}>unlike workout</Button>
-      <Button onClick={handleCommentWorkout}>comment workout</Button>
-      <Button onClick={handleDeleteComment}>delete comment</Button>
-      <Button onClick={handlePublishWorkout}>publish workout</Button>
-      <Button onClick={handleUnpublishWorkout}>unpublish workout</Button>
-      <Button onClick={() => handleGetAllPublicWorkouts(1, 3)}>
-        get all public workouts
-      </Button>
-      <Button onClick={handleSaveWorkout}>save workout</Button>
-    </div>
+    <ContentLayout title="Workouts">
+      <div className="py-10">
+        <h1>Workout Page</h1>
+        <Button onClick={handleAddWorkout}>add workout</Button>
+        <Button onClick={handleDeleteWorkouts}>delete workouts</Button>
+        <Button onClick={handleLikeWorkout}>like workout</Button>
+        <Button onClick={handleUnlikeWorkout}>unlike workout</Button>
+        <Button onClick={handleCommentWorkout}>comment workout</Button>
+        <Button onClick={handleDeleteComment}>delete comment</Button>
+        <Button onClick={handlePublishWorkout}>publish workout</Button>
+        <Button onClick={handleUnpublishWorkout}>unpublish workout</Button>
+        <Button onClick={() => handleGetAllPublicWorkouts(1, 3)}>
+          get all public workouts
+        </Button>
+        <Button onClick={handleSaveWorkout}>save workout</Button>
+      </div>
+    </ContentLayout>
   );
 }

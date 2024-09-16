@@ -1,7 +1,7 @@
 // src/components/workout/CreateWorkout.jsx
 
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -22,7 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import Spinner from '@/components/svgs/Spinner.svg';
+// import Spinner from '@/components/svgs/Spinner.svg';
 import { useUser } from '@clerk/clerk-react';
 import logger from '@/lib/logger';
 // import { stringify } from 'flatted';
@@ -30,7 +30,13 @@ import logger from '@/lib/logger';
 import { useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
-export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 'create' }) {
+type props = {
+    triggerEle: React.ReactNode;
+    exercise: any;
+    defaultTab: string;
+};
+
+const CreateWorkout: FC<props> = ({ triggerEle, exercise = {}, defaultTab = 'create' }) => {
     //state vars
     const [workouts, setWorkouts] = useState([]);
     // const [newWorkoutName, setNewWorkoutName] = useState('some workout');
@@ -142,48 +148,49 @@ export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 
                 <DialogHeader>
                     <Tabs defaultValue={defaultTab} className="w-full">
                         <TabsList className="grid w-full grid-cols-2 mb-5">
+                            {/* conditional tab to display when needed from prop flag */}
                             {exercise &&
                                 <TabsTrigger value="existing">Add to existing</TabsTrigger>
                             }
                             <TabsTrigger value="create">Create Workout</TabsTrigger>
                         </TabsList>
-                        {exercise &&
-                            <TabsContent value="existing" className="">
-                                <DialogTitle className="mb-2">Add Exercise</DialogTitle>
-                                <DialogDescription>
-                                    Add Exercise to any of existing workouts
-                                </DialogDescription>
-                                {!Array.isArray(workouts) ? (
+                        <TabsContent value="existing" className="">
+                            <DialogTitle className="mb-2">Add Exercise</DialogTitle>
+                            <DialogDescription>
+                                Add Exercise to any of existing workouts
+                            </DialogDescription>
+                            {!Array.isArray(workouts) ? (
+                                <div className="bg-background min-h-screen p-4 flex items-center justify-center">
+                                    No workouts found, try creating one!
+                                </div>
+                            ) : (
+                                Array.isArray(workouts) && workouts.length === 0 ? (
                                     <div className="bg-background min-h-screen p-4 flex items-center justify-center">
-                                        No workouts found, try creating one!
+                                        {/* <Spinner className="text-primary text-6xl" /> */}
+                                        LOADING...
                                     </div>
-                                ) : (
-                                    Array.isArray(workouts) && workouts.length === 0 ? (
-                                        <div className="bg-background min-h-screen p-4 flex items-center justify-center">
-                                            <Spinner className="text-primary text-6xl" />
+                                ) :
+                                    (
+                                        <div className="flex flex-col space-y-4 mt-2">
+                                            <ScrollArea className="h-72 w-full rounded-md border">
+                                                <div className="p-4">
+                                                    {workouts.map((workout) => (
+                                                        <React.Fragment key={workout._id}>
+                                                            <div key={workout._id} className={`text-center hover:cursor-pointer ${selectedWorkoutId === workout._id ?
+                                                                'bg-slate-950 rounded-lg' : ''}`} onClick={() => setSelectedWorkoutId(workout._id)}>
+                                                                {workout.name}
+                                                            </div>
+                                                            <Separator className="my-2" />
+                                                        </React.Fragment>
+                                                    ))}
+                                                </div>
+                                            </ScrollArea>
+                                            <Button onClick={handleAddExercise}>Add</Button>
                                         </div>
-                                    ) :
-                                        (
-                                            <div className="flex flex-col space-y-4 mt-2">
-                                                <ScrollArea className="h-72 w-full rounded-md border">
-                                                    <div className="p-4">
-                                                        {workouts.map((workout) => (
-                                                            <React.Fragment key={workout._id}>
-                                                                <div key={workout._id} className={`text-center hover:cursor-pointer ${selectedWorkoutId === workout._id ? 'bg-slate-950 rounded-lg' : ''}`} onClick={() => setSelectedWorkoutId(workout._id)}>
-                                                                    {workout.name}
-                                                                </div>
-                                                                <Separator className="my-2" />
-                                                            </React.Fragment>
-                                                        ))}
-                                                    </div>
-                                                </ScrollArea>
-                                                <Button onClick={handleAddExercise}>Add</Button>
-                                            </div>
-                                        )
-                                )
-                                }
-                            </TabsContent>
-                        }
+                                    )
+                            )
+                            }
+                        </TabsContent>
                         <TabsContent value="create">
                             <DialogTitle>Create a new Workout</DialogTitle>
                             <div className="flex flex-col space-y-4 mt-5">
@@ -202,3 +209,5 @@ export default function CreateWorkout({ triggerEle, exercise = {}, defaultTab = 
         </Dialog>
     )
 }
+
+export default CreateWorkout;

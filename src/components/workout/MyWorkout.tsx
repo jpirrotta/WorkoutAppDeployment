@@ -1,17 +1,29 @@
 // src/components/workout/MyWorkout.jsx
 
+import { FC } from 'react';
 import ExerciseCards from '../ExerciseCards';
 import { Workout } from '@/types';
+import Link from 'next/link';
 
-export default function MyWorkout(workout: Workout) {
+type MyWorkoutProps = {
+    workout: Workout | null
+}
 
-    if (!Object.keys(workout).length)
-        (
+const MyWorkout: FC<MyWorkoutProps> = ({ workout }) => {
+    // if no workout is selected return a message
+    if (workout === null) {
+        return (
             <div className="bg-background min-h-screen p-4 flex items-center justify-center">
-                Select a Workout
+                There seems to be no exercise in this workout yet.
+                {/* hyperlink this text */}
+                <Link href="/exercises">
+                    Try adding some!
+                </Link>
             </div>
         )
+    }
 
+    // if workout has exercises, display them
     return (
         <div>
             {!Object.keys(workout).length ? (
@@ -29,3 +41,5 @@ export default function MyWorkout(workout: Workout) {
         </div>
     )
 }
+
+export default MyWorkout;

@@ -57,9 +57,9 @@ export default function Header() {
 
   return (
     <header>
-      <div className="flex flex-row justify-between items-center py-2 dark:bg-background light:bg-gray-500">
+      <div className="flex flex-row items-center py-2 dark:bg-background light:bg-gray-500">
         {/* Links */}
-        <div className="container basis-1/3 space-x-3 items-center hidden md:block mt-1">
+        <div className="flex basis-1/3 space-x-3 items-center max-md:hidden mt-1">
           <Link href="/" className={buttonVariants()}>
             Home
           </Link>
@@ -69,7 +69,7 @@ export default function Header() {
         </div>
         {/* end of links */}
         {/* mobile burger */}
-        <div className="container basis-1/3 md:hidden">
+        <div className="flex basis-1/3 md:hidden">
           {isOpen ? (
             <StyledIcon
               Icon={X}
@@ -88,7 +88,7 @@ export default function Header() {
           )}
         </div>
         {/* Switching between Light/Dark Mode */}
-        <div className="theme-toggle flex basis-1/3 justify-center ">
+        <div className="theme-toggle flex basis-1/3 justify-center">
           {isDarkMode ? (
             <StyledIcon
               Icon={Sun}
@@ -106,17 +106,19 @@ export default function Header() {
           )}
         </div>
         {/* Check if the user is signed in and show their profile */}
-        <div className="pr-2 basis-1/3 flex justify-end">
-          {isSignedIn ? (
-            <UserButton
-              // TODO deal with afterSignOutUrl being deprecated soon
-              afterSignOutUrl="/"
-              userProfileMode="navigation"
-              userProfileUrl="/user-profile"
-            />
-          ) : (
-            <SignInButton mode="modal" />
-          )}
+        <div className="flex justify-end basis-1/3 pr-2">
+          <div className='justify-end'>
+            {isSignedIn ? (
+              <UserButton
+                // TODO deal with afterSignOutUrl being deprecated soon
+                afterSignOutUrl="/"
+                userProfileMode="navigation"
+                userProfileUrl="/user-profile"
+              />
+            ) : (
+              <SignInButton mode="modal" />
+            )}
+          </div>
         </div>
       </div>
       {/* Navbar Menu for responsiveness (for smaller screens) */}

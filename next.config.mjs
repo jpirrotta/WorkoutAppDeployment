@@ -11,6 +11,11 @@ const nextConfig = {
         hostname: 'v2.exercisedb.io',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'assets.aceternity.com',
+        port: '',
+      },
     ],
   },
   webpack: (config) => {

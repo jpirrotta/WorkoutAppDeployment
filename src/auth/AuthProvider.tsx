@@ -12,8 +12,6 @@ type AuthProviderProps = Readonly<{
 export default function Providers({ children }: AuthProviderProps) {
   const { theme } = useTheme();
 
-  console.log(`Profile theme set to ${theme}`);
-
   return (
     <ClerkProvider
       appearance={{

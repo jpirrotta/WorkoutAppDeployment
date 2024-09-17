@@ -7,6 +7,7 @@ import {
   UserCog,
   Newspaper,
   Dumbbell,
+  HeartHandshake,
 } from 'lucide-react';
 
 type Submenu = {
@@ -101,6 +102,13 @@ export function getMenuList(pathname: string): Group[] {
           label: 'Account',
           active: pathname.includes('/account'),
           icon: UserCog,
+          submenus: [],
+        },
+        {
+          href: '/contact-us',
+          label: 'Contact Us',
+          active: pathname.includes('/contact-us'),
+          icon: HeartHandshake,
           submenus: [],
         },
       ],

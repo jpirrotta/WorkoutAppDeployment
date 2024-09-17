@@ -9,14 +9,16 @@ export default function Contact() {
   if (isSignedIn) {
     return (
       <ContentLayout title="Contact Us">
-        <ContactForm />
+        <div className="flex min-h-screen flex-col items-center justify-between p-24">
+          <ContactForm />
+        </div>
       </ContentLayout>
     );
   }
 
   return (
-    <section className="flex min-h-screen flex-col items-center justify-between p-24">
+    <div className="flex min-h-screen flex-col items-center justify-between p-24">
       <ContactForm />
-    </section>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 
-export type Exercise = {
+type Exercise = {
   id: string;
   bodyPart: string;
   gifUrl: string;
@@ -11,7 +11,8 @@ export type Exercise = {
   instructions: string[];
 };
 
-export type Workout = Document & {
+// Base type that represents the structure of a workout (without Document)
+type BaseWorkout = {
   _id: mongoose.Types.ObjectId & string;
   name: string;
   exercises: Exercise[];
@@ -23,3 +24,18 @@ export type Workout = Document & {
   }[];
   saves: mongoose.Types.ObjectId[];
 };
+
+// Extend BaseWorkout with Document for MongoDB operations
+type Workout = BaseWorkout & Document;
+
+// NewWorkout for client-side use (without _id or Document properties)
+type NewWorkout = Omit<BaseWorkout, '_id'>;
+
+type patchReqDataType = {
+  name?: string;
+  exercise?: Exercise;
+  public?: boolean;
+  comments?: Workout['comments'];
+};
+
+export type { Exercise, Workout, patchReqDataType, NewWorkout, BaseWorkout};

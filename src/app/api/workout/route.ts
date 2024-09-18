@@ -65,7 +65,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     logger.info(`Workouts (${workouts?.length}): ${JSON.stringify(workouts)}`);
 
     // send the response with workouts
-    return new NextResponse(JSON.stringify({ workouts }), {
+    return new NextResponse(JSON.stringify(workouts), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

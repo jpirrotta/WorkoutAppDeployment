@@ -177,14 +177,19 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
         await dbConnect();
 
         //get user
-        let user = await User.findOne({ userId: userId });
+        let user: (userType & Document) | null = await User.findOne({ userId: userId });
+
+        if (!user) {
+            logger.error('User not found');
+            return NextResponse.json('User not found.', { status: 404 });
+        }
 
         // Find the workout by its id
-        const workout = user?.workouts?.find((workout) => workout._id == workoutId);
+        const workout: Workout | undefined = user?.workouts?.id(workoutId);
 
         if (!workout) {
-            logger.error('User not found');
-            return NextResponse.json('User not found!', { status: 404 });
+            logger.error('Workout not found');
+            return NextResponse.json('Workout not found, so no action taken!', { status: 404 });
         }
 
         logger.info(`Workout found, now deleting...`);

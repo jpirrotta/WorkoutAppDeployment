@@ -58,11 +58,11 @@ const workoutSchema = new Schema<WorkoutDocument>({
     type: Boolean,
     default: false,
   },
+  // TO DO: add publishDate field (empty by default)
   likes: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
+      type: String
+    }
   ],
   comments: [
     {
@@ -72,8 +72,7 @@ const workoutSchema = new Schema<WorkoutDocument>({
   ],
   saves: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String
     },
   ],
 });

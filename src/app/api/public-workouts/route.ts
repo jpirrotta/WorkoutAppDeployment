@@ -1,9 +1,10 @@
 // src/api/workout/isPublic/route.ts
 
 import { dbConnect } from '@/lib/dbConnect';
-import User from '@/models/userSchema';
+import UserModal, {UserDocument} from '@/models/userSchema';
 import logger from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
+import { FeedWorkout } from '@/types';
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   logger.info('\n\nGET All Public Workouts API called');
@@ -26,7 +27,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     // 3. $sort sorts the documents based on the workouts' _id in descending order (-1), which means the most recent workouts come first
     // 4. $skip skips the first (page - 1) * itemsPerPage documents where page is the current page and itemsPerPage is the number of items per page
     // 5. $limit limits the result to itemsPerPage documents
-    const result = await User.aggregate([
+    const result: UserDocument[] = await UserModal.aggregate([
       { $unwind: '$workouts' },
       { $match: { 'workouts.public': true } },
       { $sort: { 'workouts._id': -1 } },
@@ -34,21 +35,59 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       { $limit: itemsPerPage },
     ]);
 
-    logger.info(`Public workouts sss :\n ${JSON.stringify(result)}`);
+    if (!result) {
+      logger.info('No public workouts found');
+      return new NextResponse('No public workouts found', { status: 404 });
+    }
 
-    // filter sensitive data and data that is not needed
-    // we exclude profile, weight history, fatPercentage history
-    const retData = result.map((user) => {
-      const { profile, weightHistory, bodyFatHistory, __v, ...rest } = user;
-      return rest;
+    const testData: any[] = result.flatMap((user) => {
+      console.log("Workout name: ", user.workouts.name);
+      console.log("----------------------------")
+
+      return []; // Ensure you return an array
     });
+    console.log("Test data: ", testData);
+
+    const retData: FeedWorkout[] = result.flatMap((user) => {
+      let feedWorkout: FeedWorkout = {
+        ownerName: user.name,
+        ownerId: user.userId,
+        _id: user.workouts._id,
+        name: user.workouts.name,
+        exercises: user.workouts.exercises,
+        public: user.workouts.public,
+        likes: user.workouts.likes,
+        comments: user.workouts.comments,
+        saves: user.workouts.saves
+      };
+      console.log("Feedworkout: ", feedWorkout);
+      return feedWorkout;
+    });
+
+    console.log("Return data: ", retData);
 
     logger.info(`Public workouts after filtering :`);
     logger.info(retData);
 
-    return new NextResponse(JSON.stringify(retData), { status: 200 });
+    return NextResponse.json(retData, { status: 200 });
   } catch (error) {
-    logger.error(error);
-    return new NextResponse('Internal server error', { status: 500 });
+    if (error instanceof Error) {
+      logger.error(`GET Error getting public workouts: ${error.message}`);
+      return NextResponse.json(
+        {
+          error: error.message,
+          message: 'Something went wrong, please try again or contact support',
+        },
+        { status: 500 }
+      );
+    }
+    logger.error(`GET Error getting public workouts: ${error}`);
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: 'Something went wrong, please try again or contact support',
+      },
+      { status: 500 }
+    );
   }
 }

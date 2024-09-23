@@ -95,7 +95,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
     const comments = {
       comments: CommentedWorkout?.comments,
-      commentsCount: CommentedWorkout?.comments.length,
+      commentsCount: CommentedWorkout?.comments?.length ?? 0,
     };
     logger.info('Comments: ' + comments.comments);
 
@@ -174,7 +174,7 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
     );
     const comments = {
       comments: CommentedWorkout?.comments,
-      commentsCount: CommentedWorkout?.comments.length,
+      commentsCount: CommentedWorkout?.comments?.length ?? 0,
     };
     logger.info('Comments: ' + comments.comments);
 

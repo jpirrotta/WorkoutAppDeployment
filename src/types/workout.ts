@@ -15,10 +15,15 @@ export type Workout = {
   name: string;
   exercises: Exercise[];
   public: boolean;
-  likes: mongoose.Types.ObjectId[];
+  likes: string[];
   comments: {
     text: string;
     postedBy: mongoose.Types.ObjectId;
   }[];
-  saves: mongoose.Types.ObjectId[];
+  saves: string[];
 };
+
+export type FeedWorkout = {
+    ownerId: string;
+    ownerName: string;
+} & Workout;

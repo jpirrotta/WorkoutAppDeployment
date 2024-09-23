@@ -61,7 +61,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         workouts: { $elemMatch: { _id: workoutId } },
       },
       {
-        $addToSet: { 'workouts.$.likes': user._id },
+        $addToSet: { 'workouts.$.likes': user.userId },
       }
     );
 
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
 
     const likesCount = {
-      likes: LikedWorkout?.likes.length,
+      likes: LikedWorkout?.likes?.length ?? 0,
     };
 
     logger.info('Workout liked');
@@ -148,7 +148,7 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
     );
 
     const likesCount = {
-      likes: LikedWorkout?.likes.length,
+      likes: LikedWorkout?.likes?.length ?? 0,
     };
 
     logger.info('Likes count: ' + likesCount.likes);

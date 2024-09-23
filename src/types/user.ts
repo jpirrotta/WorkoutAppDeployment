@@ -25,6 +25,6 @@ export type User = {
   bmi?: BMI;
   weightHistory?: WorkoutHistory[];
   bodyFatHistory?: WorkoutHistory[];
-  workouts?: Workout[];
-  savedWorkouts?: { workoutId: string }[];
+  workouts: Workout[];
+  savedWorkouts: string[];
 };

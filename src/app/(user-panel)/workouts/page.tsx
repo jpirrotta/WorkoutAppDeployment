@@ -11,6 +11,7 @@ import { Workout } from '@/types';
 import logger from '@/lib/logger';
 import { useGetAllUserWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import { toast } from 'sonner';
+import { LoaderCircle } from 'lucide-react';
 
 export default function Page() {
   // state vars
@@ -36,45 +37,17 @@ export default function Page() {
     setSelectedWorkout(workout);
   }
 
-  // const handleDeleteWorkouts = async () => {
-  //   console.log('Delete Workout');
-  //   const response = await fetch('/api/workout', {
-  //     method: 'DELETE',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ userId }),
-  //   });
-  // };
-
-  // // this handler is responsible for saving a workout from the social feed
-  // // from different user -> currently logged in user
-  // const handleSaveWorkout = async () => {
-  //   console.log('Save Workout');
-  //   const response = await fetch('/api/workout/save', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ userId, workoutId: testWorkoutId }),
-  //   });
-  // };
-
   if (workoutsLoading) {
     return (
-      <div className='flex justify-center items-center'>
-        <p>Loading user Workouts...</p>
+      <div className='flex h-screen justify-center items-center'>
+        <LoaderCircle className="text-primary text-6xl animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="py-5">
+    <div className="pt-5">
       <h1 className='flex justify-center text-primary text-4xl pb-5'>Workout Page</h1>
-      {/* <div className='flex gap-4'>
-        <Button onClick={handleDeleteWorkouts}>delete workouts</Button>
-        <Button onClick={handleSaveWorkout}>save workout</Button>
-      </div> */}
 
       {/* Create Workout btn */}
       <CreateWorkout
@@ -85,45 +58,41 @@ export default function Page() {
       />
 
       {/* Workout List */}
-      {
-        !Array.isArray(workouts) ? (
-          <div className="bg-background min-h-screen p-4 flex items-center justify-center">
-            No workouts found, try creating one! {/* TODO: maybe hyperlink this text with modal trigger */}
-          </div>
-        ) :
-          (workouts.length === 0 ? (
-            <div className="bg-background min-h-screen p-4 flex items-center justify-center">
-              {/* <Spinner className="text-primary text-6xl" /> */}
-              <p>
-                Loading...
-              </p>
+      {Array.isArray(workouts) && workouts.length > 0 ? (
+        //
+        // display workouts and selected workout exercises
+        <div>
+          {/* horizontal Scrollable workout tabs */}
+          <ScrollArea className="p-2 mx-2 mb-2 rounded-md border border-border">
+            <div className="flex items-center py-2 space-x-4 text-sm">
+              {workouts.map((workout) => (
+                <div key={workout._id} className='flex justify-center items-center'>
+                  <Button size='sm' key={workout._id} className={selectedWorkout && selectedWorkout._id === workout._id ? 'opacity-50' : ''} onClick={() => handleWorkoutClick(workout)}>{workout.name}</Button>
+                  <Separator orientation="vertical" decorative className='ml-5 h-5' />
+                </div >
+              ))}
             </div>
-          ) :
-            (
-              // Listing workouts
-              <section>
-                {/* Scrollable workout tabs */}
-                <ScrollArea className="w-full h-full p-2 mx-2 mb-2 rounded-md border border-border">
-                  <div className="flex items-center space-x-4 text-sm">
-                    {workouts.map((workout) => (
-                      <React.Fragment key={workout._id}>
-                        <Button size='sm' key={workout._id} onClick={() => handleWorkoutClick(workout)}>{workout.name}</Button>
-                        <Separator orientation="vertical" decorative />
-                      </React.Fragment >
-                    ))}
-                  </div>
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-                <Separator />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+          <Separator />
 
-                {/* display selected workout exercises */}
-                {selectedWorkout &&
-                  <MyWorkout workout={selectedWorkout} />
-                }
-              </section>
-            )
-          )
-      }
+          {/* display selected workout exercises */}
+          {selectedWorkout ? (
+            <MyWorkout workout={selectedWorkout} />
+          ) : (
+            <div className="bg-background text-xl min-h-screen p-4 flex items-center justify-center">
+              Select a Workout
+            </div>
+          )}
+        </div>
+        //
+      ) : (
+        // 
+        <div className="bg-background min-h-screen p-4 flex items-center justify-center">
+          No workouts found, try creating one! {/* TODO: maybe hyperlink this text with modal trigger */}
+        </div>
+        // 
+      )}
     </div>
   );
 }

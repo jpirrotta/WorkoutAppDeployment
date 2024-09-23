@@ -5,13 +5,14 @@ import {
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { addWorkout, deleteWorkout, updateWorkout } from '@/actions/workout';
-import { NewWorkout, Workout, patchReqDataType } from '@/types';
+import { NewWorkout, patchReqDataType, Workout } from '@/types';
 import { useUser } from '@clerk/clerk-react';
+import logger from '@/lib/logger';
 
 // create new workout
 const useWorkoutCreate = (
 ): UseMutationResult<
-  { title: string; message: string }, // TData: The response from the mutation
+  { title: string; message: string, createdWorkout?: Workout }, // TData: The response from the mutation
   unknown, // TError: Could be unknown or Error
   NewWorkout, // TVariables: The data passed to the mutation function
   unknown // TContext: Context not used here, so it's unknown
@@ -28,6 +29,10 @@ const useWorkoutCreate = (
       queryClient.invalidateQueries({
         queryKey: ['workouts', userId],
       });
+
+      if (data) {
+        return data;
+      }
     },
     onError: (error) => {
       toast.error('Something went wrong', {
@@ -49,16 +54,23 @@ const useWorkoutUpdate = (
   const { user } = useUser();
   const userId = user?.id ?? '';
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (variables: { workoutId: string, workoutData: patchReqDataType }) => {
       return updateWorkout(userId, variables.workoutId, variables.workoutData)
     },
+
     onSuccess: (data, variables) => {
-      toast.success(data.title, { description: data.message });
       queryClient.invalidateQueries({
         queryKey: ['workouts', userId],
       });
+      logger.info('Workout updated successfully');
+      if (variables.workoutData.exercise) {
+        return;
+      }
+      toast.success(data.title, { description: data.message });
     },
+
     onError: (error) => {
       toast.error('Something went wrong', {
         description:
@@ -67,6 +79,9 @@ const useWorkoutUpdate = (
     },
   });
 };
+
+// update multiple workouts (for now only 1 use case that is to add exercise to multiple workouts at once)
+
 
 // delete a workout
 const useWorkoutDelete = (

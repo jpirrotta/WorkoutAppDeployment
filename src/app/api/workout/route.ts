@@ -62,7 +62,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
 
     //logging user workouts
-    logger.info(`Workouts (${workouts?.length}): ${JSON.stringify(workouts)}`);
+    logger.info(`Workouts count: ${workouts?.length}`);
+    // logger.info(`Workouts (${workouts?.length}): ${JSON.stringify(workouts)}`);
 
     // send the response with workouts
     return new NextResponse(JSON.stringify(workouts), {

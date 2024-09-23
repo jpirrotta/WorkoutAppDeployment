@@ -10,24 +10,15 @@ import {
 import { useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-
-// TODO see the Exercise type in src/types/workout.ts
-// combine them somehow
-interface Exercise {
-  id: string;
-  name: string;
-  gifUrl: string;
-  target: string;
-  equipment: string;
-  bodyPart: string;
-  secondaryMuscles: string[];
-}
-
-interface ExerciseCardProps {
-  readonly exercise: Exercise;
-}
-
-export default function ExerciseCard({ exercise }: ExerciseCardProps) {
+import { Exercise } from '@/types/workout';
+import { cn } from '@/lib/utils';
+export default function ExerciseCard({
+  exercise,
+  className,
+}: {
+  exercise: Exercise;
+  className?: string;
+}) {
   const [showDemo, setShowDemo] = useState(true);
 
   const ImageToggler = () => {
@@ -36,7 +27,11 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
 
   return (
     <Card
-      className="bg-slate-700 border-primary md:transform md:hover:scale-105 md:transition-transform md:duration-200"
+      className={cn(
+        'bg-slate-700 border-primary',
+        'md:transform md:hover:scale-105 md:transition-transform md:duration-200',
+        className
+      )}
       key={exercise.id}
     >
       <CardHeader>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import ExerciseCards from '@/components/ExerciseCards';
+import ExerciseCards from '@/components/exercises/ExerciseCards';
 import { useExercises } from '@/utils/fetchData';
 import { useUser } from '@clerk/clerk-react';
 import { ContentLayout } from '@/components/user-panel/content-layout';

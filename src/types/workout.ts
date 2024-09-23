@@ -2,10 +2,11 @@ import mongoose from 'mongoose';
 
 export type Exercise = {
   id: string;
-  bodyPart: string;
-  equipment: string;
   name: string;
+  gifUrl: string;
   target: string;
+  equipment: string;
+  bodyPart: string;
   secondaryMuscles: string[];
   instructions: string[];
 };

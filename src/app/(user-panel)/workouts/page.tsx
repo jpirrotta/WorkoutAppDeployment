@@ -11,9 +11,10 @@ import { Workout } from '@/types';
 import logger from '@/lib/logger';
 import { useGetAllUserWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import { toast } from 'sonner';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, BicepsFlexed } from 'lucide-react';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import { truncateText } from '@/utils/trucateText';
+import { StyledIcon } from '@/components/StyledIcon';
 
 export default function Page() {
   // state vars
@@ -87,7 +88,10 @@ export default function Page() {
               />
             ) : (
               <div className="bg-background text-xl min-h-screen p-4 flex items-center justify-center">
-                Select a Workout
+                <div className='rounded-full flex flex-col items-center gap-5 p-10'>
+                  <StyledIcon Icon={BicepsFlexed} className="size-20 text-primary" />
+                  <p className='text-primary'>Select a Workout</p>
+                </div>
               </div>
             )}
           </div>

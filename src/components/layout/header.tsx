@@ -31,7 +31,7 @@ export default function Header() {
 
   return (
     <header>
-      <div className="flex flex-row justify-between items-center py-2 dark:bg-background light:bg-gray-500">
+      <div className="flex flex-row items-center py-2 dark:bg-background light:bg-gray-500">
         {/* Links */}
         <nav className="container basis-1/3 space-x-3 items-center hidden md:block mt-1">
           <ul className="flex space-x-3">

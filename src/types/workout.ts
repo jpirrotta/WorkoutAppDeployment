@@ -38,4 +38,4 @@ type patchReqDataType = {
   comments?: Workout['comments'];
 };
 
-export type { Exercise, Workout, patchReqDataType, NewWorkout, BaseWorkout};
+export type { Exercise, Workout, patchReqDataType, NewWorkout, BaseWorkout };

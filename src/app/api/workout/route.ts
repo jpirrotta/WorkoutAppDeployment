@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Workout, User as userType } from '@/types';
 import { Exercise } from '@/types/workout';
 import { Document } from 'mongoose';
+import { currentUser } from '@clerk/nextjs/server';
 
 interface RequestData {
   userId: string;
@@ -26,9 +27,11 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   // critical default values
   // const userId = user?.id;
   try {
-    const { searchParams } = new URL(req.url);
+    // const { searchParams } = new URL(req.url);
+    const user = await currentUser();
+    const userId = user?.id;
     // Get the userId from the query parameters
-    const userId = searchParams.get('userId');
+    // const userId = searchParams.get('userId');
 
     // logs
     logger.info(`User with ID [${JSON.stringify(userId)}] requested their workouts`);

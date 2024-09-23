@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import { Exercise, NewWorkout } from '@/types';
 import { useGetAllUserWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import { useWorkoutCreate, useWorkoutUpdate } from '@/hooks/workout/useWorkoutMutations';
+import { truncateText } from '@/utils/trucateText';
 
 type props = {
     triggerNode: React.ReactNode;
@@ -49,7 +50,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
             logger.info(`getting workouts....`)
 
             const structuredOptions = workoutData?.map(workout => ({
-                label: workout.name,
+                label: truncateText(workout.name),
                 value: workout._id.toString()
             }));
 
@@ -99,6 +100,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
 
     const handleAddExercise = async () => {
         logger.info(`Adding Exercise to Workouts: ${selectedWorkoutIds}`);
+        logger.info(`Exercise to add: ${JSON.stringify(exerciseToAdd)}`);
 
         await Promise.all(
             selectedWorkoutIds.map(workoutId =>
@@ -125,7 +127,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
                 <AlertDialogHeader>
                     <AlertDialogTitle>Create New Workout</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action will create new Workout named <q>{workoutSearchValue}</q> and add exercise to it that you currently selected.
+                        This action will create new Workout named <i><b><q>{workoutSearchValue}</q></b></i> and add exercise to it that you currently selected.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

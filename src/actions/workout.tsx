@@ -131,14 +131,15 @@ async function deleteWorkout(userId: string, workoutId: string): Promise<{ title
         }
 
         // Find the workout by its id and remove it
-        const workout = user.workouts?.id(workoutId);
+        const workout: Document & Workout = user.workouts?.id(workoutId);
         if (!workout) {
             logger.error('Workout not found!');
             return { title: 'Workout not found.', message: 'Unable to find Workout for current User' };
         }
 
         // Remove the workout
-        workout.remove();
+        workout.deleteOne();
+
         await user.save();
 
         logger.info(`Workout deleted: ${workoutId}`);
@@ -146,7 +147,7 @@ async function deleteWorkout(userId: string, workoutId: string): Promise<{ title
         // Send the response with the updated workouts
         return {
             title: 'Workout Deleted!',
-            message: `Your Workout with ID ${workoutId} deleted successfully!`,
+            message: `Your Workout named ${workout.name} deleted successfully!`,
         };
     } catch (error) {
         if (error instanceof Error) {

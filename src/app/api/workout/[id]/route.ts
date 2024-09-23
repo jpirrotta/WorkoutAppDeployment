@@ -5,20 +5,21 @@ import User from '@/models/userSchema';
 import { NextRequest, NextResponse } from 'next/server';
 import { Workout, User as userType } from '@/types';
 import { Document } from 'mongoose';
+import { currentUser } from '@clerk/nextjs/server';
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+    const user = await currentUser();
     logger.info(`\n\nGET Workout API called - ${JSON.stringify(req.url)}`);
 
     // Get a workout ID and userId from URL
     const id = req.url.split('/')[5].split('?')[0];
-    const userId = req.url.split('?')[1].split('=')[1];
+    const userId = user?.id;
+    // const userId = req.url.split('?')[1].split('=')[1];
     logger.info(
         `\n\nGET req queries - ${JSON.stringify(id)} -- ${JSON.stringify(userId)}`
     );
 
     try {
-        // Get the workout id as after the last slash in the url and userId after ?, assuming userId is not the only query param
-        // Get the workout id by splitting the url assuming that id is the last part of the url
         logger.info(`\n\nWorkout ID - ${id}`);
 
         // Connect to the database

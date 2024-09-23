@@ -14,7 +14,7 @@ export function ContentLayout({
   return (
     <div>
       <Navbar title={title} />
-      <div className={cn('container pt-8 pb-8 px-4 sm:px-8 h-full', className)}>
+      <div className={cn('container pt-8 pb-8 px-4 sm:px-8', className)}>
         {children}
       </div>
     </div>

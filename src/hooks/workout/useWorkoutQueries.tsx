@@ -4,11 +4,10 @@ import { BaseWorkout, NewWorkout, Workout } from '@/types';
 
 // fetch all workouts for the current user
 const fetchUserWorkouts = async (
-    userId: string,
     signal: AbortSignal
 ): Promise<Workout[]> => {
     // no need for try catch, react-query will handle the error and the rest is handled by the api
-    const response = await fetch(`/api/workout?userId=${userId}`, { signal });
+    const response = await fetch(`/api/workout`, { signal });
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch user workouts');
@@ -21,7 +20,7 @@ const useGetAllUserWorkouts = (): UseQueryResult<Workout[], Error> => {
     const userId = user?.id ?? '';
     return useQuery({
         queryKey: ['workouts', userId],
-        queryFn: async ({ signal }) => await fetchUserWorkouts(userId, signal),
+        queryFn: async ({ signal }) => await fetchUserWorkouts(signal),
         enabled: !!userId,
         retry: false,
     });

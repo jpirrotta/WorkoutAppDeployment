@@ -80,9 +80,6 @@ const useWorkoutUpdate = (
   });
 };
 
-// update multiple workouts (for now only 1 use case that is to add exercise to multiple workouts at once)
-
-
 // delete a workout
 const useWorkoutDelete = (
 ): UseMutationResult<

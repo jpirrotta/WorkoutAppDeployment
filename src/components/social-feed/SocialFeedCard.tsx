@@ -1,6 +1,7 @@
 'use client';
-import mongoose from 'mongoose';
 import React, { useState, useEffect } from 'react';
+import UserModel from '@/models/userSchema';
+import { UserDocument } from '@/models/userSchema';
 
 // Hooks
 import usePublicWorkoutMutate from '@/hooks/workouts/usePublicWorkoutMutate';
@@ -60,7 +61,7 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
     }
 
     //TO DO: state type as explicitly bool?
-    let isSuccess: any = await mutationLike.mutateAsync({userId, workout});
+    const isSuccess = await mutationLike.mutateAsync({userId, workout});
     if (isSuccess) {
       setWorkout((prevWorkout: FeedWorkout) => ({
         ...prevWorkout,
@@ -104,17 +105,6 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
     }
 
     let isSuccess: any = await mutationComment.mutateAsync({userId, workout, commentText});
-    console.log("is success: ", isSuccess);
-    /*if (isSuccess) {
-      setWorkout((prevWorkout: FeedWorkout) => ({
-        ...prevWorkout,
-        comments: [
-          ...(prevWorkout.comments || []),
-          { postedBy: userId, text: commentText }
-        ]
-      }));
-      console.log("Successfully added a comment to the workout");
-    }*/
   };
 
   /*const handleDeleteComment = async (commentId: mongoose.Types.ObjectId) => {
@@ -260,15 +250,6 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
               {workout.comments?.map((comment, index) => (
                 <div key={index} className="flex flex-row align-center justify-between">
                   <p>{comment.text}</p>
-                  {/* TODO: Add delete comment functionality
-                  {comment.postedBy === _id && (
-                    <StyledIcon
-                      Icon={Trash}
-                      w={'1.7rem'}
-                      className="text-primary hover:cursor-pointer"
-                      onClick={() => handleDeleteComment(comment._id)}
-                      />
-                  )}*/}
                 </div>
               ))}
             </div>

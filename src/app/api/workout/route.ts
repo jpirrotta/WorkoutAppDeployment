@@ -58,9 +58,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     //if no workouts found then return a message notifying
     if (workouts?.length === 0) {
       logger.info('No workouts found');
-      return new NextResponse('No workouts found!', {
+      return NextResponse.json('No workouts found!', {
         status: 200,
-        headers: { 'Content-Type': 'application/json' },
       });
     }
 

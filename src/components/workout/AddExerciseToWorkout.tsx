@@ -99,8 +99,8 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
     };
 
     const handleAddExercise = async () => {
-        logger.info(`Adding Exercise to Workouts: ${selectedWorkoutIds}`);
-        logger.info(`Exercise to add: ${JSON.stringify(exerciseToAdd)}`);
+        // logger.info(`Adding Exercise to Workouts: ${selectedWorkoutIds}`);
+        // logger.info(`Exercise to add: ${JSON.stringify(exerciseToAdd)}`);
 
         await Promise.all(
             selectedWorkoutIds.map(workoutId =>

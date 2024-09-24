@@ -114,6 +114,58 @@ async function updateWorkout(userId: string, workoutId: string, workoutUpdateDat
     }
 }
 
+// update a workout to edit exercises, name, public status, comments
+async function removeExercise(userId: string, workoutId: string, ExerciseId: string): Promise<{ title: string; message: string }> {
+    logger.info('\n\nPATCH Workout action called');
+
+    try {
+        logger.info(`\n\Exercise ID to be removed- ${ExerciseId}`);
+
+        // Connect to the database
+        await dbConnect();
+
+        //get user
+        let user = await User.findOne({ userId: userId });
+
+        // If the user is not found return an error
+        if (!user) {
+            logger.error('User not found!');
+            return { title: 'User not found.', message: 'User you are trying to update a Workout for does not exist in DB.' };
+        }
+
+        // Find the workout by its id
+        const workout: Workout = user?.workouts?.id(workoutId);
+
+        if (!workout) {
+            logger.error('Workout not found!');
+            return { title: 'Workout not found.', message: 'Unable to find Workout for current User' };
+        }
+
+        // Find the exercise by its id and remove it
+        const exerciseIndex = workout.exercises.findIndex(exercise => exercise.id === ExerciseId);
+
+        if (exerciseIndex === -1) {
+            logger.error('Exercise not found!');
+            return { title: 'Exercise not found.', message: 'Unable to find Exercise in the specified Workout' };
+        }
+
+        workout.exercises.splice(exerciseIndex, 1);
+
+        // Save the updated user document
+        await user.save();
+
+        logger.info('Exercise removed successfully');
+        return { title: 'Success', message: 'Exercise removed successfully from the Workout' };
+    } catch (error) {
+        if (error instanceof Error) {
+            logger.error(`Error removing exercise: ${error.message}`);
+            throw new Error(`Error removing Workout: ${error.message}`);
+        }
+        logger.error(`Error removing workouts: ${error}`);
+        throw new Error(`Internal Server Error: ${error}`);
+    }
+}
+
 // Delete a specific workout for a user
 async function deleteWorkout(userId: string, workoutId: string): Promise<{ title: string; message: string }> {
     logger.info('DELETE all Workouts action called');
@@ -209,4 +261,4 @@ async function deleteAllWorkouts(userId: string): Promise<{ title: string; messa
     }
 }
 
-export { addWorkout, deleteWorkout, deleteAllWorkouts, updateWorkout }
+export { addWorkout, deleteWorkout, deleteAllWorkouts, updateWorkout, removeExercise }

@@ -17,12 +17,12 @@ type BaseWorkout = {
   name: string;
   exercises: Exercise[];
   public: boolean;
-  likes: mongoose.Types.ObjectId[];
+  likes: string[];
   comments: {
     text: string;
     postedBy: mongoose.Types.ObjectId;
   }[];
-  saves: mongoose.Types.ObjectId[];
+  saves: string[];
 };
 
 // Extend BaseWorkout with Document for MongoDB operations
@@ -31,6 +31,11 @@ type Workout = BaseWorkout & Document;
 // NewWorkout for client-side use (without _id or Document properties)
 type NewWorkout = Omit<BaseWorkout, '_id'>;
 
+type FeedWorkout = {
+  ownerId: string;
+  ownerName: string;
+} & BaseWorkout;
+
 type patchReqDataType = {
   name?: string;
   exercise?: Exercise;
@@ -38,4 +43,4 @@ type patchReqDataType = {
   comments?: Workout['comments'];
 };
 
-export type { Exercise, Workout, patchReqDataType, NewWorkout, BaseWorkout };
+export type { Exercise, Workout, patchReqDataType, NewWorkout, FeedWorkout, BaseWorkout };

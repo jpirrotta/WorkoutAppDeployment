@@ -31,33 +31,12 @@ export default function Header() {
 
   return (
     <header>
-      <div className="flex flex-row items-center py-2 dark:bg-background light:bg-gray-500">
-        {/* Links */}
-        <nav className="container basis-1/3 space-x-3 items-center hidden md:block mt-1">
-          <ul className="flex space-x-3">
-            <li>
-              <Link href="/" className={buttonVariants()}>
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link href="/about-us" className={buttonVariants()}>
-                About Us
-              </Link>
-            </li>
-          </ul>
-        </nav>
-        {/* end of links */}
-        {/* mobile burger */}
-        <div className="container basis-1/3 md:hidden">
-          <button onClick={toggleMenu} aria-label="Toggle menu">
-            {isOpen ? (
-              <StyledIcon Icon={X} w={'1.7rem'} className="text-primary" />
-            ) : (
-              <StyledIcon Icon={Menu} w={'1.7rem'} className="text-primary" />
-            )}
-          </button>
-        </div>
+      <div className="flex flex-row justify-between items-center py-2 dark:bg-background light:bg-gray-500">
+
+        {/* TO DO: fix spacing between nav items and delete nav sections below */}
+        <nav className="container basis-1/3 space-x-3 items-center hidden md:block mt-2"></nav>
+        <div className="container basis-1/3 md:hidden"></div>
+
         {/* Switching between Light/Dark Mode */}
         <div className="theme-toggle flex basis-1/3 justify-center">
           <ThemeToggle />

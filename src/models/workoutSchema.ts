@@ -64,9 +64,8 @@ const workoutSchema = new Schema<WorkoutDocument>({
   },
   likes: [
     {
-      type: String,
-      ref: 'User',
-    },
+      type: String
+    }
   ],
   comments: [
     {
@@ -76,8 +75,7 @@ const workoutSchema = new Schema<WorkoutDocument>({
   ],
   saves: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String
     },
   ],
 });

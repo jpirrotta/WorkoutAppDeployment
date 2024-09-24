@@ -1,0 +1,40 @@
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useUser } from '@clerk/clerk-react';
+
+// Hooks
+import useAllPublicWorkouts from '@/hooks/workouts/useAllPublicWorkouts';
+
+// UI Components
+import { Button } from '@/components/ui/button';
+import SocialFeedCard from '@/components/social-feed/SocialFeedCard';
+
+export default function SocialFeed() {
+  // Get current user id
+  const { user } = useUser();
+  const userId = user?.id;
+
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const { data: workouts, isLoading: loadingWorkouts, error: errorWorkouts } = useAllPublicWorkouts(1, itemsPerPage);
+
+  if (loadingWorkouts) {
+    return <div>Loading...</div>;
+  } else if (errorWorkouts) { //change to toast
+    return <div>Error: {errorWorkouts?.message || errorWorkouts?.message}</div>;
+  }
+
+  return (
+    <div className="flex flex-col space-y-8 p-20 items-center justify-center"> 
+      {Array.isArray(workouts) && workouts.map((workout) => (
+        <SocialFeedCard
+          key={workout._id.toString()}
+          userId={userId || ''}
+          initialWorkout={workout}
+        />
+      ))}
+      <Button onClick={()=>setItemsPerPage(prev => prev + 2)}>
+        Load More
+      </Button>
+    </div>
+  );
+}

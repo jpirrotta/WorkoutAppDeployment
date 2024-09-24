@@ -34,7 +34,7 @@ type NewWorkout = Omit<BaseWorkout, '_id'>;
 type FeedWorkout = {
   ownerId: string;
   ownerName: string;
-} & Workout;
+} & BaseWorkout;
 
 type patchReqDataType = {
   name?: string;
@@ -43,4 +43,4 @@ type patchReqDataType = {
   comments?: Workout['comments'];
 };
 
-export type { Exercise, Workout, patchReqDataType, NewWorkout, BaseWorkout };
+export type { Exercise, Workout, patchReqDataType, NewWorkout, FeedWorkout, BaseWorkout };

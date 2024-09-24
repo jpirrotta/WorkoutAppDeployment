@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 //TO DO: import removeCommentPublicWorkout
 import { addLikePublicWorkout, removeLikePublicWorkout, addCommentPublicWorkout, addSavePublicWorkout, removeSavePublicWorkout } from '@/actions/publicWorkout';
-import { Workout } from '@/types';
+import { BaseWorkout } from '@/types';
 import { toast } from 'sonner';
   
 const usePublicWorkoutMutate = (
@@ -13,12 +13,12 @@ const usePublicWorkoutMutate = (
 ): UseMutationResult<
   boolean,
   unknown,
-  {userId: string, workout: Workout, commentText?: string, commentId?: string},
+  {userId: string, workout: BaseWorkout, commentText?: string, commentId?: string},
   unknown
 > => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (retVal: {userId: string, workout: Workout, commentText?: string, commentId?: string}) => {
+    mutationFn: (retVal: {userId: string, workout: BaseWorkout, commentText?: string, commentId?: string}) => {
       switch (option) {
         case 'like':
           return addLikePublicWorkout(retVal.userId, retVal.workout._id.toString());
@@ -44,7 +44,6 @@ const usePublicWorkoutMutate = (
       }
     },
     onSuccess: (data, variables) => {
-      toast.success('Success', { description: 'Successfully updated' });
       queryClient.invalidateQueries({
         queryKey: ['profile', variables.userId],
       });

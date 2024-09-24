@@ -2,10 +2,10 @@
 
 import { FC } from 'react';
 import ExerciseCards from '../ExerciseCards';
-import { Workout } from '@/types';
+import { Exercise, Workout } from '@/types';
 import Link from 'next/link';
 import { Trash2 } from 'lucide-react';
-import { useWorkoutDelete } from '@/hooks/workout/useWorkoutMutations';
+import { useWorkoutDelete, useExerciseRemove } from '@/hooks/workout/useWorkoutMutations';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -18,6 +18,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { truncateText } from '@/utils/trucateText';
+import { X } from 'lucide-react';
 
 type MyWorkoutProps = {
     workout: Workout
@@ -25,12 +26,25 @@ type MyWorkoutProps = {
 }
 
 const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
+    // mutation hooks
     const workoutDeleteMutation = useWorkoutDelete();
+    const ExerciseRemoveMutation = useExerciseRemove();
 
     const handleDeleteWorkout = () => {
         workoutDeleteMutation.mutate(workout._id);
 
         setWorkout(null)
+    }
+
+    const handleExerciseDelete = (exerciseId: string) => {
+        ExerciseRemoveMutation.mutate({ workoutId: workout._id.toString(), ExerciseId: exerciseId },
+            {
+                onSuccess: () => {
+                    // Update the workout state to remove the exercise
+                    const updatedExercises: Exercise[] = workout.exercises.filter(exercise => exercise.id !== exerciseId);
+                    setWorkout({ ...workout as any, exercises: updatedExercises });
+                }
+            });
     }
 
     // alert dialog for delete workout confirmation
@@ -57,6 +71,41 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
         </AlertDialog>
     )
 
+    // alert dialog for delete exercise from selected workout confirmation
+    const DeleteExerciseDialog = ({ triggerNode, exerciseId }: { triggerNode: React.ReactNode, exerciseId: string }) => (
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                {triggerNode}
+            </AlertDialogTrigger>
+            <AlertDialogContent className='border-border'>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will remove the Exercise from your Workout.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <div className='flex w-full justify-between'>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleExerciseDelete(exerciseId)}>Continue</AlertDialogAction>
+                    </div>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    )
+
+    // handle generating closeIcon for exercise cards
+    const generateCloseIcon: (exerciseId: string) => React.ReactNode = (exerciseId: string) => (
+        <DeleteExerciseDialog
+            exerciseId={exerciseId}
+            triggerNode={
+                <div className='flex mt-2 mr-2 justify-end'>
+                    <X className='justify-end text-primary hover:cursor-pointer hover:opacity-70' />
+                </div>
+            }
+        />
+    );
+
     // if workout has exercises, display them or else related message
     return (
         <div className='bg-background gap-10'>
@@ -66,7 +115,10 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
             </div>
             {workout?.exercises.length ? (
                 <div className='mt-10'>
-                    <ExerciseCards exercises={workout.exercises} />
+                    <ExerciseCards
+                        exercises={workout.exercises}
+                        closeIcon={generateCloseIcon}
+                    />
                 </div>
             ) : (
                 <p className='w-full mt-10 text-center'>

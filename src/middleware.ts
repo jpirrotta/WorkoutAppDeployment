@@ -8,7 +8,7 @@ import logger from '@/lib/logger';
 // Log the log level
 logger.info(`initializing clerkMiddleware`);
 
-const isProtectedRoute = createRouteMatcher(['/about-us']);
+const isProtectedRoute = createRouteMatcher(['/about-us', '/workouts']);
 
 export default clerkMiddleware((auth, req) => {
   if (!auth().userId && isProtectedRoute(req)) {

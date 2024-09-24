@@ -176,7 +176,7 @@ export async function addCommentPublicWorkout(
 } 
 
 //TO DO: implement removeCommentPublicWorkout
-//export async function removeCommentPublicWorkout(){}
+export async function removeCommentPublicWorkout(){}
 
 
 export async function addSavePublicWorkout(

@@ -24,6 +24,6 @@ export type Workout = {
 };
 
 export type FeedWorkout = {
-    ownerId: string;
-    ownerName: string;
+  ownerId: string;
+  ownerName: string;
 } & Workout;

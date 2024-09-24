@@ -27,6 +27,7 @@ export default function SocialFeed() {
     <div className="flex flex-col space-y-8 p-20 items-center justify-center"> 
       {Array.isArray(workouts) && workouts.map((workout) => (
         <SocialFeedCard
+          key={workout._id.toString()}
           userId={userId || ''}
           initialWorkout={workout}
         />

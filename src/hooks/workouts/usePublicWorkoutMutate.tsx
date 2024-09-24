@@ -3,7 +3,8 @@ import {
   UseMutationResult,
   useQueryClient,
 } from '@tanstack/react-query';
-import { addLikePublicWorkout, removeLikePublicWorkout, addCommentPublicWorkout, removeCommentPublicWorkout, addSavePublicWorkout, removeSavePublicWorkout } from '@/actions/publicWorkout';
+//TO DO: import removeCommentPublicWorkout
+import { addLikePublicWorkout, removeLikePublicWorkout, addCommentPublicWorkout, addSavePublicWorkout, removeSavePublicWorkout } from '@/actions/publicWorkout';
 import { Workout } from '@/types';
 import { toast } from 'sonner';
   
@@ -29,11 +30,11 @@ const usePublicWorkoutMutate = (
           }
           console.log("Comment: ", retVal.commentText)
           return addCommentPublicWorkout(retVal.userId, retVal.workout._id.toString(), retVal.commentText);
-        case 'removeComment':
+        /*case 'removeComment':
           if (!retVal.commentId) {
             throw new Error('Comment ID is required');
           }
-          return removeCommentPublicWorkout(retVal.userId, retVal.workout._id.toString(), retVal.commentId);
+          return removeCommentPublicWorkout(retVal.userId, retVal.workout._id.toString(), retVal.commentId);*/
         case 'save':
           return addSavePublicWorkout(retVal.userId, retVal.workout._id.toString());
         case 'unsave':

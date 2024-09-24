@@ -2,6 +2,7 @@
 
 import { dbConnect } from '@/lib/dbConnect';
 import UserModal, {UserDocument} from '@/models/userSchema';
+import {User} from '@/types/user';
 import logger from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
 import { FeedWorkout } from '@/types';
@@ -27,7 +28,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     // 3. $sort sorts the documents based on the workouts' _id in descending order (-1), which means the most recent workouts come first
     // 4. $skip skips the first (page - 1) * itemsPerPage documents where page is the current page and itemsPerPage is the number of items per page
     // 5. $limit limits the result to itemsPerPage documents
-    const result: UserDocument[] = await UserModal.aggregate([
+    const result = await UserModal.aggregate([
       { $unwind: '$workouts' },
       { $match: { 'workouts.public': true } },
       { $sort: { 'workouts._id': -1 } },
@@ -35,20 +36,17 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       { $limit: itemsPerPage },
     ]);
 
+    logger.info(`Result: ${JSON.stringify(result)}`);
+
     if (!result) {
       logger.info('No public workouts found');
       return new NextResponse('No public workouts found', { status: 404 });
     }
 
-    const testData: any[] = result.flatMap((user) => {
-      console.log("Workout name: ", user.workouts.name);
-      console.log("----------------------------")
-
-      return []; // Ensure you return an array
-    });
-    console.log("Test data: ", testData);
-
+    
     const retData: FeedWorkout[] = result.flatMap((user) => {
+      console.log("User: ", user);
+      
       let feedWorkout: FeedWorkout = {
         ownerName: user.name,
         ownerId: user.userId,
@@ -60,9 +58,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         comments: user.workouts.comments,
         saves: user.workouts.saves
       };
-      console.log("Feedworkout: ", feedWorkout);
+      //console.log("Feedworkout: ", feedWorkout);
       return feedWorkout;
-    });
+    }); 
 
     console.log("Return data: ", retData);
 

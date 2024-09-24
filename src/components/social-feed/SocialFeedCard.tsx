@@ -41,7 +41,7 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
   const mutationLike = usePublicWorkoutMutate('like');
   const mutationUnlike = usePublicWorkoutMutate('unlike');
   const mutationComment = usePublicWorkoutMutate('addComment');
-  const mutationUncomment = usePublicWorkoutMutate('removeComment');
+  //const mutationUncomment = usePublicWorkoutMutate('removeComment');
   const mutationSave = usePublicWorkoutMutate('save');
   const mutationUnsave = usePublicWorkoutMutate('unsave');
 
@@ -117,7 +117,7 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
     }*/
   };
 
-  const handleDeleteComment = async (commentId: mongoose.Types.ObjectId) => {
+  /*const handleDeleteComment = async (commentId: mongoose.Types.ObjectId) => {
     console.log('Delete Comment');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
@@ -126,14 +126,14 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
   
     let isSuccess: any = await mutationUncomment.mutateAsync({ userId, workout, commentText });
     console.log("is success: ", isSuccess);
-    /*if (isSuccess) {
+    if (isSuccess) {
       setWorkout((prevWorkout: FeedWorkout) => ({
         ...prevWorkout,
         comments: prevWorkout.comments.filter(comment => comment._id !== commentId)
       }));
       console.log("Successfully removed the comment from the workout");
-    }*/
-  };
+    }
+  };*/
 
   const handleSaveWorkout = async () => {
     if (!workout || !workout._id) {

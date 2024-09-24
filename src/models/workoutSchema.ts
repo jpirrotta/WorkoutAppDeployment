@@ -22,6 +22,10 @@ const exerciseSchema = new Schema<ExerciseDocument>({
     required: [true, 'Body Part is required'],
     maxlength: [100, 'Body Part cannot be greater than 100 characters'],
   },
+  gifUrl: {
+    type: String,
+    required: [false, 'Gif URL is required'],
+  },
   equipment: {
     type: String,
     required: [true, 'Equipment is required'],
@@ -58,7 +62,6 @@ const workoutSchema = new Schema<WorkoutDocument>({
     type: Boolean,
     default: false,
   },
-  // TO DO: add publishDate field (empty by default)
   likes: [
     {
       type: String

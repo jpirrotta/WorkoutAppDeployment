@@ -34,8 +34,7 @@ export default function Header() {
       <div className="flex flex-row justify-between items-center py-2 dark:bg-background light:bg-gray-500">
 
         {/* TO DO: fix spacing between nav items and delete nav sections below */}
-        <nav className="container basis-1/3 space-x-3 items-center hidden md:block mt-2">
-        </nav>
+        <nav className="container basis-1/3 space-x-3 items-center hidden md:block mt-2"></nav>
         <div className="container basis-1/3 md:hidden"></div>
 
         {/* Switching between Light/Dark Mode */}

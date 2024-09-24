@@ -10,18 +10,8 @@ import {
 import { useState } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-
-// TODO see the Exercise type in src/types/workout.ts
-// combine them somehow
-interface Exercise {
-  id: string;
-  name: string;
-  gifUrl: string;
-  target: string;
-  equipment: string;
-  bodyPart: string;
-  secondaryMuscles: string[];
-}
+import AddExerciseToWorkout from './workout/AddExerciseToWorkout';
+import { Exercise } from '@/types';
 
 interface ExerciseCardProps {
   readonly exercise: Exercise;
@@ -73,10 +63,18 @@ export default function ExerciseCard({ exercise }: ExerciseCardProps) {
           <br />
         </CardDescription>
         <br />
-        <Button className="px-0" variant="link">
-          Add To Workout
-        </Button>
+
+        {/* modal trigger btn for adding exercise to desired workout */}
+        <AddExerciseToWorkout
+          triggerNode={
+            <Button className="px-0" variant="link">
+              Add To Workout
+            </Button>
+          }
+          exerciseToAdd={exercise}
+        />
       </CardContent>
+
       <CardFooter className="capitalize text-secondary">
         <strong>Secondary Muscles:&nbsp;</strong>
         {exercise.secondaryMuscles.join(', ')}

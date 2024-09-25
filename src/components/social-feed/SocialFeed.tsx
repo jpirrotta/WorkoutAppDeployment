@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 
 // Hooks
-import useAllPublicWorkouts from '@/hooks/workouts/useAllPublicWorkouts';
+import useAllPublicWorkouts from '@/hooks/public-workout/useAllPublicWorkouts';
 
-// UI Components
+// Components
 import { Button } from '@/components/ui/button';
 import SocialFeedCard from '@/components/social-feed/SocialFeedCard';
 
@@ -16,6 +16,7 @@ export default function SocialFeed() {
 
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [page, perPage] = useState<number>(1);
+  
   const {
     data: workouts,
     isLoading: loadingWorkouts,
@@ -41,9 +42,11 @@ export default function SocialFeed() {
             page={page}
           />
         ))}
-      <Button onClick={() => perPage(page + 1)} disabled={loadingWorkouts}>
-        Load More
-      </Button>
     </div>
   );
 }
+
+//Old code, may need to be added back in
+/*<Button onClick={() => perPage(page + 1)} disabled={loadingWorkouts}>
+  Load More
+</Button>*/

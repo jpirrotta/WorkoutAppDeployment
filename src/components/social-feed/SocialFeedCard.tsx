@@ -1,10 +1,11 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import UserModel from '@/models/userSchema';
-import { UserDocument } from '@/models/userSchema';
+import React, { useState } from 'react';
+
+// Types
+import { FeedWorkout } from '@/types';
 
 // Hooks
-import usePublicWorkoutMutate from '@/hooks/workouts/usePublicWorkoutMutate';
+import usePublicWorkoutMutate from '@/hooks/public-workout/usePublicWorkoutMutate';
 
 // Icons
 import { StyledIcon } from '../StyledIcon';
@@ -17,8 +18,7 @@ import {
   Trash2 as Trash,
 } from 'lucide-react';
 
-// UI Components
-import { FeedWorkout } from '@/types';
+// Components
 import {
   Card,
   CardContent,
@@ -28,6 +28,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import logger from '@/lib/logger';
 
 interface SocialWorkoutCardProps {
   userId: string;
@@ -42,16 +43,18 @@ export default function SocialWorkoutCard({
   perPage,
   page,
 }: SocialWorkoutCardProps) {
-  const mutationLike = usePublicWorkoutMutate('like');
-  const mutationUnlike = usePublicWorkoutMutate('unlike');
-  const mutationComment = usePublicWorkoutMutate('addComment');
-  //const mutationUncomment = usePublicWorkoutMutate('removeComment');
-  const mutationSave = usePublicWorkoutMutate('save');
-  const mutationUnsave = usePublicWorkoutMutate('unsave');
-
   const [commentText, setCommentText] = useState('');
+  const mutateLike = usePublicWorkoutMutate('like');
+  const mutateUnlike = usePublicWorkoutMutate('unlike');
+  const mutateComment = usePublicWorkoutMutate('comment');
+  //const mutateUncomment = usePublicWorkoutMutate('uncomment');
+  const mutateSave = usePublicWorkoutMutate('save');
+  const mutateUnsave = usePublicWorkoutMutate('unsave');
 
+
+  // Mutation handling ---------------------------------------
   const handleLikeWorkout = async () => {
+    logger.info('Attempting to like workout...');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
       return;
@@ -60,17 +63,13 @@ export default function SocialWorkoutCard({
       console.error('User already liked the workout');
       return;
     }
-
-    //TO DO: state type as explicitly bool?
-    mutationLike.mutate({
-      userId,
-      workout,
-      perPage,
-      page,
-    });
+    
+    mutateLike.mutate({ userId, workout, perPage, page });
+    logger.info('Like workout complete!');
   };
 
   const handleUnlikeWorkout = async () => {
+    logger.info('Attempting to unlike workout...');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
       return;
@@ -80,55 +79,35 @@ export default function SocialWorkoutCard({
       return;
     }
 
-    //TO DO: state type as explicitly bool?
-    mutationUnlike.mutate({
-      userId,
-      workout,
-      perPage,
-      page,
-    });
-  };
-
-  const handleSubmitComment = (event: React.FormEvent) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    handleCommentWorkout();
+    mutateUnlike.mutate({ userId, workout, perPage, page });
+    logger.info('Unlike workout complete!');
   };
 
   const handleCommentWorkout = async () => {
-    console.log('Comment Workout');
+    logger.info('Attempting to comment on workout...');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
       return;
     }
 
-    mutationComment.mutate({
-      userId,
-      workout,
-      commentText,
-      perPage,
-      page,
-    });
+    mutateComment.mutate({ userId, workout, commentText, perPage, page });
+    logger.info('Commenting on workout complete!');
   };
 
-  /*const handleDeleteComment = async (commentId: mongoose.Types.ObjectId) => {
-    console.log('Delete Comment');
+  //TO DO: Implement delete comment functionality
+  /*const handleDeleteComment = async (commentId: string) => {
+    logger.info('Attempting to remove comment from workout...');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
       return;
     }
-  
-    let isSuccess: any = await mutationUncomment.mutateAsync({ userId, workout, commentText });
-    console.log("is success: ", isSuccess);
-    if (isSuccess) {
-      setWorkout((prevWorkout: FeedWorkout) => ({
-        ...prevWorkout,
-        comments: prevWorkout.comments.filter(comment => comment._id !== commentId)
-      }));
-      console.log("Successfully removed the comment from the workout");
-    }
+
+    mutateUncomment.mutate({ userId, workout, commentId, perPage, page });
+    logger.info('Remove comment from workout complete!');
   };*/
 
   const handleSaveWorkout = async () => {
+    logger.info('Attempting to save workout...');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
       return;
@@ -138,16 +117,12 @@ export default function SocialWorkoutCard({
       return;
     }
 
-    //TO DO: state type as explicitly bool?
-    mutationSave.mutate({
-      userId,
-      workout,
-      page,
-      perPage,
-    });
+    mutateSave.mutate({ userId, workout, page, perPage });
+    logger.info('Save workout complete!');
   };
 
   const handleUnsaveWorkout = async () => {
+    logger.info('Attempting to unsave workout...');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
       return;
@@ -157,14 +132,11 @@ export default function SocialWorkoutCard({
       return;
     }
 
-    //TO DO: state type as explicitly bool?
-    mutationUnsave.mutate({
-      userId,
-      workout,
-      page,
-      perPage,
-    });
+    mutateUnsave.mutate({ userId, workout, page, perPage });
+    logger.info('Unsave workout complete!');
   };
+  // End of mutation handling ------------------------------
+
 
   return (
     <Card className="w-1/3 bg-slate-700 border-primary md:transform  md:transition-transform md:duration-200">
@@ -256,18 +228,25 @@ export default function SocialWorkoutCard({
             ))}
           </div>
 
-          <form onSubmit={handleSubmitComment} className="flex flex-row gap-2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // Prevent the default form submission behavior
+              handleCommentWorkout();
+              setCommentText('');  //Clear the input field after submission
+            }}
+            className="flex flex-row gap-2"
+          >
             <Input
               type="text"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               placeholder="Add a comment"
-              className="input-class" // Replace with actual class names
+              className="input-class"
+              required 
             />
             <button type="submit" className="button-class">
-              Comment
-            </button>{' '}
-            {/* Replace with actual class names */}
+              +
+            </button>
           </form>
         </div>
       </CardFooter>

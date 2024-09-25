@@ -15,7 +15,7 @@ import { BaseWorkout } from '@/types';
 import { toast } from 'sonner';
 
 const usePublicWorkoutMutate = (
-  option: 'like' | 'unlike' | 'addComment' | 'removeComment' | 'save' | 'unsave'
+  option: 'like' | 'unlike' | 'comment' | 'uncomment' | 'save' | 'unsave'
 ): UseMutationResult<
   boolean,
   unknown,
@@ -49,7 +49,7 @@ const usePublicWorkoutMutate = (
           retVal.userId,
           retVal.workout._id.toString()
         );
-      } else if (option === 'addComment') {
+      } else if (option === 'comment') {
         if (!retVal.commentText) {
           throw new Error('Comment text is required');
         }
@@ -59,7 +59,7 @@ const usePublicWorkoutMutate = (
           retVal.workout._id.toString(),
           retVal.commentText
         );
-      } /*else if (option === 'removeComment') {
+      } /*else if (option === 'uncomment') {
         if (!retVal.commentId) {
           throw new Error('Comment ID is required');
         }

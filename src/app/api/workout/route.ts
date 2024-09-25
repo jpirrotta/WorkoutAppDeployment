@@ -56,10 +56,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const workouts: ((Workout[] & Document) | undefined) = curUser.workouts;
 
     //if no workouts found then return a message notifying
-    if (workouts?.length === 0) {
+    if (!workouts) {
       logger.info('No workouts found');
       return NextResponse.json('No workouts found!', {
-        status: 200,
+        status: 204,
       });
     }
 

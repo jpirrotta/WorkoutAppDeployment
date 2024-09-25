@@ -36,7 +36,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
         if (!user.workouts) {
             logger.error('User does not have any workouts!');
-            return NextResponse.json('No workouts found!', { status: 200 });
+            return NextResponse.json({ status: 204 });
         }
 
         // Find the workout by its id

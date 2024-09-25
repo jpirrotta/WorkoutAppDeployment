@@ -49,7 +49,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
         if (workoutData) {
             logger.info(`getting workouts....`)
 
-            const structuredOptions = workoutData?.map(workout => ({
+            const structuredOptions = workoutData.map(workout => ({
                 label: truncateText(workout.name),
                 value: workout._id.toString()
             }));

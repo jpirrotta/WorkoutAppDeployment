@@ -8,20 +8,17 @@ import usePublicWorkoutMutate from '@/hooks/workouts/usePublicWorkoutMutate';
 
 // Icons
 import { StyledIcon } from '../StyledIcon';
-import { 
+import {
   LoaderCircle,
-  Heart, 
+  Heart,
   HeartOff,
   Check,
   Plus,
-  Trash2 as Trash
+  Trash2 as Trash,
 } from 'lucide-react';
 
-
 // UI Components
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { FeedWorkout } from '@/types'
+import { FeedWorkout } from '@/types';
 import {
   Card,
   CardContent,
@@ -30,15 +27,21 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
-
+import { Input } from '@/components/ui/input';
 
 interface SocialWorkoutCardProps {
   userId: string;
-  initialWorkout: FeedWorkout;
+  workout: FeedWorkout;
+  perPage: number;
+  page: number;
 }
 
-export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkoutCardProps) {
+export default function SocialWorkoutCard({
+  userId,
+  workout,
+  perPage,
+  page,
+}: SocialWorkoutCardProps) {
   const mutationLike = usePublicWorkoutMutate('like');
   const mutationUnlike = usePublicWorkoutMutate('unlike');
   const mutationComment = usePublicWorkoutMutate('addComment');
@@ -46,9 +49,7 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
   const mutationSave = usePublicWorkoutMutate('save');
   const mutationUnsave = usePublicWorkoutMutate('unsave');
 
-
-  const [workout, setWorkout] = useState<FeedWorkout>(initialWorkout);
-  const [commentText, setCommentText] = useState("");
+  const [commentText, setCommentText] = useState('');
 
   const handleLikeWorkout = async () => {
     if (!workout || !workout._id) {
@@ -61,16 +62,14 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
     }
 
     //TO DO: state type as explicitly bool?
-    const isSuccess = await mutationLike.mutateAsync({userId, workout});
-    if (isSuccess) {
-      setWorkout((prevWorkout: FeedWorkout) => ({
-        ...prevWorkout,
-        likes: [...prevWorkout.likes, userId],
-      }));
-      console.log("Successfully liked workout");
-    }
+    mutationLike.mutate({
+      userId,
+      workout,
+      perPage,
+      page,
+    });
   };
-  
+
   const handleUnlikeWorkout = async () => {
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
@@ -82,16 +81,14 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
     }
 
     //TO DO: state type as explicitly bool?
-    let isSuccess: any = await mutationUnlike.mutateAsync({userId, workout});
-    if (isSuccess) {
-      setWorkout((prevWorkout: FeedWorkout) => ({
-        ...prevWorkout,
-        likes: prevWorkout.likes.filter((id) => id !== userId),
-      }));
-      console.log("Successfully unliked workout");
-    }
+    mutationUnlike.mutate({
+      userId,
+      workout,
+      perPage,
+      page,
+    });
   };
-  
+
   const handleSubmitComment = (event: React.FormEvent) => {
     event.preventDefault(); // Prevent the default form submission behavior
     handleCommentWorkout();
@@ -104,7 +101,13 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
       return;
     }
 
-    let isSuccess: any = await mutationComment.mutateAsync({userId, workout, commentText});
+    mutationComment.mutate({
+      userId,
+      workout,
+      commentText,
+      perPage,
+      page,
+    });
   };
 
   /*const handleDeleteComment = async (commentId: mongoose.Types.ObjectId) => {
@@ -136,16 +139,14 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
     }
 
     //TO DO: state type as explicitly bool?
-    let isSuccess: any = await mutationSave.mutateAsync({userId, workout});
-    if (isSuccess) {
-      setWorkout((prevWorkout: FeedWorkout) => ({
-        ...prevWorkout,
-        saves: [...prevWorkout.saves, userId],
-      }));
-      console.log("Successfully saved workout");
-    }
+    mutationSave.mutate({
+      userId,
+      workout,
+      page,
+      perPage,
+    });
   };
-  
+
   const handleUnsaveWorkout = async () => {
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
@@ -157,117 +158,119 @@ export default function SocialWorkoutCard({userId, initialWorkout}: SocialWorkou
     }
 
     //TO DO: state type as explicitly bool?
-    let isSuccess: any = await mutationUnsave.mutateAsync({userId, workout});
-    if (isSuccess) {
-      setWorkout((prevWorkout: FeedWorkout) => ({
-        ...prevWorkout,
-        saves: prevWorkout.saves.filter((id) => id !== userId),
-      }));
-      console.log("Successfully unsaved workout");
-    }
+    mutationUnsave.mutate({
+      userId,
+      workout,
+      page,
+      perPage,
+    });
   };
 
-
-
   return (
-      <Card className="w-1/3 bg-slate-700 border-primary md:transform  md:transition-transform md:duration-200">
-        <CardHeader>
-          <CardTitle className="text-secondary uppercase text-center">
-            <p>{workout.name}</p>
+    <Card className="w-1/3 bg-slate-700 border-primary md:transform  md:transition-transform md:duration-200">
+      <CardHeader>
+        <CardTitle className="text-secondary uppercase text-center">
+          <p>{workout.name}</p>
+        </CardTitle>
+      </CardHeader>
 
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent>
-          <CardDescription className="text-secondary">
-            <div className = "flex flex-row gap-2">
-              <h1 className = "font-bold">Posted by: </h1>
-              <h1> {workout.ownerName}</h1>
-            </div>
-            <div className = "flex flex-row w-full gap-2">
-              <h1 className = "font-bold">Exercises:</h1>
-              {workout.exercises && workout.exercises.map((exercise, index) => (
+      <CardContent>
+        <CardDescription className="text-secondary">
+          <div className="flex flex-row gap-2">
+            <h1 className="font-bold">Posted by: </h1>
+            <h1> {workout.ownerName}</h1>
+          </div>
+          <div className="flex flex-row w-full gap-2">
+            <h1 className="font-bold">Exercises:</h1>
+            {workout.exercises &&
+              workout.exercises.map((exercise, index) => (
                 <div key={index}>
-                  <p>{exercise.name}{workout.exercises.length === index + 1 ? null : ','}</p>
+                  <p>
+                    {exercise.name}
+                    {workout.exercises.length === index + 1 ? null : ','}
+                  </p>
                 </div>
               ))}
-            </div>
-           </CardDescription>
-        </CardContent>
+          </div>
+        </CardDescription>
+      </CardContent>
 
-        <CardFooter className="capitalize text-secondary">
-          <div className="flex flex-col w-full gap-4">
-            <div className="flex flex-row w-full justify-between items-center">
-              {/*Like workout and like counter*/}
-              <div className="flex flex-row gap-4">
-                <div>
-                  {workout.likes.includes(userId) ? (
-                    <StyledIcon
-                      Icon={HeartOff}
-                      w={'1.7rem'}
-                      className="text-primary hover:cursor-pointer"
-                      onClick={handleUnlikeWorkout}
-                    />
-                  ) : (
-                    <StyledIcon
-                      Icon={Heart}
-                      w={'1.7rem'}
-                      className="text-primary hover:cursor-pointer"
-                      onClick={handleLikeWorkout}
-                    />
-                  )}
-                </div>
-                {workout.likes.length}
+      <CardFooter className="capitalize text-secondary">
+        <div className="flex flex-col w-full gap-4">
+          <div className="flex flex-row w-full justify-between items-center">
+            {/*Like workout and like counter*/}
+            <div className="flex flex-row gap-4">
+              <div>
+                {workout.likes.includes(userId) ? (
+                  <StyledIcon
+                    Icon={HeartOff}
+                    w={'1.7rem'}
+                    className="text-primary hover:cursor-pointer"
+                    onClick={handleUnlikeWorkout}
+                  />
+                ) : (
+                  <StyledIcon
+                    Icon={Heart}
+                    w={'1.7rem'}
+                    className="text-primary hover:cursor-pointer"
+                    onClick={handleLikeWorkout}
+                  />
+                )}
               </div>
+              {workout.likes.length}
+            </div>
 
-              {/*Save workout*/}
-              <div className="flex flex-row gap-4">
-                <div>
-                  {workout.saves.includes(userId) ? (
-                    <StyledIcon
-                      Icon={Check}
-                      w={'1.7rem'}
-                      className="text-primary hover:cursor-pointer"
-                      onClick={handleUnsaveWorkout}
-                    />
-                  ) : (
-                    <StyledIcon
-                      Icon={Plus}
-                      w={'1.7rem'}
-                      className="text-primary hover:cursor-pointer"
-                      onClick={handleSaveWorkout}
-                    />
-                  )}
-                </div>
-                {workout.saves.length}
+            {/*Save workout*/}
+            <div className="flex flex-row gap-4">
+              <div>
+                {workout.saves.includes(userId) ? (
+                  <StyledIcon
+                    Icon={Check}
+                    w={'1.7rem'}
+                    className="text-primary hover:cursor-pointer"
+                    onClick={handleUnsaveWorkout}
+                  />
+                ) : (
+                  <StyledIcon
+                    Icon={Plus}
+                    w={'1.7rem'}
+                    className="text-primary hover:cursor-pointer"
+                    onClick={handleSaveWorkout}
+                  />
+                )}
               </div>
-
+              {workout.saves.length}
             </div>
+          </div>
 
-            {/*Comments*/}
-            <div className="flex flex-col">
-              <h1 className = "font-bold">Comments</h1>
-              {workout.comments?.map((comment, index) => (
-                <div key={index} className="flex flex-row align-center justify-between">
-                  <p>{comment.text}</p>
-                </div>
-              ))}
-            </div>
+          {/*Comments*/}
+          <div className="flex flex-col">
+            <h1 className="font-bold">Comments</h1>
+            {workout.comments?.map((comment, index) => (
+              <div
+                key={index}
+                className="flex flex-row align-center justify-between"
+              >
+                <p>{comment.text}</p>
+              </div>
+            ))}
+          </div>
 
-            <form onSubmit={handleSubmitComment} className="flex flex-row gap-2">
-            <input
+          <form onSubmit={handleSubmitComment} className="flex flex-row gap-2">
+            <Input
               type="text"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               placeholder="Add a comment"
               className="input-class" // Replace with actual class names
             />
-            <button type="submit" className="button-class">Comment</button> {/* Replace with actual class names */}
+            <button type="submit" className="button-class">
+              Comment
+            </button>{' '}
+            {/* Replace with actual class names */}
           </form>
-
-          </div>
-        </CardFooter>
-      </Card>
+        </div>
+      </CardFooter>
+    </Card>
   );
-  
 }

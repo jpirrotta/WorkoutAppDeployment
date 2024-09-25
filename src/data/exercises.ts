@@ -3,7 +3,7 @@ export const exercises: Exercise[] = [
   {
     bodyPart: 'waist',
     equipment: 'body weight',
-    gifUrl: 'https://v2.exercisedb.io/image/aMsHrOTPjY2AsE',
+    gifUrl: 'https://v2.exercisedb.io/image/1he8l9sBbJCU1H',
     id: '0001',
     name: '3/4 sit-up',
     target: 'abs',
@@ -19,7 +19,7 @@ export const exercises: Exercise[] = [
   {
     bodyPart: 'waist',
     equipment: 'body weight',
-    gifUrl: 'https://v2.exercisedb.io/image/5ENwAS7KApfvBY',
+    gifUrl: 'https://v2.exercisedb.io/image/Z6dOatnGildtX9',
     id: '0002',
     name: '45° side bend',
     target: 'abs',
@@ -35,7 +35,7 @@ export const exercises: Exercise[] = [
   {
     bodyPart: 'waist',
     equipment: 'body weight',
-    gifUrl: 'https://v2.exercisedb.io/image/1Y5eMFnbm-Dw3K',
+    gifUrl: 'https://v2.exercisedb.io/image/bYMsvOdDjub6Ck',
     id: '0003',
     name: 'air bike',
     target: 'abs',
@@ -51,7 +51,7 @@ export const exercises: Exercise[] = [
   {
     bodyPart: 'upper legs',
     equipment: 'body weight',
-    gifUrl: 'https://v2.exercisedb.io/image/2JSjujjMv5rKln',
+    gifUrl: 'https://v2.exercisedb.io/image/Qr99dYR2t8w6-3',
     id: '1512',
     name: 'all fours squad stretch',
     target: 'quads',
@@ -67,7 +67,7 @@ export const exercises: Exercise[] = [
   {
     bodyPart: 'waist',
     equipment: 'body weight',
-    gifUrl: 'https://v2.exercisedb.io/image/5DtycgEUV9MPau',
+    gifUrl: 'https://v2.exercisedb.io/image/HkOfZ5BncmVjrj',
     id: '0006',
     name: 'alternate heel touchers',
     target: 'abs',
@@ -78,22 +78,6 @@ export const exercises: Exercise[] = [
       'Engaging your abs, lift your shoulders off the ground and reach your right hand towards your right heel.',
       'Return to the starting position and repeat on the left side, reaching your left hand towards your left heel.',
       'Continue alternating sides for the desired number of repetitions.',
-    ],
-  },
-  {
-    bodyPart: 'back',
-    equipment: 'cable',
-    gifUrl: 'https://v2.exercisedb.io/image/fOW37IemdA0TEC',
-    id: '0007',
-    name: 'alternate lateral pulldown',
-    target: 'lats',
-    secondaryMuscles: ['biceps', 'rhomboids'],
-    instructions: [
-      'Sit on the cable machine with your back straight and feet flat on the ground.',
-      'Grasp the handles with an overhand grip, slightly wider than shoulder-width apart.',
-      'Lean back slightly and pull the handles towards your chest, squeezing your shoulder blades together.',
-      'Pause for a moment at the peak of the movement, then slowly release the handles back to the starting position.',
-      'Repeat for the desired number of repetitions.',
     ],
   },
 ];

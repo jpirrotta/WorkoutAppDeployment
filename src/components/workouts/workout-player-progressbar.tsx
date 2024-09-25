@@ -5,13 +5,12 @@ import * as ProgressPrimitive from '@radix-ui/react-progress';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useAtom } from 'jotai';
-import { selectedStepAtom } from '@/store';
+import { useAtom, useSetAtom } from 'jotai';
+import { carouselApiAtom, selectedStepAtom } from '@/store';
 import { Check } from 'lucide-react';
 
 interface WorkoutProgressProps
   extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
-  value: number; //? not sure if needed
   steps: number;
   completedSteps: number[];
 }
@@ -21,6 +20,17 @@ const WorkoutProgress = React.forwardRef<
   WorkoutProgressProps
 >(({ className, value, completedSteps, steps, ...props }, ref) => {
   const [selectedStep, setSelectedStep] = useAtom(selectedStepAtom);
+  const setApi = useSetAtom(carouselApiAtom);
+
+  const handleClick = (index: number) => {
+    setSelectedStep(index);
+    setApi((prev) => {
+      prev?.scrollTo(index);
+      return prev;
+    });
+  };
+
+
   return (
     <ProgressPrimitive.Root
       ref={ref}
@@ -35,7 +45,7 @@ const WorkoutProgress = React.forwardRef<
           <Button
             variant={selectedStep === index ? 'default' : 'secondary'}
             key={index}
-            onClick={() => setSelectedStep(index)}
+            onClick={() => handleClick(index)}
             className="rounded-full"
             size="icon"
           >

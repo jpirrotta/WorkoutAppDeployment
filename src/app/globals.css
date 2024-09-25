@@ -80,3 +80,32 @@ body {
     --indigo-touch: 244 47% 20%;
   }
 }
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 0.3s linear;
+}
+
+@keyframes grow-shrink {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-grow-shrink {
+  animation: grow-shrink 0.5s ease-in-out;
+}

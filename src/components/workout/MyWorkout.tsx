@@ -5,7 +5,7 @@ import ExerciseCards from '../ExerciseCards';
 import { Exercise, Workout } from '@/types';
 import Link from 'next/link';
 import { Trash2 } from 'lucide-react';
-import { useWorkoutDelete, useExerciseRemove } from '@/hooks/workout/useWorkoutMutations';
+import { useWorkoutDelete, useExerciseRemove, useWorkoutUpdate } from '@/hooks/workout/useWorkoutMutations';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -19,21 +19,21 @@ import {
 } from "@/components/ui/alert-dialog"
 import { truncateText } from '@/utils/trucateText';
 import { X } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 type MyWorkoutProps = {
     workout: Workout
-    setWorkout: (workout: Workout | null) => void
 }
 
-const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
+const MyWorkout: FC<MyWorkoutProps> = ({ workout }) => {
     // mutation hooks
     const workoutDeleteMutation = useWorkoutDelete();
     const ExerciseRemoveMutation = useExerciseRemove();
+    const workoutUpdateMutation = useWorkoutUpdate();
 
     const handleDeleteWorkout = () => {
         workoutDeleteMutation.mutate(workout._id);
-
-        setWorkout(null)
     }
 
     const handleExerciseDelete = (exerciseId: string) => {
@@ -42,10 +42,19 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
                 onSuccess: () => {
                     // Update the workout state to remove the exercise
                     const updatedExercises: Exercise[] = workout.exercises.filter(exercise => exercise.id !== exerciseId);
-                    setWorkout({ ...workout as any, exercises: updatedExercises });
                 }
             });
     }
+
+    const handleUpdateWorkoutVisibility = () => {
+        const updatedWorkout = {
+            ...workout,
+            public: !workout.public
+        }
+
+        workoutUpdateMutation.mutate({ workoutId: workout._id, workoutData: updatedWorkout });
+    }
+
 
     // alert dialog for delete workout confirmation
     const DeleteWorkoutDialog = ({ triggerNode }: { triggerNode: React.ReactNode }) => (
@@ -111,8 +120,13 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
         <div className='bg-background gap-10'>
             <div className='flex justify-between sm:px-20 px-5 pt-10'>
                 <h1 className='text-2xl font-bold text-primary break-words w-2/5' style={{ hyphens: 'auto' }}>{workout?.name}</h1>
+                <div className="flex items-center justify-between">
+                        <Label htmlFor="workout-name" className="mr-2">Public</Label>
+                        <Switch id="airplane-mode" checked={workout?.public} onCheckedChange={handleUpdateWorkoutVisibility}/>
+                </div>                  
                 <DeleteWorkoutDialog triggerNode={<Trash2 className='text-text hover:text-primary hover:cursor-pointer' />} />
             </div>
+            
             {workout?.exercises.length ? (
                 <div className='mt-10'>
                     <ExerciseCards

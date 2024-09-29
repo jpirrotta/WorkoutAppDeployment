@@ -80,7 +80,7 @@ const useWorkoutUpdate = (
   });
 };
 
-// update a workout
+// remove an exercise from a workout
 const useExerciseRemove = (
 ): UseMutationResult<
   { title: string; message: string },

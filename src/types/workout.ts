@@ -17,6 +17,7 @@ type BaseWorkout = {
   name: string;
   exercises: Exercise[];
   public: boolean;
+  postDate: Date;
   likes: string[];
   comments: {
     text: string;

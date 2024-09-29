@@ -54,6 +54,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         name: user.workouts.name,
         exercises: user.workouts.exercises,
         public: user.workouts.public,
+        postDate: user.workouts.postDate,
         likes: user.workouts.likes,
         comments: user.workouts.comments,
         saves: user.workouts.saves

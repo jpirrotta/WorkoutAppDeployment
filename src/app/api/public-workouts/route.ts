@@ -1,11 +1,13 @@
 // src/api/workout/isPublic/route.ts
 
 import { dbConnect } from '@/lib/dbConnect';
-import UserModal, {UserDocument} from '@/models/userSchema';
-import {User} from '@/types/user';
 import logger from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
+
+// Type and Schema
 import { FeedWorkout } from '@/types';
+import UserModal from '@/models/userSchema';
+
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   logger.info('\n\nGET All Public Workouts API called');
@@ -36,7 +38,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       { $limit: itemsPerPage },
     ]);
 
-    logger.info(`Result: ${JSON.stringify(result)}`);
+    //logger.info(`Result: ${JSON.stringify(result)}`);
 
     if (!result) {
       logger.info('No public workouts found');
@@ -45,8 +47,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     
     const retData: FeedWorkout[] = result.flatMap((user) => {
-      console.log("User: ", user);
-      
       let feedWorkout: FeedWorkout = {
         ownerName: user.name,
         ownerId: user.userId,
@@ -59,14 +59,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         comments: user.workouts.comments,
         saves: user.workouts.saves
       };
-      //console.log("Feedworkout: ", feedWorkout);
+
       return feedWorkout;
     }); 
 
-    console.log("Return data: ", retData);
-
-    logger.info(`Public workouts after filtering :`);
-    logger.info(retData);
+    // --- INFO FOR DEBUGGING ---
+    //logger.info(`Public workouts after filtering :`);
+    //logger.info(retData);
 
     return NextResponse.json(retData, { status: 200 });
   } catch (error) {

@@ -25,7 +25,7 @@ const usePublicWorkoutMutate = (
     commentText?: string;
     commentId?: string;
     page: number;
-    perPage: number;
+    itemsPerPage: number;
   },
   unknown
 > => {
@@ -37,7 +37,7 @@ const usePublicWorkoutMutate = (
       commentText?: string;
       commentId?: string;
       page: number;
-      perPage: number;
+      itemsPerPage: number;
     }) => {
       if (option === 'like') {
         return addLikePublicWorkout(
@@ -84,7 +84,7 @@ const usePublicWorkoutMutate = (
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['public-workouts', variables.page, variables.perPage],
+        queryKey: ['public-workouts', variables.page, variables.itemsPerPage],
       });
     },
     onError: (error) => {

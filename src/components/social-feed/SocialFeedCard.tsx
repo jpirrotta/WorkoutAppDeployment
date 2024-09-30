@@ -33,14 +33,14 @@ import logger from '@/lib/logger';
 interface SocialWorkoutCardProps {
   userId: string;
   workout: FeedWorkout;
-  perPage: number;
+  itemsPerPage: number;
   page: number;
 }
 
 export default function SocialWorkoutCard({
   userId,
   workout,
-  perPage,
+  itemsPerPage,
   page,
 }: SocialWorkoutCardProps) {
   const [commentText, setCommentText] = useState('');
@@ -64,7 +64,7 @@ export default function SocialWorkoutCard({
       return;
     }
     
-    mutateLike.mutate({ userId, workout, perPage, page });
+    mutateLike.mutate({ userId, workout, itemsPerPage, page });
     logger.info('Like workout complete!');
   };
 
@@ -79,7 +79,7 @@ export default function SocialWorkoutCard({
       return;
     }
 
-    mutateUnlike.mutate({ userId, workout, perPage, page });
+    mutateUnlike.mutate({ userId, workout, itemsPerPage, page });
     logger.info('Unlike workout complete!');
   };
 
@@ -90,7 +90,7 @@ export default function SocialWorkoutCard({
       return;
     }
 
-    mutateComment.mutate({ userId, workout, commentText, perPage, page });
+    mutateComment.mutate({ userId, workout, commentText, itemsPerPage, page });
     logger.info('Commenting on workout complete!');
   };
 
@@ -102,7 +102,7 @@ export default function SocialWorkoutCard({
       return;
     }
 
-    mutateUncomment.mutate({ userId, workout, commentId, perPage, page });
+    mutateUncomment.mutate({ userId, workout, commentId, itemsPerPage, page });
     logger.info('Remove comment from workout complete!');
   };*/
 
@@ -117,7 +117,7 @@ export default function SocialWorkoutCard({
       return;
     }
 
-    mutateSave.mutate({ userId, workout, page, perPage });
+    mutateSave.mutate({ userId, workout, page, itemsPerPage });
     logger.info('Save workout complete!');
   };
 
@@ -132,7 +132,7 @@ export default function SocialWorkoutCard({
       return;
     }
 
-    mutateUnsave.mutate({ userId, workout, page, perPage });
+    mutateUnsave.mutate({ userId, workout, page, itemsPerPage });
     logger.info('Unsave workout complete!');
   };
   // End of mutation handling ------------------------------
@@ -148,6 +148,21 @@ export default function SocialWorkoutCard({
 
       <CardContent>
         <CardDescription className="text-secondary">
+          {workout.postDate &&
+            <div className="flex flex-row gap-2">
+              <h1 className="font-bold">Posted on:</h1>
+              {new Date(workout.postDate).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+              })}
+              <p> </p>
+              {new Date(workout.postDate).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </div>
+          }
           <div className="flex flex-row gap-2">
             <h1 className="font-bold">Posted by: </h1>
             <h1> {workout.ownerName}</h1>
@@ -174,19 +189,14 @@ export default function SocialWorkoutCard({
             <div className="flex flex-row gap-4">
               <div>
                 {workout.likes.includes(userId) ? (
-                  <StyledIcon
-                    Icon={HeartOff}
-                    w={'1.7rem'}
-                    className="text-primary hover:cursor-pointer"
-                    onClick={handleUnlikeWorkout}
-                  />
+                  <Heart color="red" fill="red"
+                  className="text-primary hover:cursor-pointer"
+                  onClick={handleUnlikeWorkout}/>
+
                 ) : (
-                  <StyledIcon
-                    Icon={Heart}
-                    w={'1.7rem'}
-                    className="text-primary hover:cursor-pointer"
-                    onClick={handleLikeWorkout}
-                  />
+                  <Heart color="red"
+                  className="text-primary hover:cursor-pointer"
+                  onClick={handleLikeWorkout}/>
                 )}
               </div>
               {workout.likes.length}

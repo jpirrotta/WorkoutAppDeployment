@@ -62,6 +62,9 @@ const workoutSchema = new Schema<WorkoutDocument>({
     type: Boolean,
     default: false,
   },
+  postDate: {
+    type: Date,
+  },
   likes: [
     {
       type: String

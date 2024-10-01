@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import logger from '@/lib/logger';
 
 // Types
-import { FeedWorkout } from '@/types';
+import { FeedWorkout, Exercise } from '@/types';
 
 // Hooks
 import usePublicWorkoutMutate from '@/hooks/public-workout/usePublicWorkoutMutate';
@@ -20,7 +20,20 @@ import {
 } from 'lucide-react';
 
 // Components
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from '@/components/ui/card';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 
@@ -165,50 +178,36 @@ export default function SocialWorkoutCard({
   return (
     <Card className="w-1/3 border-primary md:transform  md:transition-transform md:duration-200">
 
-      <CardHeader className="flex flex-row gap-x-2">
-        <Avatar>
-          <AvatarImage src={EMPTY_AVATAR_URL} alt={workout.ownerName}/>  
-          <AvatarFallback>{workout.ownerName.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <h1>{workout.ownerName}</h1>
-        {workout.postDate &&
-          <h1>{timeAgo(workout.postDate)}</h1>
-        }
+      <CardHeader>
+        <div className="flex flex-row gap-x-2 items-center justify-between">
+          <div className="flex flex-row gap-x-2 items-center">
+            <Avatar>
+              <AvatarImage src={EMPTY_AVATAR_URL} alt={workout.ownerName}/>  
+              <AvatarFallback>{workout.ownerName.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <h1>{workout.ownerName}</h1>
+          </div>
+          {workout.postDate &&
+            <h1>{timeAgo(workout.postDate)}</h1>
+          }
+        </div>
+        <CardTitle className="mt-16">{workout.name}</CardTitle>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="mt-10">
+        <Carousel className="bg-background mx-5 sm:mx-10 md:mx-20 3xl:mx-[30rem]">
+          <CarouselContent>
+            {workout.exercises?.map((exercise: Exercise) => (
+              <CarouselItem key={exercise.id}>
+                <img src={exercise.gifUrl} alt={exercise.name} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+
         <CardDescription className="text-secondary">
-          {workout.postDate &&
-            <div className="flex flex-row gap-2">
-              <h1 className="font-bold">Posted on:</h1>
-              {new Date(workout.postDate).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-              })}
-              <p> </p>
-              {new Date(workout.postDate).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </div>
-          }
-          <div className="flex flex-row gap-2">
-            <h1 className="font-bold">Posted by: </h1>
-            <h1> {workout.ownerName}</h1>
-          </div>
-          <div className="flex flex-row w-full gap-2">
-            <h1 className="font-bold">Exercises:</h1>
-            {workout.exercises &&
-              workout.exercises.map((exercise, index) => (
-                <div key={index}>
-                  <p>
-                    {exercise.name}
-                    {workout.exercises.length === index + 1 ? null : ','}
-                  </p>
-                </div>
-              ))}
-          </div>
         </CardDescription>
       </CardContent>
 

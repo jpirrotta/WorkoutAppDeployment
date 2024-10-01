@@ -88,6 +88,7 @@ async function updateWorkout(userId: string, workoutId: string, workoutUpdateDat
         }
         if (workoutUpdateData.public !== undefined) {
             workout.public = workoutUpdateData.public;
+            workout.postDate = workoutUpdateData.public ? new Date() : new Date(0);  // set post date to current date & time if public, or set it to epoch time (representing empty date) if private
         }
         if (workoutUpdateData.exercise) {
             workout.exercises.push(workoutUpdateData.exercise); // Assuming you want to add an exercise

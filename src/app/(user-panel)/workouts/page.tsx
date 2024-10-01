@@ -18,7 +18,7 @@ import { StyledIcon } from '@/components/StyledIcon';
 
 export default function Page() {
   // state vars
-  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+  const [selectedWorkoutIndex, setSelectedWorkoutIndex] = useState<number | null>(null);
   const {
     data: workouts,
     error: workoutError,
@@ -34,10 +34,12 @@ export default function Page() {
     }
   }, [workoutError]);
 
-  const handleWorkoutClick = (workout: Workout) => {
-    logger.info(`Workout clicked: ${workout.name}`);
+  const handleWorkoutClick = (index: number) => {
+    if (workouts) {
+      logger.info(`Workout clicked: ${workouts[index]?.name}`);
+    }
 
-    setSelectedWorkout(workout);
+    setSelectedWorkoutIndex(index);
   }
 
   if (workoutsLoading) {
@@ -71,9 +73,9 @@ export default function Page() {
           {/* horizontal Scrollable workout tabs */}
           <ScrollArea className="p-2 mx-2 mb-2 rounded-md border border-border">
             <div className="flex items-center py-2 space-x-4 text-sm">
-              {workouts.map((workout) => (
+              {workouts.map((workout, index) => (
                 <div key={workout._id} className='flex justify-center items-center'>
-                  <Button size='sm' key={workout._id} className={selectedWorkout && selectedWorkout._id === workout._id ? 'opacity-50' : ''} onClick={() => handleWorkoutClick(workout)}>{truncateText(workout.name)}</Button>
+                  <Button size='sm' key={workout._id} className={selectedWorkoutIndex !== null && workouts[selectedWorkoutIndex]._id === workout._id ? 'opacity-50' : ''} onClick={() => handleWorkoutClick(index)}>{truncateText(workout.name)}</Button>
                   <Separator orientation="vertical" decorative className='ml-5 h-5' />
                 </div >
               ))}
@@ -83,10 +85,9 @@ export default function Page() {
           <Separator />
 
           {/* display selected workout exercises */}
-          {selectedWorkout ? (
+          {selectedWorkoutIndex !== null ? (
             <MyWorkout
-              workout={selectedWorkout}
-              setWorkout={setSelectedWorkout}
+              workout={workouts[selectedWorkoutIndex]}
             />
           ) : (
             <div className="bg-background text-xl min-h-screen p-4 flex items-center justify-center">

@@ -9,6 +9,10 @@ import { NewWorkout, patchReqDataType, Workout } from '@/types';
 import { useUser } from '@clerk/clerk-react';
 import logger from '@/lib/logger';
 
+// State management for invalidating public workouts if publicity of a workout changes
+import { useAtomValue } from 'jotai';
+import { pageAtom, itemsPerPageAtom } from '@/store';
+
 // create new workout
 const useWorkoutCreate = (
 ): UseMutationResult<
@@ -20,6 +24,7 @@ const useWorkoutCreate = (
   const { user } = useUser();
   const userId = user?.id ?? '';
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (workout: NewWorkout) => {
       return addWorkout(userId, workout)
@@ -55,6 +60,10 @@ const useWorkoutUpdate = (
   const userId = user?.id ?? '';
   const queryClient = useQueryClient();
 
+  // State management
+  const page = useAtomValue(pageAtom);
+  const itemsPerPage = useAtomValue(itemsPerPageAtom);
+
   return useMutation({
     mutationFn: (variables: { workoutId: string, workoutData: patchReqDataType }) => {
       return updateWorkout(userId, variables.workoutId, variables.workoutData)
@@ -63,6 +72,10 @@ const useWorkoutUpdate = (
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['workouts', userId],
+      });
+      
+      queryClient.invalidateQueries({
+        queryKey: ['public-workouts', page, itemsPerPage],
       });
       logger.info('Workout updated successfully');
       if (variables.workoutData.exercise) {
@@ -80,7 +93,7 @@ const useWorkoutUpdate = (
   });
 };
 
-// update a workout
+// remove an exercise from a workout
 const useExerciseRemove = (
 ): UseMutationResult<
   { title: string; message: string },

@@ -18,6 +18,7 @@ import logger from '@/lib/logger';
 import { NewWorkout } from '@/types';
 import { useWorkoutCreate } from '@/hooks/workout/useWorkoutMutations';
 
+
 const CreateWorkout = ({ triggerNode }: { triggerNode: React.ReactNode }) => {
     const [isPublic, setIsPublic] = useState(false);
     const [workoutName, setWorkoutName] = useState('');
@@ -28,11 +29,13 @@ const CreateWorkout = ({ triggerNode }: { triggerNode: React.ReactNode }) => {
 
     //handle create workout
     const handleCreateWorkout = async () => {
+
         // data prep for creating new workout
         const workoutData: NewWorkout = {
             name: workoutName,
             exercises: [],
             public: isPublic,
+            postDate: isPublic ? new Date() : new Date(0),  // set post date to current date & time if public, or set it to epoch time (representing empty date) if private
             likes: [],
             comments: [],
             saves: [],

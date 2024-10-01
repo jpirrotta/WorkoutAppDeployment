@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/user-panel/navbar';
 import { cn } from '@/lib/utils';
+
 interface ContentLayoutProps {
   title: string;
   children: React.ReactNode;
@@ -14,7 +15,7 @@ export function ContentLayout({
   return (
     <div>
       <Navbar title={title} />
-      <div className={cn('container pt-8 pb-8 px-4 sm:px-8', className)}>
+      <div className={cn('container pt-8 pb-8 px-4', className)}>
         {children}
       </div>
     </div>

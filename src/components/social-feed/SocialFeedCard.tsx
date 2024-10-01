@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import logger from '@/lib/logger';
 
 // Types
 import { FeedWorkout } from '@/types';
@@ -19,16 +20,10 @@ import {
 } from 'lucide-react';
 
 // Components
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import logger from '@/lib/logger';
+
 
 interface SocialWorkoutCardProps {
   userId: string;
@@ -36,6 +31,8 @@ interface SocialWorkoutCardProps {
   itemsPerPage: number;
   page: number;
 }
+
+const EMPTY_AVATAR_URL = "https://ui-avatars.com/api/?name=Placeholder&background=random";
 
 export default function SocialWorkoutCard({
   userId,
@@ -137,13 +134,46 @@ export default function SocialWorkoutCard({
   };
   // End of mutation handling ------------------------------
 
+  // Function to calculate how long ago the post was made
+  const timeAgo = (date: Date) => {
+    const now = new Date();
+    const postDate = new Date(date);
+    const diff = now.getTime() - postDate.getTime();
+
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 20) {
+      return postDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? 's' : ''} ago`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else {
+      return `${seconds} second${seconds > 1 ? 's' : ''} ago`;
+    }
+  };
 
   return (
-    <Card className="w-1/3 bg-slate-700 border-primary md:transform  md:transition-transform md:duration-200">
-      <CardHeader>
-        <CardTitle className="text-secondary uppercase text-center">
-          <p>{workout.name}</p>
-        </CardTitle>
+    <Card className="w-1/3 border-primary md:transform  md:transition-transform md:duration-200">
+
+      <CardHeader className="flex flex-row gap-x-2">
+        <Avatar>
+          <AvatarImage src={EMPTY_AVATAR_URL} alt={workout.ownerName}/>  
+          <AvatarFallback>{workout.ownerName.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <h1>{workout.ownerName}</h1>
+        {workout.postDate &&
+          <h1>{timeAgo(workout.postDate)}</h1>
+        }
       </CardHeader>
 
       <CardContent>

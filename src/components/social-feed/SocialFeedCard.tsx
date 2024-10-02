@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/carousel';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-
+import Image from 'next/image';
 
 interface SocialWorkoutCardProps {
   userId: string;
@@ -212,7 +212,7 @@ export default function SocialWorkoutCard({
           <CarouselContent>
             {workout.exercises?.map((exercise: Exercise) => (
               <CarouselItem key={exercise.id} className="text-center">
-                <img src={exercise.gifUrl} alt={exercise.name} className="rounded-lg mx-auto"/>
+                <Image src={exercise.gifUrl} alt={exercise.name} width="350" height="350" className="rounded-lg mx-auto"/>
                 <h1>{capitalizeFirstLetterOfEachWord(exercise.name)}</h1>
               </CarouselItem>
             ))}
@@ -272,7 +272,7 @@ export default function SocialWorkoutCard({
                 {/*Display comments*/}
                 <div className="mb-4">
                   {workout.comments?.map((comment, index) => (
-                      <p className="text-black dark:text-white">{comment.text}</p>
+                      <p key={index} className="text-black dark:text-white">{comment.text}</p>
                   ))}
                 </div>
 

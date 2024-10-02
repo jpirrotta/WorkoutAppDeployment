@@ -21,7 +21,7 @@ type BaseWorkout = {
   likes: string[];
   comments: {
     text: string;
-    postedBy: mongoose.Types.ObjectId;
+    postedBy: string;
   }[];
   saves: string[];
 };

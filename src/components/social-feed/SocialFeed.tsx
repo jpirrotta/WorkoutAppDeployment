@@ -60,7 +60,7 @@ export default function SocialFeed() {
     : [];
 
   return (
-    <div className="flex flex-col space-y-8 p-20 items-center justify-center">
+    <div className="flex flex-col space-y-8 items-center justify-center">
       {sortedWorkouts.map((workout) => (
         <SocialFeedCard
           key={workout._id.toString()}

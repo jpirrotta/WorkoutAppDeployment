@@ -41,6 +41,7 @@ export default function SocialFeed() {
     setPage((prev) => prev + 1);
   };
 
+  // Displays loading spinner while fetching workouts
   if (loadingWorkouts) {
     return (
       <div className='flex h-screen justify-center items-center'>

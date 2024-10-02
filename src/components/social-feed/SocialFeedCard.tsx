@@ -11,9 +11,7 @@ import usePublicWorkoutMutate from '@/hooks/public-workout/usePublicWorkoutMutat
 // Icons
 import { StyledIcon } from '../StyledIcon';
 import {
-  LoaderCircle,
   Heart,
-  HeartOff,
   Check,
   Plus,
   Trash2 as Trash,
@@ -176,7 +174,7 @@ export default function SocialWorkoutCard({
   };
 
   return (
-    <Card className="w-1/3 border-primary md:transform  md:transition-transform md:duration-200">
+    <Card className="w-2/5 border-primary">
 
       <CardHeader>
         <div className="flex flex-row gap-x-2 items-center justify-between">
@@ -191,15 +189,16 @@ export default function SocialWorkoutCard({
             <h1>{timeAgo(workout.postDate)}</h1>
           }
         </div>
-        <CardTitle className="mt-16">{workout.name}</CardTitle>
+        <CardTitle>{workout.name}</CardTitle>
       </CardHeader>
 
-      <CardContent className="mt-10">
-        <Carousel className="bg-background mx-5 sm:mx-10 md:mx-20 3xl:mx-[30rem]">
+      <CardContent>
+        <Carousel className="bg-background m-10">
           <CarouselContent>
             {workout.exercises?.map((exercise: Exercise) => (
-              <CarouselItem key={exercise.id}>
-                <img src={exercise.gifUrl} alt={exercise.name} />
+              <CarouselItem key={exercise.id} className="text-center">
+                <img src={exercise.gifUrl} alt={exercise.name} className="rounded-lg mx-auto"/>
+                <h1>{exercise.name}</h1>
               </CarouselItem>
             ))}
           </CarouselContent>

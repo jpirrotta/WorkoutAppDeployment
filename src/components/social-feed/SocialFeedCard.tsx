@@ -232,12 +232,12 @@ export default function SocialWorkoutCard({
             <div className="flex flex-row gap-4 items-center">
               <div>
                 {workout.likes.includes(userId) ? (
-                  <Heart color="red" fill="red" size={32}
-                  className="text-primary hover:cursor-pointer"
+                  <Heart size={32}
+                  className="text-primary fill-current hover:cursor-pointer"
                   onClick={handleUnlikeWorkout}/>
 
                 ) : (
-                  <Heart color="red" size={32}
+                  <Heart size={32}
                   className="text-primary hover:cursor-pointer"
                   onClick={handleLikeWorkout}/>
                 )}
@@ -249,12 +249,12 @@ export default function SocialWorkoutCard({
             <div className="flex flex-row gap-4 items-center">
               <div>
                 {workout.saves.includes(userId) ? (
-                  <Bookmark color="white" fill="white" size={32}
-                  className="text-primary hover:cursor-pointer"
+                  <Bookmark fill="grey"  size={32}
+                  className="text-muted-foreground fill-current hover:cursor-pointer"
                   onClick={handleUnsaveWorkout}/>
                 ) : (
-                  <Bookmark color="white" size={32}
-                  className="text-primary hover:cursor-pointer"
+                  <Bookmark size={32}
+                  className="text-muted-foreground  hover:cursor-pointer"
                   onClick={handleSaveWorkout}/>
                 )}
               </div>

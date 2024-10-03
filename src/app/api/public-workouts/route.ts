@@ -107,8 +107,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }); 
 
     // --- INFO FOR DEBUGGING ---
-    logger.info(`Public workouts after filtering :{retData}`);
-    logger.info(retData);
+    //ogger.info(`Public workouts after filtering:}`);
+    //logger.info(retData);
 
     return NextResponse.json(retData, { status: 200 });
   } catch (error) {

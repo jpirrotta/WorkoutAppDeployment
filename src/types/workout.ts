@@ -21,7 +21,8 @@ type BaseWorkout = {
   likes: string[];
   comments: {
     text: string;
-    postedBy: string;
+    userId: string;
+    name: string;
   }[];
   saves: string[];
 };

@@ -73,7 +73,7 @@ const workoutSchema = new Schema<WorkoutDocument>({
   comments: [
     {
       text: String,
-      postedBy: String,
+      userId: String,
     },
   ],
   saves: [

@@ -164,7 +164,7 @@ export async function addCommentPublicWorkout(
         },
         {
           $addToSet: {
-            'workouts.$.comments': { text: commentText, postedBy: user.userId },
+            'workouts.$.comments': { text: commentText, userId: user.userId },
           },
         }
       );

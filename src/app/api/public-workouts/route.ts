@@ -10,7 +10,7 @@ import UserModal from '@/models/userSchema';
 
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  logger.info('\n\nGET All Public Workouts API called');
+  logger.info('GET All Public Workouts API called');
   try {
     const { searchParams } = new URL(req.url);
     // Get the page number and the number of items per page from the query parameters
@@ -36,8 +36,52 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       { $sort: { 'workouts._id': -1 } },
       { $skip: (page - 1) * itemsPerPage },
       { $limit: itemsPerPage },
+      {
+        $lookup: {
+          from: 'users', // The collection to join with
+          localField: 'workouts.comments.userId', // The field from the input documents
+          foreignField: 'userId', // The field from the documents of the "from" collection
+          as: 'commentUsers', // The name of the new array field to add to the input documents
+        },
+      },
+      {
+        $addFields: {
+          'workouts.comments': {
+            $map: {
+              input: '$workouts.comments',
+              as: 'comment',
+              in: {
+                $mergeObjects: [
+                  '$$comment',
+                  {
+                    name: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input: '$commentUsers',
+                                as: 'user',
+                                cond: { $eq: ['$$user.userId', '$$comment.userId'] },
+                              },
+                            },
+                            as: 'user',
+                            in: '$$user.name',
+                          },
+                        },
+                        0,
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
     ]);
 
+    // --- INFO FOR DEBUGGING ---
     //logger.info(`Result: ${JSON.stringify(result)}`);
 
     if (!result) {
@@ -45,7 +89,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       return new NextResponse('No public workouts found', { status: 404 });
     }
 
-    
+
     const retData: FeedWorkout[] = result.flatMap((user) => {
       let feedWorkout: FeedWorkout = {
         ownerName: user.name,
@@ -59,13 +103,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         comments: user.workouts.comments,
         saves: user.workouts.saves
       };
-
       return feedWorkout;
     }); 
 
     // --- INFO FOR DEBUGGING ---
-    //logger.info(`Public workouts after filtering :`);
-    //logger.info(retData);
+    logger.info(`Public workouts after filtering :{retData}`);
+    logger.info(retData);
 
     return NextResponse.json(retData, { status: 200 });
   } catch (error) {

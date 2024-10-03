@@ -189,7 +189,7 @@ export default function SocialWorkoutCard({
 
 
   return (
-    <Card className="w-1/3 border-primary bg-background dark:bg-background text-black dark:text-white">
+    <Card className="lg:w-1/3 md:w-1/2 sm:w-1/2 border-primary bg-background dark:bg-background text-black dark:text-white">
 
       <CardHeader>
         <div className="flex flex-row gap-x-2 items-center justify-between">
@@ -212,7 +212,7 @@ export default function SocialWorkoutCard({
           <CarouselContent>
             {workout.exercises?.map((exercise: Exercise) => (
               <CarouselItem key={exercise.id} className="text-center">
-                <Image src={exercise.gifUrl} alt={exercise.name} width="350" height="350" className="rounded-lg mx-auto"/>
+                <Image src={exercise.gifUrl} alt={exercise.name} width="350" height="350" className="rounded-lg mx-auto" unoptimized/>
                 <h1>{capitalizeFirstLetterOfEachWord(exercise.name)}</h1>
               </CarouselItem>
             ))}
@@ -272,7 +272,9 @@ export default function SocialWorkoutCard({
                 {/*Display comments*/}
                 <div className="mb-4">
                   {workout.comments?.map((comment, index) => (
-                      <p key={index} className="text-black dark:text-white">{comment.text}</p>
+                    <p key={index} className="text-black dark:text-white">
+                      <span className="font-bold">{comment.name}</span>: {comment.text}
+                    </p>
                   ))}
                 </div>
 

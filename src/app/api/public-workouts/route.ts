@@ -3,11 +3,14 @@
 import { dbConnect } from '@/lib/dbConnect';
 import logger from '@/lib/logger';
 import { NextRequest, NextResponse } from 'next/server';
+import { clerkClient } from '@clerk/nextjs/server';
 
 // Type and Schema
 import { FeedWorkout } from '@/types';
 import UserModal from '@/models/userSchema';
 
+
+const DEFAULT_IMAGE_URL = "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   logger.info('GET All Public Workouts API called');
@@ -82,18 +85,38 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     ]);
 
     // --- INFO FOR DEBUGGING ---
-    //logger.info(`Result: ${JSON.stringify(result)}`);
+    //logger.info(`Result: ${JSON.stringify(result, null, 2)}`);
 
     if (!result) {
       logger.info('No public workouts found');
       return new NextResponse('No public workouts found', { status: 404 });
     }
 
+    const retData: FeedWorkout[] = await Promise.all(result.map(async (user) => {
+      // Fetch the owner of the post profile pic
+      try {
+        const userResponse = await clerkClient().users.getUser(user.userId);
+        user.pfpImageUrl = userResponse.imageUrl; // Add the user's profile pic to the comment
+      } catch (err) {
+        console.error(`Error fetching user for user ${user.userId}:`, err);
+        user.pfpImageUrl = DEFAULT_IMAGE_URL; // Add an empty profile pic to the comment
+      }
 
-    const retData: FeedWorkout[] = result.flatMap((user) => {
+      // Fetch the commenters' profile pics
+      for (const comment of user.workouts.comments) {
+        try {
+          const userResponse = await clerkClient().users.getUser(comment.userId);
+          comment.pfpImageUrl = userResponse.imageUrl; // Add the user's profile pic to the comment
+        } catch (err) {
+          console.error(`Error fetching user for comment ${comment.userId}:`, err);
+          comment.pfpImageUrl = DEFAULT_IMAGE_URL; // Add an empty profile pic to the comment
+        }
+      }
+
       let feedWorkout: FeedWorkout = {
         ownerName: user.name,
         ownerId: user.userId,
+        ownerPfpImageUrl: user.pfpImageUrl,
         _id: user.workouts._id,
         name: user.workouts.name,
         exercises: user.workouts.exercises,
@@ -104,10 +127,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         saves: user.workouts.saves
       };
       return feedWorkout;
-    }); 
+    }));
 
     // --- INFO FOR DEBUGGING ---
-    //ogger.info(`Public workouts after filtering:}`);
+    //logger.info(`Public workouts after filtering:}`);
     //logger.info(retData);
 
     return NextResponse.json(retData, { status: 200 });

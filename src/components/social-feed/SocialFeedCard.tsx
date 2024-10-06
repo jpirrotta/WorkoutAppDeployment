@@ -12,9 +12,8 @@ import usePublicWorkoutMutate from '@/hooks/public-workout/usePublicWorkoutMutat
 import {
   Heart,
   Bookmark,
-  SendHorizonal,
-  Trash2 as Trash,
   SendHorizontal,
+  Trash2 as Trash,
 } from 'lucide-react';
 
 // Components
@@ -51,6 +50,9 @@ export default function SocialWorkoutCard({
   itemsPerPage,
   page,
 }: SocialWorkoutCardProps) {
+
+
+
   const [commentText, setCommentText] = useState('');
   const [commentsVisible, setCommentsVisible] = useState(false);
 
@@ -196,8 +198,7 @@ export default function SocialWorkoutCard({
         <div className="flex flex-row gap-x-2 items-center justify-between">
           <div className="flex flex-row gap-x-2 items-center">
             <Avatar>
-              <AvatarImage src={EMPTY_AVATAR_URL} alt={workout.ownerName}/>  
-              <AvatarFallback>{workout.ownerName.charAt(0)}</AvatarFallback>
+              <AvatarImage src={workout.ownerPfpImageUrl} alt="profile picture"/>  
             </Avatar>
             <h1>{workout.ownerName}</h1>
           </div>
@@ -208,7 +209,7 @@ export default function SocialWorkoutCard({
         <CardTitle>{workout.name}</CardTitle>
       </CardHeader>
 
-      <CardContent className="pb-0 ">
+      <CardContent className="pb-2 ">
         <Carousel className="ml-8 mr-8">
           <CarouselContent>
             {workout.exercises?.map((exercise: Exercise) => (
@@ -273,10 +274,15 @@ export default function SocialWorkoutCard({
                 {/*Display comments*/}
                 <div className="mb-4 ml-2">
                   {workout.comments?.map((comment, index) => (
-                    <p key={index} className="text-black dark:text-white mb-2">
-                      <div style={{fontWeight: 550, fontSize: '11px'}}>{comment.name}</div>
-                      <div style={{fontWeight: 400, fontSize: '14px'}}>{comment.text}</div>
-                    </p>
+                    <section key={index} className="flex flex-row gap-2 items-center text-black dark:text-white mb-2">
+                      <Avatar className="h-7 w-7">
+                        <AvatarImage src={comment.pfpImageUrl} alt="profile picture"/>  
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <p style={{fontWeight: 550, fontSize: '11px'}}>{comment.name}</p>
+                        <p style={{fontWeight: 400, fontSize: '14px'}}>{comment.text}</p>
+                      </div>
+                    </section>
                   ))}
                 </div>
 
@@ -302,7 +308,7 @@ export default function SocialWorkoutCard({
                       <SendHorizontal size={26} color="red"/>
                     </button>
                   </div>
-                  
+
                 </form>
               </div>
             )}  

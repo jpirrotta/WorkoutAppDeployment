@@ -73,7 +73,7 @@ const workoutSchema = new Schema<WorkoutDocument>({
   comments: [
     {
       text: String,
-      postedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+      userId: String,
     },
   ],
   saves: [

@@ -23,6 +23,7 @@ type BaseWorkout = {
     text: string;
     userId: string;
     name: string;
+    pfpImageUrl: string;
   }[];
   saves: string[];
 };
@@ -36,6 +37,7 @@ type NewWorkout = Omit<BaseWorkout, '_id'>;
 type FeedWorkout = {
   ownerId: string;
   ownerName: string;
+  ownerPfpImageUrl: string;
 } & BaseWorkout;
 
 type patchReqDataType = {

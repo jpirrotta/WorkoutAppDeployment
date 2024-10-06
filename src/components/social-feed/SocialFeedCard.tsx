@@ -12,8 +12,9 @@ import usePublicWorkoutMutate from '@/hooks/public-workout/usePublicWorkoutMutat
 import {
   Heart,
   Bookmark,
-  Plus,
+  SendHorizonal,
   Trash2 as Trash,
+  SendHorizontal,
 } from 'lucide-react';
 
 // Components
@@ -207,7 +208,7 @@ export default function SocialWorkoutCard({
         <CardTitle>{workout.name}</CardTitle>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="pb-0 ">
         <Carousel className="ml-8 mr-8">
           <CarouselContent>
             {workout.exercises?.map((exercise: Exercise) => (
@@ -270,10 +271,11 @@ export default function SocialWorkoutCard({
             {commentsVisible && (
               <div className="mt-4">
                 {/*Display comments*/}
-                <div className="mb-4">
+                <div className="mb-4 ml-2">
                   {workout.comments?.map((comment, index) => (
-                    <p key={index} className="text-black dark:text-white">
-                      <span className="font-bold">{comment.name}</span>: {comment.text}
+                    <p key={index} className="text-black dark:text-white mb-2">
+                      <div style={{fontWeight: 550, fontSize: '11px'}}>{comment.name}</div>
+                      <div style={{fontWeight: 400, fontSize: '14px'}}>{comment.text}</div>
                     </p>
                   ))}
                 </div>
@@ -286,25 +288,25 @@ export default function SocialWorkoutCard({
                   }}
                     className="flex flex-row gap-2"
                   >
-                  <Input
-                    type="text"
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Add a comment"
-                    className="input-class"
-                    required 
-                  />
-                  <button type="submit" className="button-class text-black dark:text-white">
-                    +
-                  </button>
+
+                  <div className="relative flex-grow">
+                    <Input
+                      type="text"
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      placeholder="Add a comment"
+                      className="input-class w-full pr-10 text-black dark:text-white" // Add padding to the right to make space for the button
+                      required 
+                    />
+                    <button type="submit" className="absolute right-0 top-0 mt-2 mr-2 hover:cursor-pointer">
+                      <SendHorizontal size={26} color="red"/>
+                    </button>
+                  </div>
+                  
                 </form>
               </div>
-              
-            )}
+            )}  
           </div>
-
-
-        
         </div>
       </CardFooter>
     </Card>

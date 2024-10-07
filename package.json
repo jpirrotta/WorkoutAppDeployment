@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env next dev",
+    "dev": "concurrently \"cross-env next dev\" \"ngrok http --domain=lemming-robust-badly.ngrok-free.app 3000\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -14,8 +14,9 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.7.0",
     "@clerk/clerk-sdk-node": "^5.0.48",
-    "@clerk/nextjs": "^5.4.1",
+    "@clerk/nextjs": "^5.7.1",
     "@clerk/themes": "^2.1.27",
+    "@clerk/types": "^4.21.0",
     "@emailjs/browser": "^4.4.1",
     "@hookform/resolvers": "^3.9.0",
     "@icons-pack/react-simple-icons": "^10.0.0",
@@ -53,6 +54,7 @@
     "react-hook-form": "^7.53.0",
     "sharp": "^0.33.5",
     "sonner": "^1.5.0",
+    "svix": "^1.35.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
@@ -64,6 +66,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "concurrently": "^9.0.1",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "eslint": "^8",

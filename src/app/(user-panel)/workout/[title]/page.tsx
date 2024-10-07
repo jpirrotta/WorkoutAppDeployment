@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { WorkoutProgress } from '@/components/workouts/workout-player-progressbar';
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import { exercises } from '@/data/exercises';
-import ExerciseCard from '@/components/exercises/ExerciseCard';
+import ExerciseCard from '@/components/ExerciseCard';
 import WorkoutPlayerCommandMenu from '@/components/workouts/player-command-menu';
 import Stopwatch from '@/components/workouts/stopwatch';
 import {

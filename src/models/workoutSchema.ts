@@ -22,6 +22,10 @@ const exerciseSchema = new Schema<ExerciseDocument>({
     required: [true, 'Body Part is required'],
     maxlength: [100, 'Body Part cannot be greater than 100 characters'],
   },
+  gifUrl: {
+    type: String,
+    required: [false, 'Gif URL is required'],
+  },
   equipment: {
     type: String,
     required: [true, 'Equipment is required'],
@@ -58,22 +62,23 @@ const workoutSchema = new Schema<WorkoutDocument>({
     type: Boolean,
     default: false,
   },
+  postDate: {
+    type: Date,
+  },
   likes: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
+      type: String
+    }
   ],
   comments: [
     {
       text: String,
-      postedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+      userId: String,
     },
   ],
   saves: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
+      type: String
     },
   ],
 });

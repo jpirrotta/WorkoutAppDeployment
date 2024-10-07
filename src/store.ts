@@ -11,3 +11,7 @@ export const userBMI = atom<BMI | undefined>();
 export const limitAtom = atom<number>(6);
 
 export const sidebarToggleAtom = atomWithStorage('sidebarToggle', true);
+
+// Used in Social Feed for number of posts to render per load
+export const pageAtom = atom<number>(1);
+export const itemsPerPageAtom = atom<number>(10);

@@ -57,9 +57,8 @@ const userSchema = new Schema<UserDocument>({
   },
   weightHistory: [historySchema],
   bodyFatHistory: [historySchema],
-  workouts: [workoutSchema],
-  savedWorkouts: [ { workoutId: String } ],
-
+  workouts: { type: [workoutSchema], default: [] },
+  savedWorkouts: [ String ],
 });
 
 const UserModel: Model<UserDocument> =

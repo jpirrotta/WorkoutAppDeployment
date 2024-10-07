@@ -14,11 +14,20 @@ const isProtectedRoute = createRouteMatcher([
   '/(api|trpc)(.*)',
 ]);
 
+// Define the route to be ignored by the middleware
+// webhook routes should be ignored
+const ignoreRoute = createRouteMatcher(['/api/webhooks(/.*)?']);
+
 export default clerkMiddleware((auth, req) => {
+  if (ignoreRoute(req)) {
+    logger.info('Ignoring /api/webhooks route');
+    return;
+  }
+
   if (!auth().userId && isProtectedRoute(req)) {
-    console.log('Redirecting to sign in');
+    logger.info('Redirecting to sign in');
 
     return auth().redirectToSignIn();
   }
-  console.log('User is signed in');
+  logger.info('User is signed in or not on a protected route');
 });

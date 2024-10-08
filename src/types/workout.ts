@@ -2,11 +2,11 @@ import mongoose, { Document } from 'mongoose';
 
 type Exercise = {
   id: string;
-  bodyPart: string;
-  gifUrl: string;
-  equipment: string;
   name: string;
+  gifUrl: string;
   target: string;
+  equipment: string;
+  bodyPart: string;
   secondaryMuscles: string[];
   instructions: string[];
 };

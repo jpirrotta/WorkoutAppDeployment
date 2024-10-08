@@ -30,7 +30,6 @@ const WorkoutProgress = React.forwardRef<
     });
   };
 
-
   return (
     <ProgressPrimitive.Root
       ref={ref}

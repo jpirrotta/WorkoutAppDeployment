@@ -6,12 +6,15 @@ import {
   completedStepsAtom,
   carouselApiAtom,
   isPlayingAtom,
+  totalStepsAtom,
 } from '@/store';
 import { useAtom, useSetAtom } from 'jotai';
 import { Play, StepBack, StepForward, Check, X, Pause } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function WorkoutPlayerCommandMenu() {
+  const [totalSteps, setTotalSteps] = useAtom(totalStepsAtom);
+
   const [selectedStep, setSelectedStep] = useAtom(selectedStepAtom);
   const [completedSteps, setCompletedSteps] = useAtom(completedStepsAtom);
   const setApi = useSetAtom(carouselApiAtom);
@@ -41,18 +44,20 @@ export default function WorkoutPlayerCommandMenu() {
 
   const nextStep = () => {
     setApi((prev) => {
-      prev?.scrollTo(selectedStep + 1);
+      const newIndex = (selectedStep + 1) % totalSteps;
+      prev?.scrollTo(newIndex);
       return prev;
     });
-    setSelectedStep((prev) => prev + 1);
+    setSelectedStep((prev) => (prev + 1) % totalSteps);
   };
 
   const prevStep = () => {
     setApi((prev) => {
-      prev?.scrollTo(selectedStep - 1);
+      const newIndex = (selectedStep - 1 + totalSteps) % totalSteps;
+      prev?.scrollTo(newIndex);
       return prev;
     });
-    setSelectedStep((prev) => prev - 1);
+    setSelectedStep((prev) => (prev - 1 + totalSteps) % totalSteps);
   };
 
   useEffect(() => {

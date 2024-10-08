@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import ExerciseCards from '@/components/exercises/ExerciseCards';
+import ExerciseCards from '@/components/ExerciseCards';
 import { useExercises } from '@/utils/fetchData';
 import { useUser } from '@clerk/clerk-react';
 import { ContentLayout } from '@/components/user-panel/content-layout';
@@ -10,12 +10,12 @@ import { LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExercisesSearchBar from '@/components/ExerciseSearchBar';
 
-import { useAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { limitAtom } from '@/store';
 
 export default function ExercisePage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [limit, setLimit] = useAtom(limitAtom);
+  const setLimit = useSetAtom(limitAtom);
   const { isSignedIn } = useUser();
   let content = <></>;
   // TODO ADD ERROR HANDLING

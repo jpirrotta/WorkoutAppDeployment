@@ -14,7 +14,7 @@ export const limitAtom = atom<number>(6);
 export const sidebarToggleAtom = atomWithStorage('sidebarToggle', true);
 
 
-// atoms for the workout player ( consider moving this to a separate store file )
+// atoms for the workout player ( consider moving this to a separate store )
 
 // this will hold the current played workout which will be used
 // to see if theres a workout playing or not ( can be useful for the notification )
@@ -28,8 +28,6 @@ export const totalStepsAtom = atom<number>(0);
 export const completedStepsAtom = atom<number[]>([]);
 
 export const carouselApiAtom = atom<CarouselApi>();
-
-export const workoutStopWatchAtom = atom<number>(0);
 
 export const isPlayingAtom = atom<boolean>(false);
 

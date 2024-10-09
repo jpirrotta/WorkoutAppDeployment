@@ -221,7 +221,6 @@ export async function removeCommentPublicWorkout(
   }
 }
 
-
 export async function addSavePublicWorkout(
   userId: string,
   workoutId: string

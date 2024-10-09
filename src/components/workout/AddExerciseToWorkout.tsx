@@ -23,7 +23,7 @@ import { MultiSelect } from '../ui/multi-select';
 import logger from '@/lib/logger';
 import { toast } from 'sonner';
 import { Exercise, NewWorkout } from '@/types';
-import { useGetAllUserWorkouts } from '@/hooks/workout/useWorkoutQueries';
+import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import { useWorkoutCreate, useWorkoutUpdate } from '@/hooks/workout/useWorkoutMutations';
 import { truncateText } from '@/utils/trucateText';
 
@@ -42,7 +42,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
     const {
         data: workoutData,
         error: workoutError,
-    } = useGetAllUserWorkouts();
+    } = useGetAllWorkouts();
 
     useEffect(() => {
         // structure workout data for MultiSelect
@@ -69,6 +69,8 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
         }
     }, [workoutError]);
 
+
+    // handle create new workout while adding selected exercise to it
     const handleCreateWorkout = async () => {
         const trimmedValue = workoutSearchValue.trim();
         if (!trimmedValue) {
@@ -104,6 +106,8 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
         setIsAlertDialogOpen(false);
     };
 
+
+    // handle adding exercise to selected workouts
     const handleAddExercise = async () => {
         logger.info(`Adding Exercise to Workouts: ${workoutUpdateMutation.isPending}`);
         // logger.info(`Exercise to add: ${JSON.stringify(exerciseToAdd)}`);

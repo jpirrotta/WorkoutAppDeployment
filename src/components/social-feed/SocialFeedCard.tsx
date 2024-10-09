@@ -63,7 +63,7 @@ export default function SocialWorkoutCard({
       console.error('User already liked the workout');
       return;
     }
-    
+
     mutateLike.mutate({ userId, workout, itemsPerPage, page });
     logger.info('Like workout complete!');
   };
@@ -146,40 +146,38 @@ export default function SocialWorkoutCard({
         </CardTitle>
       </CardHeader>
 
-      <CardContent>
-        <CardDescription className="text-secondary">
-          {workout.postDate &&
-            <div className="flex flex-row gap-2">
-              <h1 className="font-bold">Posted on:</h1>
-              {new Date(workout.postDate).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-              })}
-              <p> </p>
-              {new Date(workout.postDate).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-            </div>
-          }
+      <CardContent className='text-sm text-secondary'>
+        {workout.postDate &&
           <div className="flex flex-row gap-2">
-            <h1 className="font-bold">Posted by: </h1>
-            <h1> {workout.ownerName}</h1>
+            <h1 className="font-bold">Posted on:</h1>
+            {new Date(workout.postDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+            <p> </p>
+            {new Date(workout.postDate).toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
           </div>
-          <div className="flex flex-row w-full gap-2">
-            <h1 className="font-bold">Exercises:</h1>
-            {workout.exercises &&
-              workout.exercises.map((exercise, index) => (
-                <div key={index}>
-                  <p>
-                    {exercise.name}
-                    {workout.exercises.length === index + 1 ? null : ','}
-                  </p>
-                </div>
-              ))}
-          </div>
-        </CardDescription>
+        }
+        <div className="flex flex-row gap-2">
+          <h1 className="font-bold">Posted by: </h1>
+          <h1> {workout.ownerName}</h1>
+        </div>
+        <div className="flex flex-row w-full gap-2">
+          <h1 className="font-bold">Exercises:</h1>
+          {workout.exercises &&
+            workout.exercises.map((exercise, index) => (
+              <div key={index}>
+                <p>
+                  {exercise.name}
+                  {workout.exercises.length === index + 1 ? null : ','}
+                </p>
+              </div>
+            ))}
+        </div>
       </CardContent>
 
       <CardFooter className="capitalize text-secondary">
@@ -190,13 +188,13 @@ export default function SocialWorkoutCard({
               <div>
                 {workout.likes.includes(userId) ? (
                   <Heart color="red" fill="red"
-                  className="text-primary hover:cursor-pointer"
-                  onClick={handleUnlikeWorkout}/>
+                    className="text-primary hover:cursor-pointer"
+                    onClick={handleUnlikeWorkout} />
 
                 ) : (
                   <Heart color="red"
-                  className="text-primary hover:cursor-pointer"
-                  onClick={handleLikeWorkout}/>
+                    className="text-primary hover:cursor-pointer"
+                    onClick={handleLikeWorkout} />
                 )}
               </div>
               {workout.likes.length}
@@ -252,7 +250,7 @@ export default function SocialWorkoutCard({
               onChange={(e) => setCommentText(e.target.value)}
               placeholder="Add a comment"
               className="input-class"
-              required 
+              required
             />
             <button type="submit" className="button-class">
               +

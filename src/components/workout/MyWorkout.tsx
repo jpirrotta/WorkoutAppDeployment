@@ -24,9 +24,10 @@ import { Switch } from '@/components/ui/switch';
 
 type MyWorkoutProps = {
     workout: Workout
+    setWorkout: (workout: number | null) => void
 }
 
-const MyWorkout: FC<MyWorkoutProps> = ({ workout }) => {
+const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
     // mutation hooks
     const workoutDeleteMutation = useWorkoutDelete();
     const ExerciseRemoveMutation = useExerciseRemove();
@@ -34,6 +35,8 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout }) => {
 
     const handleDeleteWorkout = () => {
         workoutDeleteMutation.mutate(workout._id);
+
+        setWorkout(null);
     }
 
     const handleExerciseDelete = (exerciseId: string) => {
@@ -120,13 +123,14 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout }) => {
         <div className='bg-background gap-10'>
             <div className='flex justify-between sm:px-20 px-5 pt-10'>
                 <h1 className='text-2xl font-bold text-primary break-words w-2/5' style={{ hyphens: 'auto' }}>{workout?.name}</h1>
+                {/* public switch for updating workout visibility */}
                 <div className="flex items-center justify-between">
-                        <Label htmlFor="workout-name" className="mr-2">Public</Label>
-                        <Switch id="airplane-mode" checked={workout?.public} onCheckedChange={handleUpdateWorkoutVisibility}/>
-                </div>                  
+                    <Label htmlFor="workout-name" className="mr-2">Public</Label>
+                    <Switch id="airplane-mode" checked={workout?.public} onCheckedChange={handleUpdateWorkoutVisibility} />
+                </div>
                 <DeleteWorkoutDialog triggerNode={<Trash2 className='text-text hover:text-primary hover:cursor-pointer' />} />
             </div>
-            
+
             {workout?.exercises.length ? (
                 <div className='mt-10'>
                     <ExerciseCards

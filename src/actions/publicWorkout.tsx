@@ -177,8 +177,50 @@ export async function addCommentPublicWorkout(
   }
 }
 
-//TO DO: implement removeCommentPublicWorkout
-export async function removeCommentPublicWorkout() {}
+export async function removeCommentPublicWorkout(
+  workoutId: string,
+  commentId: string,
+): Promise<boolean> {
+  try {
+    if (!commentId || commentId === undefined || commentId == '') {
+      return false;
+    }
+    logger.info('removeCommentPublicWorkout server action called');
+    await dbConnect();
+
+    // find the owner of the workout
+    let workoutOwner: UserDocument | null = await UserModel.findOne({
+      workouts: { $elemMatch: { _id: workoutId } },
+    });
+
+    // If the workoutOwner is not found return an error
+    if (!workoutOwner) {
+      logger.error(`Workout owner not found`);
+      throw new Error(
+        'we could not find the user who owns this workout, please try again later'
+      );
+    } else {
+      logger.info(`Workout owner ${workoutOwner.name} found`);
+      const result = await UserModel.updateOne(
+        {
+          userId: workoutOwner.userId,
+          workouts: { $elemMatch: { _id: workoutId } },
+        },
+        {
+          $pull: {
+            'workouts.$.comments': { _id: commentId },
+          },
+        }
+      );
+      logger.info(result);
+      return true;
+    }
+  } catch (error) {
+    logger.error(`Error: ${error}`);
+    throw new Error('Internal server error');
+  }
+}
+
 
 export async function addSavePublicWorkout(
   userId: string,

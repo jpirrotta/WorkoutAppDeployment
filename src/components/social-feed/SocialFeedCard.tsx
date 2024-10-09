@@ -50,9 +50,6 @@ export default function SocialWorkoutCard({
   itemsPerPage,
   page,
 }: SocialWorkoutCardProps) {
-
-
-
   const [commentText, setCommentText] = useState('');
   const [commentsVisible, setCommentsVisible] = useState(false);
 
@@ -64,7 +61,7 @@ export default function SocialWorkoutCard({
   const mutateLike = usePublicWorkoutMutate('like');
   const mutateUnlike = usePublicWorkoutMutate('unlike');
   const mutateComment = usePublicWorkoutMutate('comment');
-  //const mutateUncomment = usePublicWorkoutMutate('uncomment');
+  const mutateUncomment = usePublicWorkoutMutate('uncomment');
   const mutateSave = usePublicWorkoutMutate('save');
   const mutateUnsave = usePublicWorkoutMutate('unsave');
 
@@ -111,17 +108,16 @@ export default function SocialWorkoutCard({
     logger.info('Commenting on workout complete!');
   };
 
-  //TO DO: Implement delete comment functionality
-  /*const handleDeleteComment = async (commentId: string) => {
+  const handleDeleteComment = async (commentId: string) => {
     logger.info('Attempting to remove comment from workout...');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
       return;
     }
 
-    mutateUncomment.mutate({ userId, workout, commentId, itemsPerPage, page });
+    mutateUncomment.mutate({ userId, workout, page, itemsPerPage, commentId });
     logger.info('Remove comment from workout complete!');
-  };*/
+  };
 
   const handleSaveWorkout = async () => {
     logger.info('Attempting to save workout...');
@@ -275,6 +271,10 @@ export default function SocialWorkoutCard({
                 <div className="mb-4 ml-2">
                   {workout.comments?.map((comment, index) => (
                     <section key={index} className="flex flex-row gap-2 items-center text-black dark:text-white mb-2">
+                      {/*Display delete comment button if the comment belongs to the current user*/}
+                      {comment.userId == userId && 
+                        <Trash size={16} className="hover:cursor-pointer" onClick={() => handleDeleteComment(comment._id.toString())}/>
+                      }
                       <Avatar className="h-7 w-7">
                         <AvatarImage src={comment.pfpImageUrl} alt="profile picture"/>  
                       </Avatar>
@@ -290,7 +290,7 @@ export default function SocialWorkoutCard({
                 <form onSubmit={(e) => {
                     e.preventDefault(); // Prevent the default form submission behavior
                     handleCommentWorkout();
-                    setCommentText('');  //Clear the input field after submission
+                    setCommentText(''); //Clear the input field after submission
                   }}
                     className="flex flex-row gap-2"
                   >

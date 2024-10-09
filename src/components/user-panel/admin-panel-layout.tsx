@@ -1,7 +1,6 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Footer } from '@/components/user-panel/footer';
 import { Sidebar } from '@/components/user-panel/sidebar';
 import { sidebarToggleAtom } from '@/store';
 import { useAtomValue } from 'jotai';

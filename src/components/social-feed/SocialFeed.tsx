@@ -7,6 +7,7 @@ import useAllPublicWorkouts from '@/hooks/public-workout/useAllPublicWorkouts';
 
 // Components
 import SocialFeedCard from '@/components/social-feed/SocialFeedCard';
+import { LoaderCircle } from 'lucide-react';
 
 // State management
 import { useSetAtom, useAtomValue } from 'jotai';
@@ -40,11 +41,13 @@ export default function SocialFeed() {
     setPage((prev) => prev + 1);
   };
 
+  // Displays loading spinner while fetching workouts
   if (loadingWorkouts) {
-    return <div>Loading...</div>;
-  } else if (errorWorkouts) {
-    //change to toast
-    return <div>Error: {errorWorkouts?.message || errorWorkouts?.message}</div>;
+    return (
+      <div className='flex h-screen justify-center items-center'>
+        <LoaderCircle className="text-primary text-6xl animate-spin" />
+      </div>
+    )
   }
 
   // Sort workouts by postDate
@@ -57,7 +60,7 @@ export default function SocialFeed() {
     : [];
 
   return (
-    <div className="flex flex-col space-y-8 p-20 items-center justify-center">
+    <div className="flex flex-col space-y-8 items-center justify-center">
       {sortedWorkouts.map((workout) => (
         <SocialFeedCard
           key={workout._id.toString()}

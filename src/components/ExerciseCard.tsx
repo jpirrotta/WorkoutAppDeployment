@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from "@/components/ui/checkbox"
+import { cn } from '@/lib/utils';
 
 import { Exercise } from '@/types';
 import AddExerciseToWorkout from './workout/AddExerciseToWorkout';
@@ -23,9 +24,10 @@ interface ExerciseCardProps {
   readonly exercise: Exercise;
   closeIcon?: (exerciseId: string) => React.ReactNode;
   CreateWorkoutFlag?: boolean;
+  className?: string;
 }
 
-export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag }: ExerciseCardProps) {
+export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, className }: ExerciseCardProps) {
   const [showDemo, setShowDemo] = useState(true);
   const [SelectedExercises, setSelectedExercises] = useAtom(selectedExercisesAtom);
 
@@ -44,29 +46,16 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag }:
       });
     }
   }
-
   return (
     <div className='cursor-pointer' onClick={onExerciseSelect}>
       <Card
-        className="bg-slate-700 border-primary md:transform md:hover:scale-105 md:transition-transform md:duration-200"
+        className={cn(
+          'bg-slate-700 border-primary md:transform md:hover:scale-105 md:transition-transform md:duration-200',
+          className
+        )}
         key={exercise.id}
       >
-        {/* conditionally rendered cross icon for letting user remove exercises from their workouts */}
-        {closeIcon && (
-          <>
-            {closeIcon(exercise.id)}
-          </>
-        )}
-
-        {/* conditionally rendered checkbox for letting user select exercise for new workout */}
-        {CreateWorkoutFlag && (
-          <div className='flex mt-2 mr-2 justify-end'>
-            <Checkbox
-              className='rounded-sm'
-              id={exercise.id}
-              checked={SelectedExercises.includes(exercise)} />
-          </div>
-        )}
+        {closeIcon && <>{closeIcon(exercise.id)}</>}
         <CardHeader>
           <CardTitle className="text-secondary uppercase text-center">
             {exercise.name}
@@ -92,6 +81,17 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag }:
               Show Demo
             </Button>
           )}
+
+          {/* conditionally rendered checkbox for letting user select exercise for new workout */}
+          {CreateWorkoutFlag && (
+            <div className='flex mt-2 mr-2 justify-end'>
+              <Checkbox
+                className='rounded-sm'
+                id={exercise.id}
+                checked={SelectedExercises.includes(exercise)} />
+            </div>
+          )}
+          
           <CardDescription className="text-secondary capitalize">
             <strong>Target:</strong> {exercise.target}
             <br />

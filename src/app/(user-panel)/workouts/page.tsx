@@ -7,7 +7,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { ScrollBar } from '@/components/ui/scroll-area';
 import MyWorkout from '@/components/workout/MyWorkout';
-import logger from '@/lib/logger';
 import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import { toast } from 'sonner';
 import { LoaderCircle, Dumbbell, BicepsFlexed } from 'lucide-react';
@@ -28,7 +27,7 @@ export default function Page() {
   // error handling for getting user workouts
   useEffect(() => {
     if (workoutError) {
-      toast.error('Seems like there was an issue while getting your Workouts:(', {
+      toast.error('Seems like there was an issue getting your Workouts:(', {
         description: workoutError.message,
       });
     }
@@ -36,12 +35,12 @@ export default function Page() {
 
   const handleWorkoutClick = (index: number) => {
     if (workouts) {
-      logger.info(`Workout clicked: ${workouts[index]?.name}`);
+      console.info(`Workout clicked: ${workouts[index]?.name}`);
     }
     setIsWorkoutFormVisible(false)
 
     setSelectedWorkoutIndex(index);
-  }
+  };
 
   const handleCreateWorkoutClick = () => {
     setSelectedWorkoutIndex(null);
@@ -56,7 +55,7 @@ export default function Page() {
         </div>
         {/* <LoaderCircle className="text-primary text-6xl animate-spin" /> */}
       </div>
-    )
+    );
   }
 
   return (
@@ -103,9 +102,12 @@ export default function Page() {
               />
             ) : (
               <div className="bg-background text-xl min-h-screen p-4 flex items-center justify-center">
-                <div className='rounded-full flex flex-col items-center gap-5 p-10'>
-                  <StyledIcon Icon={BicepsFlexed} className="size-20 text-primary" />
-                  <p className='text-primary'>Select a Workout</p>
+                <div className="rounded-full flex flex-col items-center gap-5 p-10">
+                  <StyledIcon
+                    Icon={BicepsFlexed}
+                    className="size-20 text-primary"
+                  />
+                  <p className="text-primary">Select a Workout</p>
                 </div>
               </div>
             ))}

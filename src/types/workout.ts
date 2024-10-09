@@ -2,11 +2,11 @@ import mongoose, { Document } from 'mongoose';
 
 type Exercise = {
   id: string;
-  bodyPart: string;
-  gifUrl: string;
-  equipment: string;
   name: string;
+  gifUrl: string;
   target: string;
+  equipment: string;
+  bodyPart: string;
   secondaryMuscles: string[];
   instructions: string[];
 };
@@ -21,7 +21,9 @@ type BaseWorkout = {
   likes: string[];
   comments: {
     text: string;
-    postedBy: mongoose.Types.ObjectId;
+    userId: string;
+    name: string;
+    pfpImageUrl: string;
   }[];
   saves: string[];
 };
@@ -35,6 +37,7 @@ type NewWorkout = Omit<BaseWorkout, '_id'>;
 type FeedWorkout = {
   ownerId: string;
   ownerName: string;
+  ownerPfpImageUrl: string;
 } & BaseWorkout;
 
 type patchReqDataType = {

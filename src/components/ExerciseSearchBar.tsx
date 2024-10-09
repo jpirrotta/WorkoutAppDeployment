@@ -23,7 +23,9 @@ interface ExercisesSearchBarProps {
   onSearch: (searchTerm: string) => void;
 }
 
-export default function ExercisesSearchBar({ onSearch }: ExercisesSearchBarProps) {
+export default function ExercisesSearchBar({
+  onSearch,
+}: ExercisesSearchBarProps) {
   const form = useForm<SearchBarFormSchema>({
     resolver: zodResolver(searchBarFormSchema),
     defaultValues: {

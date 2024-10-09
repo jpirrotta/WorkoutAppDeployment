@@ -9,7 +9,5 @@ export default function Home() {
     return redirect('/dashboard');
   }
 
-  return (
-      <LandingPage />
-  );
+  return <LandingPage />;
 }

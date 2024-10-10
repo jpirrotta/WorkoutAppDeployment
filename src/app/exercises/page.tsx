@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ExerciseCards from '@/components/ExerciseCards';
 import { useExercises } from '@/utils/fetchData';
 import { useUser } from '@clerk/clerk-react';
@@ -12,16 +12,42 @@ import ExercisesSearchBar from '@/components/ExerciseSearchBar';
 
 import { useSetAtom } from 'jotai';
 import { limitAtom } from '@/store';
+import { Exercise } from '@/types';
+import { set } from 'lodash';
 
 export default function ExercisePage() {
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const setLimit = useSetAtom(limitAtom);
+  const [searchQuery, setSearchQuery] = useState<string>();
+  const [limit, setLimit] = useState(6);
+  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>();
   const { isSignedIn } = useUser();
   let content = <></>;
-  // TODO ADD ERROR HANDLING
-  const { data: exercises, error, isLoading } = useExercises(searchQuery);
+  const { data: exercises, error, isLoading } = useExercises();
 
-  const handleSearch = (query: string) => {
+  useEffect(() => {
+    if (exercises) {
+      const filtered = exercises.filter((exercise: Exercise) => {
+        if (!searchQuery) {
+          return true;
+        }
+        return exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+
+      setFilteredExercises(filtered.slice(0, limit));
+    }
+  }, [exercises, searchQuery, limit]);
+
+  if (!exercises) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <LoaderCircle className="text-primary text-6xl animate-spin" />
+      </div>
+    );
+  }
+
+  const handleSearch = (query: string | undefined) => {
+    if (!query) {
+      return setFilteredExercises(undefined);
+    }
     setSearchQuery(query);
     console.log('Search query:', query);
   };
@@ -31,8 +57,8 @@ export default function ExercisePage() {
     setLimit((prev) => prev + 6);
   };
 
-  if (exercises) {
-    console.log(exercises);
+  if (filteredExercises) {
+    console.log(filteredExercises);
   }
 
   if (isLoading) {
@@ -52,7 +78,7 @@ export default function ExercisePage() {
 
         <ExercisesSearchBar onSearch={handleSearch} />
 
-        <ExerciseCards exercises={exercises} />
+        <ExerciseCards exercises={filteredExercises ? filteredExercises : exercises} />
         <Button
           className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
           variant="link"
@@ -60,7 +86,7 @@ export default function ExercisePage() {
         >
           Show More
         </Button>
-      </div>
+      </div >
     );
   } else if (exercises && isSignedIn) {
     content = (
@@ -72,7 +98,7 @@ export default function ExercisePage() {
 
           <ExercisesSearchBar onSearch={handleSearch} />
 
-          <ExerciseCards exercises={exercises} />
+          <ExerciseCards exercises={filteredExercises ? filteredExercises : exercises} />
           <Button
             className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
             variant="link"

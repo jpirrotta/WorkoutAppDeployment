@@ -20,7 +20,7 @@ const searchBarFormSchema = z.object({
 type SearchBarFormSchema = z.infer<typeof searchBarFormSchema>;
 
 interface ExercisesSearchBarProps {
-  onSearch: (searchTerm: string) => void;
+  onSearch: (searchTerm: string | undefined) => void;
 }
 
 export default function ExercisesSearchBar({
@@ -36,11 +36,11 @@ export default function ExercisesSearchBar({
 
   const onSubmit: SubmitHandler<SearchBarFormSchema> = (data) => {
     if (!data.search) {
-      return onSearch('');
+      return onSearch(undefined);
     }
 
     const searchedExercise = data.search.toLowerCase();
-    onSearch(encodeURIComponent(searchedExercise));
+    onSearch(searchedExercise);
   };
 
   return (
@@ -60,7 +60,9 @@ export default function ExercisesSearchBar({
                       className="border border-black dark:border-input"
                       {...field}
                     />
+
                     <Search
+                      type='submit'
                       onClick={form.handleSubmit(onSubmit)}
                       className="absolute right-2 top-1/2 transform -translate-y-1/2 hover:cursor-pointer"
                     />

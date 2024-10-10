@@ -9,7 +9,6 @@ type Exercise = {
   bodyPart: string;
   secondaryMuscles: string[];
   instructions: string[];
-  gifUrl: string;
 };
 
 // Base type that represents the structure of a workout (without Document)

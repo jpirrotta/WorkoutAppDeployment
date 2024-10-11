@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '../ui/badge';
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { XCircle } from 'lucide-react';
 
-import { NewWorkout } from '@/types';
+import { Exercise, NewWorkout } from '@/types';
 import { useWorkoutCreate } from '@/hooks/workout/useWorkoutMutations';
 import logger from '@/lib/logger';
 import ExercisePage from '../ExercisePage';
@@ -55,6 +55,51 @@ const CreateWorkout = () => {
         });
     }
 
+    // handle removing selected exercise
+    const handleRemoveExercise = (exeToRemove: Exercise) => {
+        setSelectedExercises((prev) => prev.filter((e) => e.id !== exeToRemove.id));
+    }
+
+    // preview workout component for desktop view only
+    const PreviewWorkout = () => {
+        return (
+            <div className="hidden md:flex flex-col items-center justify-center rounded-lg p-6">
+                <h2 className="text-xl font-semibold text-primary mb-4">Preview your Workout</h2>
+                <div className="p-4 border rounded-md w-full max-w-sm">
+
+                    {/* workout name field */}
+                    <p className="text-md font-medium">Workout Name: <span className={`text-primary ${!workoutName && 'italic opacity-50'}`}>{workoutName || 'Your Workout'}</span></p>
+
+                    {/* public or private workout option */}
+                    <p className="text-md font-medium mt-2">
+                        Visibility: {isPublic ? <span className="text-green-600">Public</span> : <span className="text-red-600">Private</span>}
+                    </p>
+
+                    {/* display selected Exercises and related msg if none */}
+                    <p className="text-md font-medium">Selected Exercises:
+                        {selectedExercises.length > 0 ? (
+                            selectedExercises.map((exercise) => (
+                                <Badge key={exercise.id} className="bg-primary text-white m-2">
+                                    {exercise.name}
+                                    <XCircle
+                                        className="ml-2 h-4 w-4 cursor-pointer"
+                                        onClick={() => handleRemoveExercise(exercise)} />
+                                </Badge>
+                            ))
+                        ) : (
+                            <>
+                                <br />
+                                <span className='text-md text-gray-600 mt-10 italic'>
+                                    Selected Exercises will be displayed here.
+                                </span>
+                            </>
+                        )}
+                    </p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="container mx-auto mb-10 px-6">
             {/* Main Layout */}
@@ -87,11 +132,6 @@ const CreateWorkout = () => {
                                     onCheckedChange={() => setIsPublic(!isPublic)}
                                     className="ml-3"
                                 />
-                                <span className="ml-3 text-lg">
-                                    {isPublic ?
-                                        <EyeIcon className="text-green-500" />
-                                        : <EyeOffIcon className="text-red-500" />}
-                                </span>
                             </div>
                         </div>
 
@@ -114,42 +154,11 @@ const CreateWorkout = () => {
                     </div>
                 </div>
 
-                {/* Right Section: Preview or Instructions */}
-                <div className="hidden md:flex flex-col items-center justify-center rounded-lg p-6">
-                    <h2 className="text-xl font-semibold text-primary mb-4">Preview your Workout</h2>
-                    <div className="p-4 border rounded-md w-full max-w-sm">
-
-                        {/* workout name field */}
-                        <p className="text-md font-medium">Workout Name: <span className={`text-primary ${!workoutName && 'italic opacity-50'}`}>{workoutName || 'Your Workout'}</span></p>
-
-                        {/* public or private workout option */}
-                        <p className="text-md font-medium mt-2">
-                            Visibility: {isPublic ? <span className="text-green-600">Public</span> : <span className="text-red-600">Private</span>}
-                        </p>
-
-                        {/* display selected Exercises and related msg if none */}
-                        <p className="text-md font-medium">Selected Exercises:
-                            {selectedExercises.length > 0 ? (
-                                selectedExercises.map((exercise) => (
-                                    <Badge key={exercise.id} className="bg-primary text-white m-2">
-                                        {exercise.name}
-                                    </Badge>
-                                ))
-                            ) : (
-                                <>
-                                    <br />
-                                    <span className='text-md text-gray-600 mt-10 italic'>
-                                        Selected Exercises will be displayed here.
-                                    </span>
-                                </>
-                            )}
-                        </p>
-                    </div>
-                </div>
+                <PreviewWorkout />
             </div>
 
             {/* Exercise listing */}
-            <ExercisePage title='Select Exercises for your workouts' navbarFlag={false} />
+            <ExercisePage title='Select Exercises for your Workout' navbarFlag={false} />
         </div>
     )
 }

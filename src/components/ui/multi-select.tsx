@@ -139,7 +139,7 @@ interface MultiSelectProps
   /**
    * setter function for new workout name.
    */
-  onSearchValChange: React.Dispatch<React.SetStateAction<string>>;
+  onSearchValChange: (val: string) => void;
 }
 
 export const MultiSelect = React.forwardRef<
@@ -185,7 +185,6 @@ export const MultiSelect = React.forwardRef<
     };
 
     const toggleOption = (option: string) => {
-      option = option.trim();
       const newSelectedValues = selectedValues.includes(option)
         ? selectedValues.filter((value) => value !== option)
         : [...selectedValues, option];
@@ -316,7 +315,7 @@ export const MultiSelect = React.forwardRef<
           <Command>
             {/* Customized to assign changed value to new workout name (used when there is no workout with user searching, so this name will be used for creating new workout) */}
             <CommandInput
-              value={searchValue}
+              // value={searchValue}
               placeholder={inputPlaceholder}
               onValueChange={onSearchValChange}
               onKeyDown={handleInputKeyDown}

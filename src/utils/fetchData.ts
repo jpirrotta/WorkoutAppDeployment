@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { limitAtom } from '../store';
+import logger from '@/lib/logger';
 import { Exercise } from '@/types';
 
 const API_KEY = process.env.NEXT_PUBLIC_RAPID_API_KEY;
@@ -18,13 +19,14 @@ export const ExerciseOptions: RequestInit = {
   },
 };
 
-async function fetchExercises(url: string): Promise<Exercise[]>{
+async function fetchExercises(url: string): Promise<Exercise[]> {
   const localStorageKey = 'fetchedData';
 
   // Check if data is in local storage
   const initialData = localStorage.getItem(localStorageKey);
 
   if (!initialData) {
+    logger.info(`FETCHING exercises from ${url}`);
     // If nothing is in local storage, fetch the data
     const response = await fetch(url, ExerciseOptions);
 

@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { BMI, User } from '@/types';
+import { BMI, User, Exercise } from '@/types';
 import { atomWithStorage } from 'jotai/utils';
 import { type CarouselApi } from './components/ui/carousel';
 
@@ -34,3 +34,6 @@ export const isPlayingAtom = atom<boolean>(false);
 // Used in Social Feed for number of posts to render per load
 export const pageAtom = atom<number>(1);
 export const itemsPerPageAtom = atom<number>(10);
+
+// create workout from selected exercises atom
+export const selectedExercisesAtom = atom<Exercise[]>([]);

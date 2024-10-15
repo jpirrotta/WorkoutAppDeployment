@@ -23,7 +23,7 @@ import { MultiSelect } from '../ui/multi-select';
 import logger from '@/lib/logger';
 import { toast } from 'sonner';
 import { Exercise, NewWorkout } from '@/types';
-import { useGetAllUserWorkouts } from '@/hooks/workout/useWorkoutQueries';
+import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import { useWorkoutCreate, useWorkoutUpdate } from '@/hooks/workout/useWorkoutMutations';
 import { truncateText } from '@/utils/trucateText';
 
@@ -42,7 +42,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
     const {
         data: workoutData,
         error: workoutError,
-    } = useGetAllUserWorkouts();
+    } = useGetAllWorkouts();
 
     useEffect(() => {
         // structure workout data for MultiSelect
@@ -69,10 +69,18 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
         }
     }, [workoutError]);
 
+
+    // handle create new workout while adding selected exercise to it
     const handleCreateWorkout = async () => {
+        const trimmedValue = workoutSearchValue.trim();
+        if (!trimmedValue) {
+            toast.error('Workout name cannot be empty');
+            return;
+        }
+
         // Prepare data for creating new workout
         const newWorkoutData: NewWorkout = {
-            name: workoutSearchValue,
+            name: trimmedValue,
             exercises: [],
             public: false,
             likes: [],
@@ -98,13 +106,15 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
         setIsAlertDialogOpen(false);
     };
 
+
+    // handle adding exercise to selected workouts
     const handleAddExercise = async () => {
-        // logger.info(`Adding Exercise to Workouts: ${selectedWorkoutIds}`);
+        logger.info(`Adding Exercise to Workouts: ${workoutUpdateMutation.isPending}`);
         // logger.info(`Exercise to add: ${JSON.stringify(exerciseToAdd)}`);
 
         await Promise.all(
             selectedWorkoutIds.map(workoutId =>
-                workoutUpdateMutation.mutateAsync({ workoutId, workoutData: { exercise: exerciseToAdd } })
+                workoutUpdateMutation.mutateAsync({ workoutId, workoutData: { exerciseArr: [exerciseToAdd] } })
             )
         );
 
@@ -149,18 +159,18 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
                 </DialogHeader>
                 <MultiSelect
                     className='border border-border flex ml-30 justify-center items-center rounded-md'
-                    options={options.length > 0 ? options : [{ label: 'No workouts found. Create one!', value: '' }]}
+                    options={options}
                     defaultValue={selectedWorkoutIds}
                     onValueChange={(inputValue) => {
                         logger.info(`selected workout ID's: ${inputValue}`);
                         setSelectedWorkoutIds(inputValue)
                     }}
-                    searchValue={workoutSearchValue}
+                    // searchValue={workoutSearchValue}
                     placeholder="Select workouts or type to create one"
                     variant="inverted"
                     inputPlaceholder='Search Workouts...'
                     maxCount={4}
-                    onSearchValChange={setWorkoutSearchValue}
+                    onSearchValChange={(val) => setWorkoutSearchValue(val.trim())}
                     NoResultPlaceholder={
                         <CreateWorkoutDialog
                             triggerHolder={
@@ -175,7 +185,13 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
                     }
                 />
                 <DialogFooter className='p-2'>
-                    <Button className='w-full' onClick={handleAddExercise} disabled={selectedWorkoutIds.length === 0}>Add Exercise</Button>
+                    <Button
+                        className='w-full'
+                        onClick={(e) => { e.currentTarget.disabled = true; handleAddExercise() }}
+                        disabled={(selectedWorkoutIds.length === 0) || (workoutUpdateMutation.isPending)}
+                    >
+                        Add Exercise
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

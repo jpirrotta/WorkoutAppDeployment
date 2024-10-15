@@ -43,7 +43,7 @@ type FeedWorkout = {
 
 type patchReqDataType = {
   name?: string;
-  exercise?: Exercise;
+  exerciseArr?: Exercise[];
   public?: boolean;
   comments?: Workout['comments'];
 };

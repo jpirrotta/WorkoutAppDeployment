@@ -23,7 +23,7 @@ const fetchUserWorkouts = async (
   return await response.json();
 };
 
-const useGetAllUserWorkouts = (): UseQueryResult<Workout[], Error> => {
+const useGetAllWorkouts = (): UseQueryResult<Workout[], Error> => {
   const { user } = useUser();
   const userId = user?.id ?? '';
   return useQuery({
@@ -69,4 +69,4 @@ const useGetWorkoutById = (workoutId: string): Workout | undefined => {
   return workout;
 };
 
-export { useGetAllUserWorkouts, useGetWorkoutById };
+export { useGetAllWorkouts, useGetWorkoutById };

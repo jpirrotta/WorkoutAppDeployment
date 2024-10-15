@@ -83,6 +83,16 @@ export function getMenuList(pathname: string): Group[] {
               label: 'Calories',
               active: pathname.includes('/calculators/calories'),
             },
+            {
+              href: '/calculators/macronutrients',
+              label: 'Macronutrients',
+              active: pathname.includes('/calculators/macronutrients'),
+            },
+            {
+              href: '/calculators/body-fat',
+              label: 'Body Fat',
+              active: pathname.includes('/calculators/body-fat'),
+            },
           ],
         },
       ],

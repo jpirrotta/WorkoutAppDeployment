@@ -78,7 +78,7 @@ export default function SocialWorkoutCard({
       console.error('User already liked the workout');
       return;
     }
-    
+
     mutateLike.mutate({ userId, workout, itemsPerPage, page });
     logger.info('Like workout complete!');
   };

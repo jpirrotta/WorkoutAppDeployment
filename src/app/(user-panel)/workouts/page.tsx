@@ -3,25 +3,26 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import CreateWorkout from '@/components/workout/CreateWorkout';
+// import CreateWorkout from '@/components/workout/CreateWorkout';
 import { Separator } from '@/components/ui/separator';
 import { ScrollBar } from '@/components/ui/scroll-area';
 import MyWorkout from '@/components/workout/MyWorkout';
-import { useGetAllUserWorkouts } from '@/hooks/workout/useWorkoutQueries';
+import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import { toast } from 'sonner';
-import { LoaderCircle, BicepsFlexed } from 'lucide-react';
-import { ContentLayout } from '@/components/user-panel/content-layout';
+import { LoaderCircle, Dumbbell, BicepsFlexed } from 'lucide-react';
 import { truncateText } from '@/utils/trucateText';
 import { StyledIcon } from '@/components/StyledIcon';
+import CreateWorkout from '@/components/workout/CreateWorkout';
 
 export default function Page() {
   // state vars
-  const [selectedWorkoutIndex, setSelectedWorkoutIndex] = useState<number>();
+  const [selectedWorkoutIndex, setSelectedWorkoutIndex] = useState<number | null>(null);
+  const [isWorkoutFormVisible, setIsWorkoutFormVisible] = useState(false);
   const {
     data: workouts,
     error: workoutError,
     isLoading: workoutsLoading,
-  } = useGetAllUserWorkouts();
+  } = useGetAllWorkouts();
 
   // error handling for getting user workouts
   useEffect(() => {
@@ -36,70 +37,69 @@ export default function Page() {
     if (workouts) {
       console.info(`Workout clicked: ${workouts[index]?.name}`);
     }
+    setIsWorkoutFormVisible(false)
 
     setSelectedWorkoutIndex(index);
   };
 
+  const handleCreateWorkoutClick = () => {
+    setSelectedWorkoutIndex(null);
+    setIsWorkoutFormVisible(true);
+  };
+
   if (workoutsLoading) {
     return (
-      <div className="flex h-screen justify-center items-center">
-        <LoaderCircle className="text-primary text-6xl animate-spin" />
+      <div className='flex h-screen justify-center items-center'>
+        <div className='flex justify-center items-center rounded-full p-5 border-2 border-primary'>
+          <Dumbbell className="text-primary size-10 animate-spin" />
+        </div>
+        {/* <LoaderCircle className="text-primary text-6xl animate-spin" /> */}
       </div>
     );
   }
 
   return (
-    <ContentLayout title="Workouts" className="sm:px-0">
-      <div className="bg-background min-h-screen max-md:flex max-md:flex-col">
-        <h1 className="flex justify-center text-primary italic font-semibold text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4">
-          Explore Your Workouts!
-        </h1>
+    <div className='bg-background mx-0 min-h-screen max-md:flex max-md:flex-col'>
+      <h1 className='flex justify-center text-primary italic font-semibold text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4'>Explore Your Workouts!</h1>
 
-        {/* Create Workout btn */}
-        <CreateWorkout
-          triggerNode={<Button className="m-5">+ Create Workout</Button>}
-        />
+      {/* Create Workout btn */}
+      <Button className={`m-5 ${isWorkoutFormVisible && `opacity-50`}`} onClick={handleCreateWorkoutClick}>
+        + Create Workout
+      </Button>
 
-        {/* Workout List */}
-        {workouts && workouts.length > 0 ? (
-          // display workouts and selected workout exercises
-          <div>
-            {/* horizontal Scrollable workout tabs */}
-            <ScrollArea className="p-2 mx-2 mb-2 rounded-md border border-border">
-              <div className="flex items-center py-2 space-x-4 text-sm">
-                {workouts.map((workout, index) => (
-                  <div
+      {/* Workout List and selected workout display */}
+      {Array.isArray(workouts) && workouts.length > 0 ? (
+        // 
+        // display workouts and selected workout exercises
+        <div>
+          {/* horizontal Scrollable workout tabs */}
+          <ScrollArea className="p-2 mx-2 mb-2 rounded-md border border-border">
+            <div className="flex items-center py-2 space-x-4 text-sm">
+              {workouts.map((workout, index) => (
+                <div key={workout._id} className='flex justify-center items-center'>
+                  <Button
+                    size='sm'
                     key={workout._id}
-                    className="flex justify-center items-center"
+                    className={selectedWorkoutIndex !== null && workouts[selectedWorkoutIndex]._id === workout._id ? 'opacity-50' : ''}
+                    onClick={() => handleWorkoutClick(index)}
                   >
-                    <Button
-                      size="sm"
-                      key={workout._id}
-                      className={
-                        selectedWorkoutIndex &&
-                        workouts[selectedWorkoutIndex]._id === workout._id
-                          ? 'opacity-50'
-                          : ''
-                      }
-                      onClick={() => handleWorkoutClick(index)}
-                    >
-                      {truncateText(workout.name)}
-                    </Button>
-                    <Separator
-                      orientation="vertical"
-                      decorative
-                      className="ml-5 h-5"
-                    />
-                  </div>
-                ))}
-              </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-            <Separator />
+                    {truncateText(workout.name)}
+                  </Button>
+                  <Separator orientation="vertical" decorative className='ml-5 h-5' />
+                </div >
+              ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+          <Separator />
 
-            {/* display selected workout exercises */}
-            {selectedWorkoutIndex ? (
-              <MyWorkout workout={workouts[selectedWorkoutIndex]} />
+          {/* display selected workout exercises */}
+          {!isWorkoutFormVisible && (
+            selectedWorkoutIndex !== null ? (
+              <MyWorkout
+                workout={workouts[selectedWorkoutIndex]}
+                setWorkout={setSelectedWorkoutIndex}
+              />
             ) : (
               <div className="bg-background text-xl min-h-screen p-4 flex items-center justify-center">
                 <div className="rounded-full flex flex-col items-center gap-5 p-10">
@@ -110,15 +110,24 @@ export default function Page() {
                   <p className="text-primary">Select a Workout</p>
                 </div>
               </div>
-            )}
-          </div>
-        ) : (
+            ))}
+        </div>
+        // 
+      ) : (
+        //
+        !isWorkoutFormVisible && (
           <div className="bg-background min-h-screen p-4 flex items-center justify-center">
-            No workouts found, try creating one!{' '}
+            No workouts found, try creating one!
             {/* TODO: maybe hyperlink this text with modal trigger */}
           </div>
-        )}
-      </div>
-    </ContentLayout>
+          // 
+        )
+      )}
+
+      {/* Create Workout Form */}
+      {isWorkoutFormVisible && (
+        <CreateWorkout />
+      )}
+    </div>
   );
 }

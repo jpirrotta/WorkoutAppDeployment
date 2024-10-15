@@ -6,13 +6,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import AddExerciseToWorkout from './workout/AddExerciseToWorkout';
 import { Exercise } from '@/types';
-import { useExerciseRemove } from '@/hooks/workout/useWorkoutMutations';
 import { cn } from '@/lib/utils';
+import { Star } from 'lucide-react'; // Import the star icon
+import { addFavoriteExercise, removeFavoriteExercise } from '@/actions/favExercises'; // Import the server action
+import { useUser } from '@clerk/clerk-react';
+import { useUserFavourites } from '@/hooks/exercises/getFavourites';
+import setFav from '@/hooks/exercises/setFav';
+import useFavMutate from '@/hooks/exercises/setFav';
+
 type ExerciseCardProps = {
   readonly exercise: Exercise;
   closeIcon?: (exerciseId: string) => React.ReactNode;
@@ -25,12 +31,34 @@ export default function ExerciseCard({
   className,
 }: ExerciseCardProps) {
   const [showDemo, setShowDemo] = useState(true);
-
-  const ExerciseRemoveMutation = useExerciseRemove();
+  const [isFavorited, setIsFavorited] = useState(false); // State to track if the exercise is favorited
+  const mutation = useFavMutate();
+  const { user, isSignedIn, isLoaded } = useUser();
 
   const ImageToggler = () => {
     setShowDemo((prev) => !prev);
   };
+
+  const handleFavoriteToggle = () => {
+    if (!isSignedIn) return; // Only handle favorites if the user is signed in
+    setIsFavorited((prev) => !prev);
+    if (!isFavorited) {
+      mutation.mutate({ userId: user.id, exerciseId: exercise.id, option: "add" });
+    } else {
+      mutation.mutate({ userId: user.id, exerciseId: exercise.id, option: "remove" });
+    }
+  };
+
+  const { data: favExercises, isLoading, isError } = useUserFavourites(user?.id);
+  useEffect(() => {
+    if (isLoaded && isSignedIn && user) {
+      if (!isLoading && !isError && favExercises) {
+        if (favExercises.includes(exercise.id)) {
+          setIsFavorited(true);
+        }
+      }
+    }
+  }, [isLoaded, isSignedIn, user, exercise.id, favExercises, isLoading, isError]);
 
   return (
     <Card
@@ -41,11 +69,23 @@ export default function ExerciseCard({
       key={exercise.id}
     >
       {closeIcon && <>{closeIcon(exercise.id)}</>}
+
       <CardHeader>
-        <CardTitle className="text-secondary uppercase text-center">
-          {exercise.name}
-        </CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-secondary uppercase text-center">
+            {exercise.name}
+          </CardTitle>
+          {isSignedIn && (
+            <Button variant="link" onClick={handleFavoriteToggle}>
+              <Star
+                className={isFavorited ? 'text-yellow-500' : 'text-gray-500'}
+                fill={isFavorited ? 'currentColor' : 'none'}
+              />
+            </Button>
+          )}
+        </div>
       </CardHeader>
+
       <CardContent>
         {showDemo ? (
           <div className="flex justify-center items-center flex-col">

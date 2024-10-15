@@ -28,4 +28,6 @@ export type User = {
   bodyFatHistory?: WorkoutHistory[];
   workouts?: (Workout[] & Document);
   savedWorkouts?: { workoutId: string }[];
+  favExercises?: string[],
+
 };

@@ -1,17 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ExerciseCards from '@/components/ExerciseCards';
 import { useExercises } from '@/utils/fetchData';
 import { useUser } from '@clerk/clerk-react';
 import { ContentLayout } from '@/components/user-panel/content-layout';
-
 import { LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExercisesSearchBar from '@/components/ExerciseSearchBar';
-
-import { useAtom } from 'jotai';
-import { limitAtom } from '@/store';
+import { Exercise } from '@/types';
+import { useUserFavourites } from '@/hooks/exercises/getFavourites';
 
 type ExercisePageProps = {
     title?: string;
@@ -20,14 +18,54 @@ type ExercisePageProps = {
 };
 
 export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = true, className }: ExercisePageProps) {
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [limit, setLimit] = useAtom(limitAtom);
-    const { isSignedIn } = useUser();
+    const [searchQuery, setSearchQuery] = useState<string>();
+    const [limit, setLimit] = useState(6);
+    const [filteredExercises, setFilteredExercises] = useState<Exercise[]>();
+    const [showFav, setShowFav] = useState(false);
+    const { isSignedIn, isLoaded, user } = useUser();
     let content = <></>;
     // TODO ADD ERROR HANDLING
-    const { data: exercises, error, isLoading } = useExercises(searchQuery);
+    const { data: exercises, error, isLoading } = useExercises();
 
-    const handleSearch = (query: string) => {
+    const { data: favExercises } = useUserFavourites(user?.id);
+
+    useEffect(() => {
+        if (exercises) {
+            let filtered = exercises;
+
+            // Apply search filter
+            if (searchQuery) {
+                filtered = filtered.filter((exercise: Exercise) =>
+                    exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }
+
+            // Apply favorites filter
+            if (favExercises && favExercises.length > 0 && showFav) {
+                filtered = filtered.filter((exercise: Exercise) =>
+                    favExercises.includes(exercise.id)
+                );
+            }
+
+            // Apply limit
+            setFilteredExercises(filtered.slice(0, limit));
+        } else {
+            setFilteredExercises(undefined);
+        }
+    }, [exercises, searchQuery, limit, favExercises, showFav]);
+
+    if (!exercises) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <LoaderCircle className="text-primary text-6xl animate-spin" />
+            </div>
+        );
+    }
+
+    const handleSearch = (query: string | undefined) => {
+        if (!query) {
+            return setFilteredExercises(undefined);
+        }
         setSearchQuery(query);
         console.log('Search query:', query);
     };
@@ -37,11 +75,16 @@ export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = tr
         setLimit((prev) => prev + 6);
     };
 
-    if (exercises) {
-        console.log(exercises);
+    const handleShowFav = () => {
+        setShowFav((prev) => !prev);
+        setSearchQuery(undefined)
     }
 
-    if (isLoading) {
+    if (filteredExercises) {
+        console.log(filteredExercises);
+    }
+
+    if (isLoading || !isLoaded) {
         content = (
             <div className="flex justify-center items-center h-screen">
                 <LoaderCircle className="text-primary text-6xl animate-spin" />
@@ -49,7 +92,7 @@ export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = tr
         );
     }
 
-    if ((exercises && !isSignedIn) | (exercises && !navbarFlag)) {
+    if ((exercises && !isSignedIn) || (exercises && !navbarFlag)) {
         content = (
             <div className="bg-background min-h-screen flex flex-col justify-between">
                 <h1 className="text-primary italic font-semibold text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4">
@@ -58,7 +101,12 @@ export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = tr
 
                 <ExercisesSearchBar onSearch={handleSearch} />
 
-                <ExerciseCards exercises={exercises} CreateWorkoutFlag={title.includes('Workout')} existingWorkoutFlag={navbarFlag} />
+                <ExerciseCards
+                    exercises={filteredExercises ? filteredExercises : exercises}
+                    CreateWorkoutFlag={title.includes('Workout')}
+                    existingWorkoutFlag={navbarFlag}
+                />
+
                 <Button
                     className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
                     variant="link"
@@ -77,6 +125,14 @@ export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = tr
                     </h1>
 
                     <ExercisesSearchBar onSearch={handleSearch} />
+
+                    <Button
+                        className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
+                        variant="link"
+                        onClick={handleShowFav}
+                    >
+                        {!showFav ? 'Show Favourites Only' : 'Show All'}
+                    </Button>
 
                     <ExerciseCards exercises={exercises} />
                     <Button

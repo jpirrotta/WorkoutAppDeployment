@@ -29,6 +29,8 @@ const UserPanelLayout = ({ children }: LayoutProps) => {
             return 'Profile';
         } else if (path.includes('workouts')) {
             return 'Workouts';
+        } else if (/\/\w+\/\d+/.test(path)) { // Check for dynamic segments like /something/123
+            return ''; // Indicate a dynamic route
         }
         return 'User Panel';
     };
@@ -37,6 +39,11 @@ const UserPanelLayout = ({ children }: LayoutProps) => {
     useEffect(() => {
         setTitle(getTitle(pathname));
     }, [pathname]);
+
+    // Conditionally render ContentLayout or just children
+    if (title === '') {
+        return <>{children}</>;
+    }
 
     return (
         <ContentLayout title={title} className={title === 'Workouts' ? 'px-0' : ''}>

@@ -177,7 +177,9 @@ export default function CaloriesCalculator() {
     <section className="flex-1 flex-col justify-center w-full xl:w-[80%] light: text-foreground">
       {/* Page Header */}
       <p className="text-2xl font-bold w-full flex justify-center mb-4 flex-col items-center">
-        Calorie Calculator
+        <span className='text-primary'>
+          Calorie Calculator
+        </span>
         <span className='text-base opacity-50 font-normal'>
           By default your saved data is used
         </span>

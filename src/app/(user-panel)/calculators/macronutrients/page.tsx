@@ -89,7 +89,9 @@ export default function MacroCalculator() {
         <section className="flex-1 flex-col justify-center w-full xl:w-[80%] light: text-foreground">
             {/* Page Header */}
             <p className="text-2xl font-bold w-full flex justify-center mb-4 flex-col items-center">
-                Macronutrient Calculator
+                <span className='text-primary'>
+                    Macronutrient Calculator
+                </span>
                 <span className='text-base opacity-50 font-normal'>
                     Calculate your daily macronutrient intake
                 </span>

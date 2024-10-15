@@ -146,6 +146,7 @@ export default function BodyFatCalculator() {
             waist *= 12; // Convert ft to inches
             neck *= 12;   // Convert ft to inches
             height *= 12; // Convert ft to inches
+            hip = hip ? hip * 12 : 0; // Convert ft to inches
         }
 
         if (gender === 'male') {

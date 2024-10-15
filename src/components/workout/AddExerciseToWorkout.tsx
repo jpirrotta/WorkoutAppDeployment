@@ -114,7 +114,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
 
         await Promise.all(
             selectedWorkoutIds.map(workoutId =>
-                workoutUpdateMutation.mutateAsync({ workoutId, workoutData: { exercise: exerciseToAdd } })
+                workoutUpdateMutation.mutateAsync({ workoutId, workoutData: { exerciseArr: [exerciseToAdd] } })
             )
         );
 

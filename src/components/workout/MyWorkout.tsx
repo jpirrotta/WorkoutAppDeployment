@@ -3,8 +3,9 @@
 import { FC, memo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAtom } from 'jotai';
+import { selectedExercisesAtom } from '@/store';
 
-import { Button } from '@/components/ui/button';
 import {
     useWorkoutDelete,
     useExerciseRemove,
@@ -55,11 +56,16 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
     const addExerciseSectionRef = useRef<HTMLDivElement>(null);
     const [deleteExeDialogOpen, setDeleteExeDialogOpen] = useState(false);
     const [existingExeState, setExistingExeState] = useState(workout.name);
+    const [selectedExercises, setSelectedExercises] = useAtom(selectedExercisesAtom)
+    const [isAddExeListOpen, setIsAddExeListOpen] = useState(false);
 
     // mutation hooks
     const workoutDeleteMutation = useWorkoutDelete();
     const ExerciseRemoveMutation = useExerciseRemove();
     const workoutUpdateMutation = useWorkoutUpdate();
+
+    // empty the selected exercise list atom
+    // setSelectedExercises([]);
 
     const handleDeleteWorkout = () => {
         workoutDeleteMutation.mutate(workout._id);
@@ -205,8 +211,8 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
 
     const ExerciseExistingList = () => {
         return (
-            <Accordion type="single" collapsible value={existingExeState} className="w-full">
-                <AccordionItem value={workout.name}>
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value='item-1'>
                     <AccordionTrigger className='border border-gray-500 rounded-xl px-2'>
                         <div className={`flex items-center justify-between space-x-4 px-4`}>
                             <h4 className="text-primary md:text-2xl">
@@ -221,25 +227,6 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
                                 closeIcon={generateCloseIcon}
                             />
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        );
-    };
-
-    const ExerciseToAddList = () => {
-        return (
-            <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value='workout-item-1'>
-                    <AccordionTrigger className='border border-gray-500 rounded-xl px-2'>
-                        <div className={`flex items-center justify-between space-x-4 px-4`}>
-                            <h4 className="text-primary md:text-2xl">
-                                Exercise List
-                            </h4>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        {/* <ExercisePage title='Add Exercises to Your Workout' navbarFlag={false} /> */}
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
@@ -299,8 +286,20 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
             )}
 
             <div className='mt-16' ref={addExerciseSectionRef}>
-                {/* Exercise listing */}
-                <ExerciseToAddList />
+                <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value='workout-item-1'>
+                        <AccordionTrigger className='border border-gray-500 rounded-xl px-2'>
+                            <div className={`flex items-center justify-between space-x-4 px-4`}>
+                                <h4 className="text-primary md:text-2xl">
+                                    Add More Exercises to Workout
+                                </h4>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <ExercisePage title=' ' workout={workout} workoutFlag={true} navbarFlag={false} />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </div>
         </div>
     );

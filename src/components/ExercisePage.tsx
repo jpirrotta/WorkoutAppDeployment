@@ -10,14 +10,22 @@ import { Button } from '@/components/ui/button';
 import ExercisesSearchBar from '@/components/ExerciseSearchBar';
 import { Exercise } from '@/types';
 import { useUserFavourites } from '@/hooks/exercises/getFavourites';
+import { useAtom } from 'jotai';
+import { selectedExercisesAtom } from '@/store';
+import { Badge } from './ui/badge';
+import { XCircle } from 'lucide-react';
+import { Workout } from '@/types';
+import { useWorkoutUpdate } from '@/hooks/workout/useWorkoutMutations';
 
 type ExercisePageProps = {
     title?: string;
     navbarFlag?: boolean;
+    workoutFlag?: boolean;
     className?: string;
+    workout?: Workout;
 };
 
-export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = true, className }: ExercisePageProps) {
+export default function ExercisePage({ title = 'Our Exercises!', workout, workoutFlag = false, navbarFlag = true, className }: ExercisePageProps) {
     const [searchQuery, setSearchQuery] = useState<string>();
     const [limit, setLimit] = useState(6);
     const [filteredExercises, setFilteredExercises] = useState<Exercise[]>();
@@ -28,6 +36,11 @@ export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = tr
     const { data: exercises, error, isLoading } = useExercises();
 
     const { data: favExercises } = useUserFavourites(user?.id);
+
+    const [selectedExercises, setSelectedExercises] = useAtom(selectedExercisesAtom);
+
+    // mutation hooks
+    const workoutUpdateMutation = useWorkoutUpdate();
 
     useEffect(() => {
         if (exercises) {
@@ -92,6 +105,64 @@ export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = tr
         );
     }
 
+    // handle add more selected exercises to existing workout
+    const handleAppendExercises = () => {
+        console.log('Append Exercises clicked');
+
+        if (!workout) {
+            console.error('No Workout provided!');
+            return;
+        }
+
+        const dataForUpdate = {
+            workoutId: workout._id as string,
+            workoutData: {
+                exerciseArr: selectedExercises,
+            },
+        };
+
+        workoutUpdateMutation.mutate(dataForUpdate, {
+            onSuccess: () => {
+                setSelectedExercises([]);
+            }
+        });
+    }
+
+    // handle removing selected exercise
+    const handleRemoveExercise = (exeToRemove: Exercise) => {
+        setSelectedExercises((prev: Exercise[]) => prev.filter((e: Exercise) => e.id !== exeToRemove.id));
+    }
+
+    const SelectedExerciseList = () => {
+        return (
+            <div className='flex w-full justify-between pb-2 mt-4 px-4 items-center'>
+                <div>
+                    {/* display selected Exercises and related msg if none */}
+                    <span className="text-md font-medium">
+                        {selectedExercises.length > 0 ? (
+                            selectedExercises.map((exercise: Exercise) => (
+                                <Badge key={exercise.id} className="bg-primary text-white m-2">
+                                    {exercise.name}
+                                    <XCircle
+                                        className="ml-2 h-4 w-4 cursor-pointer"
+                                        onClick={() => handleRemoveExercise(exercise)} />
+                                </Badge>
+                            ))
+                        ) : (
+                            <>
+                                <br />
+                                <span className='text-md text-gray-600 mt-10 italic'>
+                                    Selected Exercises will be displayed here.
+                                </span>
+                            </>
+                        )}
+                    </span>
+                </div>
+                <Button onClick={handleAppendExercises}>Add exercise</Button>
+            </div>
+        )
+    }
+
     if ((exercises && !isSignedIn) || (exercises && !navbarFlag)) {
         content = (
             <div className="bg-background min-h-screen flex flex-col justify-between">
@@ -100,10 +171,13 @@ export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = tr
                 </h1>
 
                 <ExercisesSearchBar onSearch={handleSearch} />
+                {workout &&
+                    <SelectedExerciseList />
+                }
 
                 <ExerciseCards
                     exercises={filteredExercises ? filteredExercises : exercises}
-                    CreateWorkoutFlag={title.includes('Workout')}
+                    CreateWorkoutFlag={workoutFlag}
                     existingWorkoutFlag={navbarFlag}
                 />
 
@@ -134,7 +208,9 @@ export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = tr
                         {!showFav ? 'Show Favourites Only' : 'Show All'}
                     </Button>
 
-                    <ExerciseCards exercises={exercises} />
+                    <ExerciseCards
+                        exercises={filteredExercises ? filteredExercises : exercises}
+                    />
                     <Button
                         className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
                         variant="link"

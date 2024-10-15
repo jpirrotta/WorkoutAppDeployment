@@ -78,7 +78,7 @@ const useWorkoutUpdate = (
         queryKey: ['public-workouts', page, itemsPerPage],
       });
       logger.info('Workout updated successfully');
-      if (variables.workoutData.exercise) {
+      if (variables.workoutData.exerciseArr) {
         return;
       }
       toast.success(data.title, { description: data.message });

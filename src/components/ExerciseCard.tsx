@@ -88,7 +88,18 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
         key={exercise.id}
       >
 
+        {/* conditionally rendering close icon for exercise in workouts */}
         {closeIcon && <>{closeIcon(exercise.id)}</>}
+
+        {/* conditionally rendered checkbox for letting user select exercise for new workout */}
+        {CreateWorkoutFlag && (
+          <div className='flex mt-2 mr-2 justify-end'>
+            <Checkbox
+              className='rounded-sm'
+              id={exercise.id}
+              checked={SelectedExercises.includes(exercise)} />
+          </div>
+        )}
 
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -105,19 +116,6 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
             )}
           </div>
         </CardHeader>
-
-        {/* conditionally rendering close icon for exercise in workouts */}
-        {closeIcon && <>{closeIcon(exercise.id)}</>}
-
-        {/* conditionally rendered checkbox for letting user select exercise for new workout */}
-        {CreateWorkoutFlag && (
-          <div className='flex mt-2 mr-2 justify-end'>
-            <Checkbox
-              className='rounded-sm'
-              id={exercise.id}
-              checked={SelectedExercises.includes(exercise)} />
-          </div>
-        )}
 
         <CardContent>
           {showDemo ? (
@@ -151,14 +149,14 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
           <br />
 
           {/* modal trigger btn for adding exercise to desired workout */}
-          <AddExerciseToWorkout
+          {/* <AddExerciseToWorkout
             triggerNode={
               <Button className="px-0" variant="link">
                 Add To Workout
               </Button>
             }
             exerciseToAdd={exercise}
-          />
+          /> */}
         </CardContent>
 
         <CardFooter className="capitalize text-secondary">

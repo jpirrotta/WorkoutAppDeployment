@@ -84,9 +84,12 @@ async function updateWorkout(userId: string, workoutId: string, workoutUpdateDat
             workout.public = workoutUpdateData.public;
             workout.postDate = workoutUpdateData.public ? new Date() : new Date(0);  // set post date to current date & time if public, or set it to epoch time (representing empty date) if private
         }
-        if (workoutUpdateData.exercise) {
-            workout.exercises.push(workoutUpdateData.exercise); // Assuming you want to add an exercise
+        if (workoutUpdateData?.exerciseArr?.length && workoutUpdateData.exerciseArr.length > 0) {
+            workoutUpdateData.exerciseArr.forEach(exercise => {
+                workout.exercises.push(exercise);
+            })
         }
+
         if (workoutUpdateData.comments) {
             workout.comments = workoutUpdateData.comments;
         }

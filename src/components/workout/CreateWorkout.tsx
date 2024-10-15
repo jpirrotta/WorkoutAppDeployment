@@ -21,6 +21,9 @@ const CreateWorkout = () => {
     const [isPublic, setIsPublic] = useState(false);
     const [selectedExercises, setSelectedExercises] = useAtom(selectedExercisesAtom);
 
+    // empty selected exercise list
+    // setSelectedExercises([]);
+
     // mutation hooks
     const workoutCreateMutation = useWorkoutCreate();
 
@@ -76,7 +79,7 @@ const CreateWorkout = () => {
                     </p>
 
                     {/* display selected Exercises and related msg if none */}
-                    <p className="text-md font-medium">Selected Exercises:
+                    <span className="text-md font-medium">Selected Exercises:
                         {selectedExercises.length > 0 ? (
                             selectedExercises.map((exercise) => (
                                 <Badge key={exercise.id} className="bg-primary text-white m-2">
@@ -94,7 +97,7 @@ const CreateWorkout = () => {
                                 </span>
                             </>
                         )}
-                    </p>
+                    </span>
                 </div>
             </div>
         )
@@ -158,7 +161,7 @@ const CreateWorkout = () => {
             </div>
 
             {/* Exercise listing */}
-            {/* <ExercisePage title='Select Exercises for your Workout' navbarFlag={false} /> */}
+            <ExercisePage title='Select Exercises for your Workout' workoutFlag={true} navbarFlag={false} />
         </div>
     )
 }

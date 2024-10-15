@@ -59,6 +59,7 @@ const userSchema = new Schema<UserDocument>({
   bodyFatHistory: [historySchema],
   workouts: { type: [workoutSchema], default: [] },
   savedWorkouts: [ String ],
+  favExercises: { type: [ String ], default: [] },
 });
 
 const UserModel: Model<UserDocument> =

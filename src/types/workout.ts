@@ -24,6 +24,7 @@ type BaseWorkout = {
     userId: string;
     name: string;
     pfpImageUrl: string;
+    _id: mongoose.Types.ObjectId & string;
   }[];
   saves: string[];
 };

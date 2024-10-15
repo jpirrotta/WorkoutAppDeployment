@@ -17,13 +17,18 @@ import {
 } from 'lucide-react';
 
 // Components
+import { Button } from '../ui/button';
 import { Card, 
   CardContent, 
-  CardDescription, 
   CardFooter, 
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Carousel,
   CarouselContent,
@@ -31,7 +36,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 
@@ -42,29 +47,22 @@ interface SocialWorkoutCardProps {
   page: number;
 }
 
-const EMPTY_AVATAR_URL = "https://ui-avatars.com/api/?name=Placeholder&background=random";
-
 export default function SocialWorkoutCard({
   userId,
   workout,
   itemsPerPage,
   page,
 }: SocialWorkoutCardProps) {
-
-
-
   const [commentText, setCommentText] = useState('');
   const [commentsVisible, setCommentsVisible] = useState(false);
-
   const toggleCommentsVisibility = () => {
     setCommentsVisible(!commentsVisible);
   };
 
-
   const mutateLike = usePublicWorkoutMutate('like');
   const mutateUnlike = usePublicWorkoutMutate('unlike');
   const mutateComment = usePublicWorkoutMutate('comment');
-  //const mutateUncomment = usePublicWorkoutMutate('uncomment');
+  const mutateUncomment = usePublicWorkoutMutate('uncomment');
   const mutateSave = usePublicWorkoutMutate('save');
   const mutateUnsave = usePublicWorkoutMutate('unsave');
 
@@ -111,17 +109,16 @@ export default function SocialWorkoutCard({
     logger.info('Commenting on workout complete!');
   };
 
-  //TO DO: Implement delete comment functionality
-  /*const handleDeleteComment = async (commentId: string) => {
+  const handleDeleteComment = async (commentId: string) => {
     logger.info('Attempting to remove comment from workout...');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
       return;
     }
 
-    mutateUncomment.mutate({ userId, workout, commentId, itemsPerPage, page });
+    mutateUncomment.mutate({ userId, workout, page, itemsPerPage, commentId });
     logger.info('Remove comment from workout complete!');
-  };*/
+  };
 
   const handleSaveWorkout = async () => {
     logger.info('Attempting to save workout...');
@@ -152,12 +149,10 @@ export default function SocialWorkoutCard({
     mutateUnsave.mutate({ userId, workout, page, itemsPerPage });
     logger.info('Unsave workout complete!');
   };
-  // End of mutation handling ------------------------------
+  // End of mutation handling --------------------------------
 
 
-
-  // UTILITY FUNCTIONS --------------------------------------
-
+  // Utility Functions ---------------------------------------
   // Function to calculate how long ago the post was made
   const timeAgo = (date: Date) => {
     const now = new Date();
@@ -189,6 +184,7 @@ export default function SocialWorkoutCard({
   const capitalizeFirstLetterOfEachWord = (str: string): string => {
     return str.replace(/\b\w/g, char => char.toUpperCase());
   };
+  // End of utility functions --------------------------------
 
 
   return (
@@ -223,13 +219,7 @@ export default function SocialWorkoutCard({
           <CarouselNext />
         </Carousel>
 
-        <CardDescription className="text-secondary">
-        </CardDescription>
-      </CardContent>
-
-      <CardFooter className="capitalize text-secondary">
-        <div className="flex flex-col w-full gap-4">
-          <div className="flex flex-row w-full justify-between items-center">
+        <div className="flex flex-row w-full justify-between items-center">
             {/*Like workout and like counter*/}
             <div className="flex flex-row gap-4 items-center">
               <div>
@@ -237,7 +227,6 @@ export default function SocialWorkoutCard({
                   <Heart size={32}
                   className="text-primary fill-current hover:cursor-pointer"
                   onClick={handleUnlikeWorkout}/>
-
                 ) : (
                   <Heart size={32}
                   className="text-primary hover:cursor-pointer"
@@ -262,58 +251,68 @@ export default function SocialWorkoutCard({
               </div>
               <p className="text-black dark:text-white">{workout.saves.length}</p>
             </div>
-          </div>
+          </div>      
+      </CardContent>
 
-          {/*Comments*/}
-          <div>
-            <button onClick={toggleCommentsVisibility} className="font-style: italic text-gray-500 hover:underline">
-              {commentsVisible ? 'Hide Comments' : 'View Comments'}
-            </button>
-            {commentsVisible && (
-              <div className="mt-4">
-                {/*Display comments*/}
-                <div className="mb-4 ml-2">
-                  {workout.comments?.map((comment, index) => (
-                    <section key={index} className="flex flex-row gap-2 items-center text-black dark:text-white mb-2">
-                      <Avatar className="h-7 w-7">
-                        <AvatarImage src={comment.pfpImageUrl} alt="profile picture"/>  
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <p style={{fontWeight: 550, fontSize: '11px'}}>{comment.name}</p>
-                        <p style={{fontWeight: 400, fontSize: '14px'}}>{comment.text}</p>
-                      </div>
-                    </section>
-                  ))}
+      {/*Comments*/}
+      <CardFooter className="block text-secondary gap-4">
+        <button onClick={toggleCommentsVisibility} className="font-style: italic text-gray-500 hover:underline">
+          {commentsVisible ? 'Hide Comments' : 'View Comments'}
+        </button>
+        
+        {commentsVisible && (
+          <div className="mt-4">
+            {/*Display comments*/}
+            {workout.comments?.map((comment, index) => (
+              <section key={index} className="flex flex-row mb-2 gap-2 items-center text-black dark:text-white">
+                <Avatar className="h-7 w-7 self-start ml-1 mt-1">
+                  <AvatarImage src={comment.pfpImageUrl} alt="profile picture"/>  
+                </Avatar>
+                <div className="flex flex-col">
+                  <p className="text-xs font-bold" style={{overflowWrap: 'anywhere'}}>{comment.name}</p>
+                  <p className="text-sm font-normal" style={{overflowWrap: 'anywhere'}}>{comment.text}</p>
                 </div>
+                {/*Display delete comment button if the comment belongs to the current user*/}
+                {(comment.userId == userId || workout.ownerId == userId) && 
+                  <Popover>
+                    <PopoverTrigger className="ml-auto mt-2 self-start">
+                      <Trash size={16} className="hover:cursor-pointer"/>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <p className="text-center pb-4">Are you sure you want to delete this comment?</p>
+                      <section className="flex flex-row justify-center gap-6">
+                        <Button variant="secondary"> Cancel </Button>
+                        <Button variant="default" onClick={() => handleDeleteComment(comment._id.toString())}> Confirm </Button>
+                      </section>
+                    </PopoverContent>
+                  </Popover>
+                }
+              </section>
+            ))}
 
-                {/*Add comment form*/}
-                <form onSubmit={(e) => {
-                    e.preventDefault(); // Prevent the default form submission behavior
-                    handleCommentWorkout();
-                    setCommentText('');  //Clear the input field after submission
-                  }}
-                    className="flex flex-row gap-2"
-                  >
+            {/*Add comment form*/}
+            <form className="flex flex-row gap-2" onSubmit={(e) => {
+                e.preventDefault(); // Prevent the default form submission behavior
+                handleCommentWorkout();
+                setCommentText(''); //Clear the input field after submission
+              }}>
 
-                  <div className="relative flex-grow">
-                    <Input
-                      type="text"
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      placeholder="Add a comment"
-                      className="input-class w-full pr-10 text-black dark:text-white" // Add padding to the right to make space for the button
-                      required 
-                    />
-                    <button type="submit" className="absolute right-0 top-0 mt-2 mr-2 hover:cursor-pointer">
-                      <SendHorizontal size={26} color="red"/>
-                    </button>
-                  </div>
-
-                </form>
+              <div className="relative flex-grow">
+                <Input
+                  type="text"
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  placeholder="Add a comment"
+                  className="input-class pr-10 text-black dark:text-white"
+                  required 
+                />
+                <button type="submit" className="absolute right-0 top-0 mt-2 mr-2 hover:cursor-pointer">
+                  <SendHorizontal size={26} color="red"/>
+                </button>
               </div>
-            )}  
+            </form>
           </div>
-        </div>
+        )}  
       </CardFooter>
     </Card>
   );

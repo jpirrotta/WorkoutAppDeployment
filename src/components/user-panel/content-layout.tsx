@@ -13,7 +13,7 @@ export function ContentLayout({
   className,
 }: ContentLayoutProps) {
   return (
-    <div>
+    <div className='bg-background'>
       <Navbar title={title} />
       <div className={cn('container pt-8 pb-8 px-4', className)}>
         {children}

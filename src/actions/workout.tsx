@@ -74,12 +74,6 @@ async function updateWorkout(userId: string, workoutId: string, workoutUpdateDat
             return { title: 'Workout not found.', message: 'Unable to find Workout for current User' };
         }
 
-        // set id for the exercise to be added
-        if (workoutUpdateData.exercise) {
-            const exerciseId: number = workout.exercises.length + 1
-            workoutUpdateData.exercise.id = String(exerciseId)
-        }
-
         logger.info(`Workout found, now updating...`);
 
         // Manually update workout fields (had issues using set method from mongoose)

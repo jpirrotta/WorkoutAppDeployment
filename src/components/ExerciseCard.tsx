@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,16 @@ import logger from '@/lib/logger';
 import { selectedExercisesAtom } from '@/store';
 import { useAtom } from 'jotai';
 
-interface ExerciseCardProps {
+import { Star } from 'lucide-react'; // Import the star icon
+import { addFavoriteExercise, removeFavoriteExercise } from '@/actions/favExercises';
+
+// Import the server action
+import { useUser } from '@clerk/clerk-react';
+import { useUserFavourites } from '@/hooks/exercises/getFavourites';
+import setFav from '@/hooks/exercises/setFav';
+import useFavMutate from '@/hooks/exercises/setFav';
+
+type ExerciseCardProps = {
   readonly exercise: Exercise;
   closeIcon?: (exerciseId: string) => React.ReactNode;
   CreateWorkoutFlag?: boolean;
@@ -30,6 +39,9 @@ interface ExerciseCardProps {
 export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, className }: ExerciseCardProps) {
   const [showDemo, setShowDemo] = useState(true);
   const [SelectedExercises, setSelectedExercises] = useAtom(selectedExercisesAtom);
+  const [isFavorited, setIsFavorited] = useState(false); // State to track if the exercise is favorited
+  const mutation = useFavMutate();
+  const { user, isSignedIn, isLoaded } = useUser();
 
   const ImageToggler = () => {
     setShowDemo((prev) => !prev);
@@ -46,15 +58,55 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
       });
     }
   }
+  const handleFavoriteToggle = () => {
+    if (!isSignedIn) return; // Only handle favorites if the user is signed in
+    setIsFavorited((prev) => !prev);
+    if (!isFavorited) {
+      mutation.mutate({ userId: user.id, exerciseId: exercise.id, option: "add" });
+    } else {
+      mutation.mutate({ userId: user.id, exerciseId: exercise.id, option: "remove" });
+    }
+  };
+
+  const { data: favExercises, isLoading, isError } = useUserFavourites(user?.id);
+  useEffect(() => {
+    if (isLoaded && isSignedIn && user) {
+      if (!isLoading && !isError && favExercises) {
+        if (favExercises.includes(exercise.id)) {
+          setIsFavorited(true);
+        }
+      }
+    }
+  }, [isLoaded, isSignedIn, user, exercise.id, favExercises, isLoading, isError]);
+
   return (
     <div className='cursor-pointer' onClick={onExerciseSelect}>
       <Card
         className={cn(
           'bg-slate-700 border-primary md:transform md:hover:scale-105 md:transition-transform md:duration-200',
-          className
-        )}
+          className)}
         key={exercise.id}
       >
+
+        {closeIcon && <>{closeIcon(exercise.id)}</>}
+
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-secondary uppercase text-center">
+              {exercise.name}
+            </CardTitle>
+            {isSignedIn && (
+              <Button variant="link" onClick={handleFavoriteToggle}>
+                <Star
+                  className={isFavorited ? 'text-yellow-500' : 'text-gray-500'}
+                  fill={isFavorited ? 'currentColor' : 'none'}
+                />
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+
+        {/* conditionally rendering close icon for exercise in workouts */}
         {closeIcon && <>{closeIcon(exercise.id)}</>}
 
         {/* conditionally rendered checkbox for letting user select exercise for new workout */}
@@ -67,11 +119,6 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
           </div>
         )}
 
-        <CardHeader>
-          <CardTitle className="text-secondary uppercase text-center">
-            {exercise.name}
-          </CardTitle>
-        </CardHeader>
         <CardContent>
           {showDemo ? (
             <div className="flex justify-center items-center flex-col">
@@ -119,6 +166,6 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
           {exercise.secondaryMuscles.join(', ')}
         </CardFooter>
       </Card>
-    </div>
+    </div >
   );
 }

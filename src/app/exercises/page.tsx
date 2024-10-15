@@ -10,8 +10,6 @@ import { LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExercisesSearchBar from '@/components/ExerciseSearchBar';
 
-import { useSetAtom } from 'jotai';
-import { limitAtom } from '@/store';
 import { Exercise } from '@/types';
 import { set } from 'lodash';
 
@@ -19,7 +17,7 @@ export default function ExercisePage() {
   const [searchQuery, setSearchQuery] = useState<string>();
   const [limit, setLimit] = useState(6);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   let content = <></>;
   const { data: exercises, error, isLoading } = useExercises();
 
@@ -61,7 +59,7 @@ export default function ExercisePage() {
     console.log(filteredExercises);
   }
 
-  if (isLoading) {
+  if (isLoading || !isLoaded) {
     content = (
       <div className="flex justify-center items-center h-screen">
         <LoaderCircle className="text-primary text-6xl animate-spin" />

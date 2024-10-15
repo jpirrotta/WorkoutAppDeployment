@@ -25,22 +25,26 @@ export default function ExercisePage() {
 
   useEffect(() => {
     if (exercises) {
-      const filtered = exercises.filter((exercise: Exercise) => {
-        if (!searchQuery) {
-          return true;
-        }
-        return exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
-      });
+      let filtered = exercises;
+
+      // Apply search filter
+      if (searchQuery) {
+        filtered = filtered.filter((exercise: Exercise) =>
+          exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      // Apply favorites filter
       if (favExercises && favExercises.length > 0 && showFav) {
-        console.log('Fav exercises:', favExercises);
-        const favExercisesFiltered = filtered.filter((exercise: Exercise) => {
-          return favExercises.includes(exercise.id);
-        });
-        setFilteredExercises(favExercisesFiltered.slice(0, limit));
+        filtered = filtered.filter((exercise: Exercise) =>
+          favExercises.includes(exercise.id)
+        );
       }
-      else {
-        setFilteredExercises(filtered.slice(0, limit));
-      }
+
+      // Apply limit
+      setFilteredExercises(filtered.slice(0, limit));
+    } else {
+      setFilteredExercises(undefined);
     }
   }, [exercises, searchQuery, limit, favExercises, showFav]);
 
@@ -64,6 +68,11 @@ export default function ExercisePage() {
     console.log('Show more clicked');
     setLimit((prev) => prev + 6);
   };
+
+  const handleShowFav = () => {
+    setShowFav((prev) => !prev);
+    setSearchQuery(undefined)
+  }
 
   if (filteredExercises) {
     console.log(filteredExercises);
@@ -108,7 +117,7 @@ export default function ExercisePage() {
           <Button
             className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
             variant="link"
-            onClick={() => setShowFav((prev) => !prev)}
+            onClick={handleShowFav}
           >
             {!showFav ? 'Show Favourites Only' : 'Show All'}
           </Button>

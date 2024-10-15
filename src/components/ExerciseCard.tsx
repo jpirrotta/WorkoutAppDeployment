@@ -16,6 +16,8 @@ import { Star } from 'lucide-react'; // Import the star icon
 import { addFavoriteExercise, removeFavoriteExercise } from '@/actions/favExercises'; // Import the server action
 import { useUser } from '@clerk/clerk-react';
 import { useUserFavourites } from '@/hooks/exercises/getFavourites';
+import setFav from '@/hooks/exercises/setFav';
+import useFavMutate from '@/hooks/exercises/setFav';
 
 type ExerciseCardProps = {
   readonly exercise: Exercise;
@@ -30,7 +32,7 @@ export default function ExerciseCard({
 }: ExerciseCardProps) {
   const [showDemo, setShowDemo] = useState(true);
   const [isFavorited, setIsFavorited] = useState(false); // State to track if the exercise is favorited
-
+  const mutation = useFavMutate();
   const { user, isSignedIn, isLoaded } = useUser();
 
   const ImageToggler = () => {
@@ -39,12 +41,11 @@ export default function ExerciseCard({
 
   const handleFavoriteToggle = () => {
     if (!isSignedIn) return; // Only handle favorites if the user is signed in
-
     setIsFavorited((prev) => !prev);
     if (!isFavorited) {
-      addFavoriteExercise(user.id, exercise.id);
+      mutation.mutate({ userId: user.id, exerciseId: exercise.id, option: "add" });
     } else {
-      removeFavoriteExercise(user.id, exercise.id);
+      mutation.mutate({ userId: user.id, exerciseId: exercise.id, option: "remove" });
     }
   };
 

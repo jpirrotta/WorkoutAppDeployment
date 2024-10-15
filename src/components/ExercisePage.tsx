@@ -58,7 +58,7 @@ export default function ExercisePage({ title = 'Our Exercises!', navbarFlag = tr
 
                 <ExercisesSearchBar onSearch={handleSearch} />
 
-                <ExerciseCards exercises={exercises} CreateWorkoutFlag={title.includes('Select')} />
+                <ExerciseCards exercises={exercises} CreateWorkoutFlag={title.includes('Workout')} existingWorkoutFlag={navbarFlag} />
                 <Button
                     className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
                     variant="link"

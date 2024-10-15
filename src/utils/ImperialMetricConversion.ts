@@ -24,9 +24,18 @@ const cmToFt = (height: number): number => {
 const ImperialMetricConversion = (
   selectedTab: 'imperial' | 'metric',
   weight?: number,
-  height?: number
+  height?: number,
+  waist?: number,
+  neck?: number,
+  hip?: number
 ) => {
-  let convertedData: { weight?: number; height?: number } = {};
+  let convertedData: {
+    weight?: number;
+    height?: number;
+    waist?: number;
+    neck?: number;
+    hip?: number
+  } = {};
 
   // Convert weight and height to numbers if they are not undefined
   if (weight !== undefined) {
@@ -42,6 +51,30 @@ const ImperialMetricConversion = (
       convertedData.height = cmToFt(height);
     } else if (selectedTab === 'metric') {
       convertedData.height = ftToCm(height);
+    }
+  }
+
+  if (waist !== undefined) {
+    if (selectedTab === 'imperial') {
+      convertedData.waist = cmToFt(waist);
+    } else if (selectedTab === 'metric') {
+      convertedData.waist = ftToCm(waist);
+    }
+  }
+
+  if (neck !== undefined) {
+    if (selectedTab === 'imperial') {
+      convertedData.neck = cmToFt(neck);
+    } else if (selectedTab === 'metric') {
+      convertedData.neck = ftToCm(neck);
+    }
+  }
+
+  if (hip !== undefined) {
+    if (selectedTab === 'imperial') {
+      convertedData.hip = cmToFt(hip);
+    } else if (selectedTab === 'metric') {
+      convertedData.hip = ftToCm(hip);
     }
   }
 

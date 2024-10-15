@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -56,6 +56,17 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
         key={exercise.id}
       >
         {closeIcon && <>{closeIcon(exercise.id)}</>}
+
+        {/* conditionally rendered checkbox for letting user select exercise for new workout */}
+        {CreateWorkoutFlag && (
+          <div className='flex mt-2 mr-2 justify-end'>
+            <Checkbox
+              className='rounded-sm'
+              id={exercise.id}
+              checked={SelectedExercises.includes(exercise)} />
+          </div>
+        )}
+
         <CardHeader>
           <CardTitle className="text-secondary uppercase text-center">
             {exercise.name}
@@ -82,16 +93,6 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
             </Button>
           )}
 
-          {/* conditionally rendered checkbox for letting user select exercise for new workout */}
-          {CreateWorkoutFlag && (
-            <div className='flex mt-2 mr-2 justify-end'>
-              <Checkbox
-                className='rounded-sm'
-                id={exercise.id}
-                checked={SelectedExercises.includes(exercise)} />
-            </div>
-          )}
-          
           <CardDescription className="text-secondary capitalize">
             <strong>Target:</strong> {exercise.target}
             <br />

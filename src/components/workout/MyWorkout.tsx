@@ -1,10 +1,9 @@
 // src/components/workout/MyWorkout.jsx
 'use client';
-import { FC, memo } from 'react';
-import ExerciseCards from '../ExerciseCards';
-import { Exercise, Workout } from '@/types';
+import { FC, memo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Trash2, CirclePlay } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 import { Button } from '@/components/ui/button';
 import {
     useWorkoutDelete,
@@ -22,11 +21,29 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+    Menubar,
+    MenubarContent,
+    MenubarItem,
+    MenubarMenu,
+    MenubarSeparator,
+    MenubarShortcut,
+    MenubarTrigger,
+} from "@/components/ui/menubar"
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion"
 import { truncateText } from '@/utils/trucateText';
-import { X } from 'lucide-react';
+import { Trash2, CirclePlay, X, EllipsisVertical } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { useRouter } from 'next/navigation';
+
+import { Exercise, Workout } from '@/types';
+import ExerciseCards from '../ExerciseCards';
+import ExercisePage from '../ExercisePage';
 
 type MyWorkoutProps = {
     workout: Workout
@@ -35,6 +52,10 @@ type MyWorkoutProps = {
 
 const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
     const router = useRouter();
+    const addExerciseSectionRef = useRef<HTMLDivElement>(null);
+    const [deleteExeDialogOpen, setDeleteExeDialogOpen] = useState(false);
+    const [existingExeState, setExistingExeState] = useState(workout.name);
+
     // mutation hooks
     const workoutDeleteMutation = useWorkoutDelete();
     const ExerciseRemoveMutation = useExerciseRemove();
@@ -80,11 +101,13 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
     const DeleteWorkoutDialog = memo(function DeleteWorkoutDialog({
         triggerNode,
     }: {
-        triggerNode: React.ReactNode;
+        triggerNode?: React.ReactNode;
     }) {
         return (
-            <AlertDialog>
-                <AlertDialogTrigger asChild>{triggerNode}</AlertDialogTrigger>
+            <AlertDialog open={deleteExeDialogOpen} onOpenChange={setDeleteExeDialogOpen}>
+                <AlertDialogTrigger asChild>
+                    {triggerNode}
+                </AlertDialogTrigger>
                 <AlertDialogContent className="border-border">
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -122,7 +145,11 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
     }) {
         return (
             <AlertDialog>
-                <AlertDialogTrigger asChild>{triggerNode}</AlertDialogTrigger>
+                <div className="flex mt-2 mr-2 justify-end">
+                    <AlertDialogTrigger asChild>
+                        {triggerNode}
+                    </AlertDialogTrigger>
+                </div>
                 <AlertDialogContent className="border-border">
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -146,6 +173,79 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
         );
     });
 
+    const WorkoutMenuBar = memo(function WorkoutMenuBar() {
+        return (
+            <Menubar>
+                <MenubarMenu>
+                    <MenubarTrigger><EllipsisVertical /></MenubarTrigger>
+                    <MenubarContent className='pb-2 space-y-2'>
+                        <MenubarItem onClick={handlePlayWorkout}>
+                            Play it
+                            <MenubarShortcut>
+                                <CirclePlay />
+                            </MenubarShortcut>
+                        </MenubarItem>
+                        <MenubarItem onClick={() => setDeleteExeDialogOpen(true)}>
+                            Delete
+                            <MenubarShortcut>
+                                <Trash2 />
+                            </MenubarShortcut>
+                        </MenubarItem>
+                        <MenubarSeparator />
+                        <MenubarItem onClick={navigateToAddExerciseSection}>Add Exercises
+                            <MenubarShortcut className='text-2xl'>
+                                +
+                            </MenubarShortcut>
+                        </MenubarItem>
+                    </MenubarContent>
+                </MenubarMenu>
+            </Menubar>
+        );
+    });
+
+    const ExerciseExistingList = () => {
+        return (
+            <Accordion type="single" collapsible value={existingExeState} className="w-full">
+                <AccordionItem value={workout.name}>
+                    <AccordionTrigger className='border border-gray-500 rounded-xl px-2'>
+                        <div className={`flex items-center justify-between space-x-4 px-4`}>
+                            <h4 className="text-primary md:text-2xl">
+                                Existing Exercise List
+                            </h4>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <div className="mt-10">
+                            <ExerciseCards
+                                exercises={workout.exercises}
+                                closeIcon={generateCloseIcon}
+                            />
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        );
+    };
+
+    const ExerciseToAddList = () => {
+        return (
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value='workout-item-1'>
+                    <AccordionTrigger className='border border-gray-500 rounded-xl px-2'>
+                        <div className={`flex items-center justify-between space-x-4 px-4`}>
+                            <h4 className="text-primary md:text-2xl">
+                                Exercise List
+                            </h4>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        {/* <ExercisePage title='Add Exercises to Your Workout' navbarFlag={false} /> */}
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        );
+    };
+
     // handle generating closeIcon for exercise cards
     const generateCloseIcon: (exerciseId: string) => React.ReactNode = (
         exerciseId: string
@@ -153,51 +253,42 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
         <DeleteExerciseDialog
             exerciseId={exerciseId}
             triggerNode={
-                <div className="flex mt-2 mr-2 justify-end">
-                    <X className="justify-end text-primary hover:cursor-pointer hover:opacity-70" />
-                </div>
+                <X className="justify-end text-primary hover:cursor-pointer hover:opacity-70" />
             }
         />
     );
 
+    // handle navigating user to exercise list to add section
+    const navigateToAddExerciseSection = () => {
+        if (addExerciseSectionRef.current) {
+            addExerciseSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     // if workout has exercises, display them or else related message
     return (
         <div className="bg-background gap-10">
-            <div className="flex justify-between sm:px-20 px-5 pt-10">
+            <div className="flex items-center justify-between sm:px-20 px-5 my-10">
                 <h1 className="text-2xl font-bold text-primary break-words w-2/5 hyphens-auto">
                     {workout.name}
                 </h1>
-                <div className="flex items-center gap-10">
-                    <div className="flex items-center">
-                        <Label htmlFor="workout-name" className="mr-2">
-                            Public
-                        </Label>
-                        <Switch
-                            id="airplane-mode"
-                            checked={workout.public}
-                            onCheckedChange={handleUpdateWorkoutVisibility}
-                        />
-                    </div>
-                    <Button variant="icon" size="icon" onClick={handlePlayWorkout}>
-                        <CirclePlay />
-                    </Button>
-                    <DeleteWorkoutDialog
-                        triggerNode={
-                            <Button variant="icon" size="icon">
-                                <Trash2 />
-                            </Button>
-                        }
+                <div className="flex items-center">
+                    <Label htmlFor="workout-name" className="mr-2">
+                        Public
+                    </Label>
+                    <Switch
+                        id="airplane-mode"
+                        checked={workout.public}
+                        onCheckedChange={handleUpdateWorkoutVisibility}
                     />
                 </div>
+                <WorkoutMenuBar />
             </div>
 
+            <DeleteWorkoutDialog />
+
             {workout.exercises.length ? (
-                <div className="mt-10">
-                    <ExerciseCards
-                        exercises={workout.exercises}
-                        closeIcon={generateCloseIcon}
-                    />
-                </div>
+                <ExerciseExistingList />
             ) : (
                 <p className="w-full mt-10 text-center">
                     There seems to be no exercise in selected workout yet.{' '}
@@ -206,6 +297,11 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
                     </Link>
                 </p>
             )}
+
+            <div className='mt-16' ref={addExerciseSectionRef}>
+                {/* Exercise listing */}
+                <ExerciseToAddList />
+            </div>
         </div>
     );
 };

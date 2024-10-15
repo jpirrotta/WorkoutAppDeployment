@@ -12,7 +12,7 @@ import {
 import { useAtom, useAtomValue } from 'jotai';
 import { totalStepsAtom, completedStepsAtom, carouselApiAtom } from '@/store';
 import { Exercise } from '@/types';
-import { useGetAllUserWorkouts } from '@/hooks/workout/useWorkoutQueries';
+import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 
 export default function WorkoutPlayer({ id }: { id: string }) {
   const [api, setApi] = useAtom(carouselApiAtom);
@@ -20,7 +20,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
   const completedSteps = useAtomValue(completedStepsAtom);
   const [exercises, setExercises] = useState<Exercise[]>([]);
 
-  const { data } = useGetAllUserWorkouts();
+  const { data } = useGetAllWorkouts();
 
   console.log('exercises', exercises);
 

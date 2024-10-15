@@ -1,5 +1,6 @@
 import { ContentLayout } from '@/components/user-panel/content-layout';
 import WorkoutPlayer from '@/components/workout/player';
+
 export default function WorkoutPlayerPage({
   params,
 }: {

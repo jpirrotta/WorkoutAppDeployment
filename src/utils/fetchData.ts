@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import { limitAtom } from '../store';
+import logger from '@/lib/logger';
 
 const API_KEY = process.env.NEXT_PUBLIC_RAPID_API_KEY;
 const API_HOST = 'https://exercisedb.p.rapidapi.com/exercises';
@@ -19,6 +20,7 @@ export const ExerciseOptions: RequestInit = {
 
 // Use Fetch to get the data from the API
 export const fetchExercises = async (url: string = API_HOST): Promise<any> => {
+  logger.info(`FETCHING exercises from ${url}`);
   const response = await fetch(url, ExerciseOptions);
   return response.json();
 };

@@ -158,7 +158,7 @@ const CreateWorkout = () => {
             </div>
 
             {/* Exercise listing */}
-            <ExercisePage title='Select Exercises for your Workout' navbarFlag={false} />
+            {/* <ExercisePage title='Select Exercises for your Workout' navbarFlag={false} /> */}
         </div>
     )
 }

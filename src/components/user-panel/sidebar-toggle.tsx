@@ -16,7 +16,7 @@ export function SidebarToggle() {
     <div className="invisible lg:visible absolute top-[12px] -right-[16px] z-20">
       <Button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="rounded-md w-8 h-8"
+        className="rounded-md w-8 h-8 bg-background"
         variant="outline"
         size="icon"
       >

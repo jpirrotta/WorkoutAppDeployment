@@ -88,7 +88,7 @@ export default function ExercisePage() {
 
   if (exercises && !isSignedIn) {
     content = (
-      <div className="bg-background min-h-screen flex flex-col justify-between">
+      <div className="min-h-screen flex flex-col justify-between">
         <h1 className="text-primary italic font-semibold text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4">
           Our Exercises!
         </h1>
@@ -108,11 +108,7 @@ export default function ExercisePage() {
   } else if (exercises && isSignedIn) {
     content = (
       <ContentLayout title="Exercises">
-        <div className="bg-background min-h-screen flex flex-col justify-between">
-          <h1 className="text-primary italic font-semibold text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4">
-            Our Exercises!
-          </h1>
-
+        <div className="min-h-screen flex flex-col justify-between">
           <ExercisesSearchBar onSearch={handleSearch} />
           <Button
             className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"

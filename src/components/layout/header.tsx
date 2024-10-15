@@ -8,7 +8,6 @@ import { useState } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 // Icon imports
 import { StyledIcon } from '@/components/StyledIcon';
-import { Menu, X } from 'lucide-react';
 import { useHasMounted } from '@/hooks/useHasMounted';
 
 export default function Header() {
@@ -32,7 +31,6 @@ export default function Header() {
   return (
     <header>
       <div className="flex flex-row justify-between items-center py-2 dark:bg-background light:bg-gray-500">
-
         {/* TO DO: fix spacing between nav items and delete nav sections below */}
         <nav className="container basis-1/3 space-x-3 items-center hidden md:block mt-2"></nav>
         <div className="container basis-1/3 md:hidden"></div>
@@ -45,8 +43,6 @@ export default function Header() {
         <div className="pr-2 basis-1/3 flex justify-end">
           {isSignedIn ? (
             <UserButton
-              // TODO deal with afterSignOutUrl being deprecated soon
-              afterSignOutUrl="/"
               userProfileMode="navigation"
               userProfileUrl="/profile"
             />

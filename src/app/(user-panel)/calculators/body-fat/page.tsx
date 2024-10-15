@@ -7,9 +7,6 @@ import { useForm } from 'react-hook-form';
 
 import { ImperialMetricConversion } from '@/utils/ImperialMetricConversion';
 
-import { useAtom } from 'jotai';
-import { measurementAtom } from '@/store';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -399,15 +396,19 @@ export default function BodyFatCalculator() {
                 </form>
             </Form>
 
-            {/* Display Results */}
-            {bodyFatPercentage !== null && (
-                <div className="mt-10 flex w-full flex-col items-center justify-center">
-                    <p className="text-lg font-medium">Your Body Fat Percentage:</p>
-                    <span className="text-xl font-bold">
-                        {bodyFatPercentage} %
-                    </span>
+            <div className="flex justify-center flex-col items-center mt-4">
+                <div className='border flex flex-col p-6 space-y-5 rounded-lg items-center'>
+                    <p className='flex items-center font-bold'>
+                        Your Body Fat Percentage:
+                        <span className={`ml-4 mr-2 text-primary text-3xl font-semibold
+              ${!bodyFatPercentage && 'opacity-70'}`}
+                        >
+                            {bodyFatPercentage ? bodyFatPercentage : 'N/A'}
+                        </span>
+                        %
+                    </p>
                 </div>
-            )}
+            </div>
         </section>
     );
 }

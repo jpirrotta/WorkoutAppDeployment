@@ -44,7 +44,7 @@ export default function ExercisesSearchBar({
   };
 
   return (
-    <section className="flex flex-col w-full light:text-foreground mb-5 px-8 py-8">
+    <section className="flex flex-col w-full light:text-foreground px-8 py-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField

@@ -5,21 +5,23 @@ import ExerciseCards from '@/components/ExerciseCards';
 import { useExercises } from '@/utils/fetchData';
 import { useUser } from '@clerk/clerk-react';
 import { ContentLayout } from '@/components/user-panel/content-layout';
-
 import { LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExercisesSearchBar from '@/components/ExerciseSearchBar';
-
 import { Exercise } from '@/types';
-import { set } from 'lodash';
+import { useUserFavourites } from '@/hooks/exercises/getFavourites';
+
 
 export default function ExercisePage() {
   const [searchQuery, setSearchQuery] = useState<string>();
   const [limit, setLimit] = useState(6);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>();
-  const { isSignedIn, isLoaded } = useUser();
+  const [showFav, setShowFav] = useState(false);
+  const { isSignedIn, isLoaded, user } = useUser();
   let content = <></>;
   const { data: exercises, error, isLoading } = useExercises();
+
+  const { data: favExercises } = useUserFavourites(user?.id);
 
   useEffect(() => {
     if (exercises) {
@@ -29,10 +31,18 @@ export default function ExercisePage() {
         }
         return exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
       });
-
-      setFilteredExercises(filtered.slice(0, limit));
+      if (favExercises && favExercises.length > 0 && showFav) {
+        console.log('Fav exercises:', favExercises);
+        const favExercisesFiltered = filtered.filter((exercise: Exercise) => {
+          return favExercises.includes(exercise.id);
+        });
+        setFilteredExercises(favExercisesFiltered.slice(0, limit));
+      }
+      else {
+        setFilteredExercises(filtered.slice(0, limit));
+      }
     }
-  }, [exercises, searchQuery, limit]);
+  }, [exercises, searchQuery, limit, favExercises, showFav]);
 
   if (!exercises) {
     return (
@@ -95,6 +105,13 @@ export default function ExercisePage() {
           </h1>
 
           <ExercisesSearchBar onSearch={handleSearch} />
+          <Button
+            className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
+            variant="link"
+            onClick={() => setShowFav((prev) => !prev)}
+          >
+            {!showFav ? 'Show Favourites Only' : 'Show All'}
+          </Button>
 
           <ExerciseCards exercises={filteredExercises ? filteredExercises : exercises} />
           <Button

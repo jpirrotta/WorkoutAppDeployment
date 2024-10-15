@@ -2,7 +2,9 @@ import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { UserJSON, WebhookEvent } from '@clerk/nextjs/server';
 import { createUser, deleteUser, updateUser } from '@/lib/user';
+import logger from '@/lib/logger';
 export async function POST(req: Request) {
+  logger.info('Webhook received');
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
@@ -53,10 +55,10 @@ export async function POST(req: Request) {
   const data = evt.data as UserJSON;
   const fullName = data.first_name + ' ' + data.last_name;
   const eventType = evt.type;
-  console.log(`Webhook with and ID of ${data.id} and type of ${eventType}`);
-  console.log('Webhook body:', body);
-  console.log('\n\n\n\ndata', data);
-  console.log('\n\n\n\nobject', data.object);
+  logger.info(`Webhook with and ID of ${data.id} and type of ${eventType}`);
+  logger.info('Webhook body:', body);
+  logger.info('\n\n\n\ndata', data);
+  logger.info('\n\n\n\nobject', data.object);
   if (eventType === 'user.created') {
     try {
       await createUser(data.id, fullName);

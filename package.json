@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"cross-env next dev\" \"ngrok http --domain=lemming-robust-badly.ngrok-free.app 3000\"",
+    "dev": "concurrently \"cross-env next dev\" \"ngrok http --url=humble-freely-raptor.ngrok-free.app 3000\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

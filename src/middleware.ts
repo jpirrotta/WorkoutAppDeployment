@@ -16,7 +16,7 @@ const isProtectedRoute = createRouteMatcher([
 
 // Define the route to be ignored by the middleware
 // webhook routes should be ignored
-const ignoreRoute = createRouteMatcher(['/api/webhooks(/.*)?']);
+const ignoreRoute = createRouteMatcher(['/api/webhooks(.*)']);
 
 export default clerkMiddleware((auth, req) => {
   if (ignoreRoute(req)) {

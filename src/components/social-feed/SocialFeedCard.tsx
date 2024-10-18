@@ -188,7 +188,7 @@ export default function SocialWorkoutCard({
 
 
   return (
-    <Card className="lg:w-1/3 md:w-1/2 sm:w-1/2 border-primary bg-background dark:bg-background text-black dark:text-white">
+    <Card className="w-4/5 lg:w-1/3 md:w-1/2 sm:w-2/3 border-primary bg-background dark:bg-background text-black dark:text-white">
 
       <CardHeader>
         <div className="flex flex-row gap-x-2 items-center justify-between">

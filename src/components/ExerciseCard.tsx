@@ -149,14 +149,14 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
           <br />
 
           {/* modal trigger btn for adding exercise to desired workout */}
-          {/* <AddExerciseToWorkout
+          <AddExerciseToWorkout
             triggerNode={
               <Button className="px-0" variant="link">
                 Add To Workout
               </Button>
             }
             exerciseToAdd={exercise}
-          /> */}
+          />
         </CardContent>
 
         <CardFooter className="capitalize text-secondary">

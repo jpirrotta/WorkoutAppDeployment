@@ -55,9 +55,6 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
     const router = useRouter();
     const addExerciseSectionRef = useRef<HTMLDivElement>(null);
     const [deleteExeDialogOpen, setDeleteExeDialogOpen] = useState(false);
-    const [existingExeState, setExistingExeState] = useState(workout.name);
-    const [selectedExercises, setSelectedExercises] = useAtom(selectedExercisesAtom)
-    const [isAddExeListOpen, setIsAddExeListOpen] = useState(false);
 
     // mutation hooks
     const workoutDeleteMutation = useWorkoutDelete();

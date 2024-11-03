@@ -107,7 +107,12 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
               {exercise.name}
             </CardTitle>
             {isSignedIn && (
-              <Button variant="link" onClick={handleFavoriteToggle}>
+              <Button variant="link" onClick={(e) => {
+                e.stopPropagation()
+                handleFavoriteToggle()
+              }
+              }
+              >
                 <Star
                   className={isFavorited ? 'text-yellow-500' : 'text-gray-500'}
                   fill={isFavorited ? 'currentColor' : 'none'}
@@ -128,12 +133,24 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
                 className="rounded-md"
                 unoptimized
               />
-              <Button className="px-0" variant="link" onClick={ImageToggler}>
+              <Button className="px-0" variant="link" onClick={
+                (e) => {
+                  e.stopPropagation();
+                  ImageToggler()
+                }
+              }
+              >
                 Hide Demo
               </Button>
             </div>
           ) : (
-            <Button className="px-0" variant="link" onClick={ImageToggler}>
+            <Button className="px-0" variant="link" onClick={
+              (e) => {
+                e.stopPropagation()
+                ImageToggler()
+              }
+            }
+            >
               Show Demo
             </Button>
           )}

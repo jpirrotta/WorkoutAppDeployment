@@ -152,7 +152,14 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
 
     return (
         <Dialog open={isAddExeOpen} onOpenChange={setIsAddExeOpen}>
-            <DialogTrigger asChild>{triggerNode}</DialogTrigger>
+            <DialogTrigger
+                asChild
+                onClick={(e) =>
+                    e.stopPropagation()
+                }
+            >
+                {triggerNode}
+            </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Add Exercise to any Workout</DialogTitle>

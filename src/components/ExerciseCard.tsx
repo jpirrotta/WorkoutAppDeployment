@@ -57,6 +57,7 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
       });
     }
   }
+
   const handleFavoriteToggle = () => {
     if (!isSignedIn) return; // Only handle favorites if the user is signed in
     setIsFavorited((prev) => !prev);
@@ -109,8 +110,7 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
               <Button variant="link" onClick={(e) => {
                 e.stopPropagation()
                 handleFavoriteToggle()
-              }
-              }
+              }}
               >
                 <Star
                   className={isFavorited ? 'text-yellow-500' : 'text-gray-500'}
@@ -162,19 +162,7 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
             <strong>Body Part:</strong> {exercise.bodyPart}
             <br />
           </CardDescription>
-          <br />
-
-          {/* sets, reps and weights numeric fields */}
-          <div>
-            <div>
-            <strong>Sets:</strong>
-
-            </div>
-            <br />
-            <strong>Reps:</strong>
-            <br />
-            <strong>Weights:</strong>
-          </div>
+          {/* <br /> */}
 
         </CardContent>
 

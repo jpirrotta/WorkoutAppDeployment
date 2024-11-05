@@ -21,7 +21,6 @@ import { selectedExercisesAtom } from '@/store';
 import { useAtom } from 'jotai';
 
 import { Star } from 'lucide-react'; // Import the star icon
-import { addFavoriteExercise, removeFavoriteExercise } from '@/actions/favExercises';
 
 // Import the server action
 import { useUser } from '@clerk/clerk-react';
@@ -165,20 +164,36 @@ export default function ExerciseCard({ exercise, closeIcon, CreateWorkoutFlag, c
           </CardDescription>
           <br />
 
+          {/* sets, reps and weights numeric fields */}
+          <div>
+            <div>
+            <strong>Sets:</strong>
+
+            </div>
+            <br />
+            <strong>Reps:</strong>
+            <br />
+            <strong>Weights:</strong>
+          </div>
+
+        </CardContent>
+
+        <CardFooter className="capitalize text-secondary items-start flex flex-col gap-5">
+          <div>
+            <strong>Secondary Muscles:&nbsp;</strong>
+            {exercise.secondaryMuscles.join(', ')}
+          </div>
           {/* modal trigger btn for adding exercise to desired workout */}
           <AddExerciseToWorkout
             triggerNode={
-              <Button className="px-0" variant="link">
-                Add To Workout
-              </Button>
+              <div className='w-full'>
+                <Button className="px-2" variant='outline'>
+                  Add To Workout
+                </Button>
+              </div>
             }
             exerciseToAdd={exercise}
           />
-        </CardContent>
-
-        <CardFooter className="capitalize text-secondary">
-          <strong>Secondary Muscles:&nbsp;</strong>
-          {exercise.secondaryMuscles.join(', ')}
         </CardFooter>
       </Card>
     </div >

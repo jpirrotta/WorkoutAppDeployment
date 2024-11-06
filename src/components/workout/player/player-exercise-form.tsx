@@ -14,12 +14,25 @@ import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { Exercise, Set, playerFormSchema, FlatSets } from '@/types';
-
+import {
+  currentExerciseIndexAtom,
+  numberOfSetsAtom,
+  currentSetIndexAtom,
+  completedSetsAtom,
+} from '@/store';
+import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 type ExerciseFormProps = {
   exercise: Exercise;
 };
 
 export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useAtom(
+    currentExerciseIndexAtom
+  );
+  const setNumberOfSets = useSetAtom(numberOfSetsAtom);
+  const currentSetIndex = useAtomValue(currentSetIndexAtom);
+  const completedSets = useAtomValue(completedSetsAtom);
+
   // Function to flatten the nested sets structure
   const flattenSets = (nestedSets: Set[]): FlatSets => {
     const flatSets: FlatSets = [];
@@ -60,9 +73,9 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
   // Flatten the sets
   const flatSets = flattenSets(exercise.sets);
   console.log('flatSets', flatSets);
+  setNumberOfSets(flatSets.length);
 
   // Reconstruct the sets
-  const nestedSets = reconstructSets(flatSets);
   const playerForm = useForm<z.infer<typeof playerFormSchema>>({
     resolver: zodResolver(playerFormSchema),
     defaultValues: {
@@ -78,18 +91,23 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
   function onSubmit(values: z.infer<typeof playerFormSchema>) {
     console.log('values', values);
     const newValues = reconstructSets(values.sets);
-    console.log('\n\n\n\n\nxxxxxxxxxxxxxxxxXX\n', newValues);
+    console.log('new values', newValues);
   }
-  //
-
-  console.log(`form errors`, playerForm.formState.errors);
 
   return (
     <Form {...playerForm}>
       <form onSubmit={playerForm.handleSubmit(onSubmit)}>
         {fields.map((field, index) => (
-          <div key={field.id} className="flex flex-row justify-between pb-2">
-            <p>{index}</p>
+          <div
+            key={field.id}
+            className={`flex flex-row justify-between pb-2 ${
+              currentSetIndex === index ? 'bg-background' : ''
+            }`}
+          >
+            <p>
+              {index + 1} {completedSets.at(index) === true && '✅'}{' '}
+              {completedSets.at(index) === false && '❌'}
+            </p>
             <FormField
               control={playerForm.control}
               name={`sets.${index}.reps`}

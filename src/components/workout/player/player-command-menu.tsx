@@ -2,23 +2,40 @@
 
 import { Button } from '@/components/ui/button';
 import {
-  selectedStepAtom,
-  completedStepsAtom,
+  currentExerciseIndexAtom,
+  currentSetIndexAtom,
+  completedExerciseAtom,
   carouselApiAtom,
   isPlayingAtom,
-  totalStepsAtom,
+  totalExercisesAtom,
+  numberOfSetsAtom,
+  completedSetsAtom,
 } from '@/store';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import { Play, StepBack, StepForward, Check, X, Pause } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Exercise } from '@/types';
 
-export default function WorkoutPlayerCommandMenu() {
-  const [totalSteps, setTotalSteps] = useAtom(totalStepsAtom);
+type WorkoutPlayerCommandMenuProps = {
+  exercises?: Exercise[];
+};
 
-  const [selectedStep, setSelectedStep] = useAtom(selectedStepAtom);
-  const [completedSteps, setCompletedSteps] = useAtom(completedStepsAtom);
+export default function WorkoutPlayerCommandMenu({
+  exercises,
+}: WorkoutPlayerCommandMenuProps) {
+  const [totalSteps, setTotalSteps] = useAtom(totalExercisesAtom);
+
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useAtom(
+    currentExerciseIndexAtom
+  );
+  const [completedExercise, setCompletedExercise] = useAtom(
+    completedExerciseAtom
+  );
+  const [currentSetIndex, setCurrentSetIndex] = useAtom(currentSetIndexAtom);
   const setApi = useSetAtom(carouselApiAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
+  const numberOfSets = useAtomValue(numberOfSetsAtom);
+  const [completedSets, setCompletedSets] = useAtom(completedSetsAtom);
   const [animatingButton, setAnimatingButton] = useState<string | null>(null);
 
   const handleClick = (buttonName: string, callback: () => void) => {
@@ -30,11 +47,45 @@ export default function WorkoutPlayerCommandMenu() {
   };
 
   const removeCompletedStep = () => {
-    setCompletedSteps((prev) => prev.filter((step) => step !== selectedStep));
+    if (currentSetIndex >= 0 && currentSetIndex < numberOfSets - 1) {
+      setCurrentSetIndex((prev) => prev + 1);
+      setCompletedSets((prev) => {
+        const updated = [...prev];
+        updated[currentSetIndex] = false;
+        return updated;
+      });
+      return;
+    }
+    setCurrentSetIndex((prev) => prev + 1);
+    setCompletedSets((prev) => {
+      const updated = [...prev];
+      updated[currentSetIndex] = false;
+      return updated;
+    });
+    setCompletedExercise((prev) => [...prev, currentExerciseIndex]);
+
+    setCurrentSetIndex(0);
+    nextStep();
   };
 
   const addStep = () => {
-    setCompletedSteps((prev) => [...prev, selectedStep]);
+    if (currentSetIndex < numberOfSets - 1) {
+      setCurrentSetIndex((prev) => prev + 1);
+      setCompletedSets((prev) => {
+        const updated = [...prev];
+        updated[currentSetIndex] = true;
+        return updated;
+      });
+      return;
+    }
+    setCurrentSetIndex((prev) => prev + 1);
+    setCompletedSets((prev) => {
+      const updated = [...prev];
+      updated[currentSetIndex] = true;
+      return updated;
+    });
+    setCompletedExercise((prev) => [...prev, currentExerciseIndex]);
+    setCurrentSetIndex(0);
     nextStep();
   };
 
@@ -44,20 +95,28 @@ export default function WorkoutPlayerCommandMenu() {
 
   const nextStep = () => {
     setApi((prev) => {
-      const newIndex = (selectedStep + 1) % totalSteps;
+      const newIndex = (currentExerciseIndex + 1) % totalSteps;
       prev?.scrollTo(newIndex);
       return prev;
     });
-    setSelectedStep((prev) => (prev + 1) % totalSteps);
+
+    setCurrentExerciseIndex((prev) => (prev + 1) % totalSteps);
   };
 
   const prevStep = () => {
     setApi((prev) => {
-      const newIndex = (selectedStep - 1 + totalSteps) % totalSteps;
+      const newIndex = (currentExerciseIndex - 1 + totalSteps) % totalSteps;
       prev?.scrollTo(newIndex);
       return prev;
     });
-    setSelectedStep((prev) => (prev - 1 + totalSteps) % totalSteps);
+
+    if (currentSetIndex > 0) {
+      setCurrentSetIndex((prev) => prev - 1);
+      return;
+    }
+
+    setCurrentExerciseIndex((prev) => (prev - 1 + totalSteps) % totalSteps);
+    return;
   };
 
   useEffect(() => {
@@ -71,10 +130,7 @@ export default function WorkoutPlayerCommandMenu() {
 
   return (
     <menu className="flex flex-row gap-2 sm:gap-6 h-14 border-primary">
-      <Button
-        disabled={!completedSteps.includes(selectedStep)}
-        onClick={() => handleClick('remove', removeCompletedStep)}
-      >
+      <Button onClick={() => handleClick('remove', removeCompletedStep)}>
         <X
           className={animatingButton === 'remove' ? 'animate-grow-shrink' : ''}
         />
@@ -109,7 +165,7 @@ export default function WorkoutPlayerCommandMenu() {
       </Button>
 
       <Button
-        disabled={completedSteps.includes(selectedStep)}
+        disabled={completedExercise.includes(currentExerciseIndex)}
         onClick={() => handleClick('add', addStep)}
       >
         <Check

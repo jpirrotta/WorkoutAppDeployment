@@ -5,25 +5,35 @@ import * as ProgressPrimitive from '@radix-ui/react-progress';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { useAtom, useSetAtom } from 'jotai';
-import { carouselApiAtom, selectedStepAtom } from '@/store';
+import { useAtom, useSetAtom, useAtomValue } from 'jotai';
+import {
+  carouselApiAtom,
+  currentExerciseIndexAtom,
+  completedExerciseAtom,
+  currentSetIndexAtom,
+} from '@/store';
 import { Check } from 'lucide-react';
 
 interface WorkoutProgressProps
   extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
   steps: number;
-  completedSteps: number[];
 }
 
 const WorkoutProgress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   WorkoutProgressProps
->(({ className, value, completedSteps, steps, ...props }, ref) => {
-  const [selectedStep, setSelectedStep] = useAtom(selectedStepAtom);
+>(({ className, value, steps, ...props }, ref) => {
+  const [currentExerciseIndex, SetCurrentExerciseIndex] = useAtom(
+    currentExerciseIndexAtom
+  );
+  const completedExercise = useAtomValue(completedExerciseAtom);
+  const setCurrentSetIndex = useSetAtom(currentSetIndexAtom);
+
   const setApi = useSetAtom(carouselApiAtom);
 
   const handleClick = (index: number) => {
-    setSelectedStep(index);
+    setCurrentSetIndex(0);
+    SetCurrentExerciseIndex(index);
     setApi((prev) => {
       prev?.scrollTo(index);
       return prev;
@@ -42,13 +52,13 @@ const WorkoutProgress = React.forwardRef<
       <div className="flex flex-row justify-between">
         {Array.from({ length: steps }).map((_, index) => (
           <Button
-            variant={selectedStep === index ? 'default' : 'secondary'}
+            variant={currentExerciseIndex === index ? 'default' : 'secondary'}
             key={index}
             onClick={() => handleClick(index)}
             className="rounded-full"
             size="icon"
           >
-            {completedSteps.includes(index) ? <Check /> : index + 1}
+            {completedExercise.includes(index) ? <Check /> : index + 1}
           </Button>
         ))}
       </div>

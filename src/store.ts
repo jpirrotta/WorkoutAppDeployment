@@ -13,7 +13,6 @@ export const limitAtom = atom<number>(6);
 
 export const sidebarToggleAtom = atomWithStorage('sidebarToggle', true);
 
-
 // atoms for the workout player ( consider moving this to a separate store )
 
 // this will hold the current played workout which will be used
@@ -21,11 +20,17 @@ export const sidebarToggleAtom = atomWithStorage('sidebarToggle', true);
 export const selectedWorkoutAtom = atom<string | undefined>();
 
 // this will hold the current step of the workout (eg exercise 1, exercise 2)
-export const selectedStepAtom = atom<number>(0);
+export const currentExerciseIndexAtom = atom<number>(0);
 
-export const totalStepsAtom = atom<number>(0);
+export const completedExerciseAtom = atom<number[]>([]);
 
-export const completedStepsAtom = atom<number[]>([]);
+export const currentSetIndexAtom = atom<number>(0);
+
+export const completedSetsAtom = atom<boolean[]>([]);
+
+export const numberOfSetsAtom = atom<number>(0);
+
+export const totalExercisesAtom = atom<number>(0);
 
 export const carouselApiAtom = atom<CarouselApi>();
 

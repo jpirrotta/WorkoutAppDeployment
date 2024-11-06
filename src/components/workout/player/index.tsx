@@ -10,36 +10,74 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import { useAtom, useAtomValue } from 'jotai';
-import { totalStepsAtom, completedStepsAtom, carouselApiAtom } from '@/store';
+import {
+  totalExercisesAtom,
+  completedExerciseAtom,
+  carouselApiAtom,
+} from '@/store';
 import { Exercise } from '@/types';
 import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 
 // TODO remove once we have the actual data
 // eslint-disable-next-line react-hooks/exhaustive-deps
-const mockWorkoutData = {
-  sets: [
-    {
-      sets: 1,
-      reps: 10,
-      weight: 50,
-    },
-    {
-      sets: 2,
-      reps: 8,
-      weight: 55,
-    },
-    {
-      sets: 2,
-      reps: 6,
-      weight: 60,
-    },
-  ],
-};
+const mockWorkoutData = [
+  {
+    sets: [
+      {
+        sets: 1,
+        reps: 10,
+        weight: 50,
+      },
+      {
+        sets: 2,
+        reps: 8,
+        weight: 55,
+      },
+      {
+        sets: 2,
+        reps: 6,
+        weight: 60,
+      },
+    ],
+  },
+  {
+    sets: [
+      {
+        sets: 1,
+        reps: 8,
+        weight: 30,
+      },
+      {
+        sets: 3,
+        reps: 10,
+        weight: 55,
+      },
+    ],
+  },
+  {
+    sets: [
+      {
+        sets: 1,
+        reps: 10,
+        weight: 50,
+      },
+      {
+        sets: 1,
+        reps: 8,
+        weight: 55,
+      },
+      {
+        sets: 1,
+        reps: 6,
+        weight: 60,
+      },
+    ],
+  },
+];
 
 export default function WorkoutPlayer({ id }: { id: string }) {
   const [api, setApi] = useAtom(carouselApiAtom);
-  const [totalSteps, setTotalSteps] = useAtom(totalStepsAtom);
-  const completedSteps = useAtomValue(completedStepsAtom);
+  const [totalSteps, setTotalSteps] = useAtom(totalExercisesAtom);
   const [exercises, setExercises] = useState<Exercise[]>([]);
 
   const { data } = useGetAllWorkouts();
@@ -52,9 +90,9 @@ export default function WorkoutPlayer({ id }: { id: string }) {
       if (workout && workout.exercises) {
         // Set the exercises with mock sets data remove this when we have the actual data
         setExercises(
-          workout.exercises.map((exercise) => ({
+          workout.exercises.map((exercise, index) => ({
             ...exercise,
-            sets: mockWorkoutData.sets,
+            sets: mockWorkoutData[index].sets,
           }))
         );
         // setExercises(workout.exercises);
@@ -81,7 +119,6 @@ export default function WorkoutPlayer({ id }: { id: string }) {
       <Stopwatch />
       <WorkoutProgress
         value={60}
-        completedSteps={completedSteps}
         steps={totalSteps}
         className="w-[80%] sm:w-[60%]"
       />

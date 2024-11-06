@@ -27,7 +27,5 @@ export type User = {
   weightHistory?: WorkoutHistory[];
   bodyFatHistory?: WorkoutHistory[];
   workouts?: (Workout[] & Document);
-  savedWorkouts?: { workoutId: string }[];
   favExercises?: string[],
-
 };

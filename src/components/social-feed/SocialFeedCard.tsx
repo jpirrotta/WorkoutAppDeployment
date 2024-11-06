@@ -11,7 +11,7 @@ import usePublicWorkoutMutate from '@/hooks/public-workout/usePublicWorkoutMutat
 // Icons
 import {
   Heart,
-  Bookmark,
+  Download,
   SendHorizontal,
   Trash2 as Trash,
 } from 'lucide-react';
@@ -64,7 +64,6 @@ export default function SocialWorkoutCard({
   const mutateComment = usePublicWorkoutMutate('comment');
   const mutateUncomment = usePublicWorkoutMutate('uncomment');
   const mutateSave = usePublicWorkoutMutate('save');
-  const mutateUnsave = usePublicWorkoutMutate('unsave');
 
 
   // Mutation handling ---------------------------------------
@@ -126,29 +125,11 @@ export default function SocialWorkoutCard({
       console.error('Workout is null or undefined');
       return;
     }
-    if (workout.saves?.includes(userId)) {
-      console.error('User already saved the workout');
-      return;
-    }
 
     mutateSave.mutate({ userId, workout, page, itemsPerPage });
     logger.info('Save workout complete!');
   };
 
-  const handleUnsaveWorkout = async () => {
-    logger.info('Attempting to unsave workout...');
-    if (!workout || !workout._id) {
-      console.error('Workout is null or undefined');
-      return;
-    }
-    if (!workout.saves?.includes(userId)) {
-      console.error('User has not saved the workout, so it cannot be unsaved');
-      return;
-    }
-
-    mutateUnsave.mutate({ userId, workout, page, itemsPerPage });
-    logger.info('Unsave workout complete!');
-  };
   // End of mutation handling --------------------------------
 
 
@@ -238,18 +219,11 @@ export default function SocialWorkoutCard({
 
             {/*Save workout*/}
             <div className="flex flex-row gap-4 items-center">
-              <div>
-                {workout.saves.includes(userId) ? (
-                  <Bookmark fill="grey"  size={32}
-                  className="text-muted-foreground fill-current hover:cursor-pointer"
-                  onClick={handleUnsaveWorkout}/>
-                ) : (
-                  <Bookmark size={32}
-                  className="text-muted-foreground  hover:cursor-pointer"
-                  onClick={handleSaveWorkout}/>
-                )}
-              </div>
-              <p className="text-black dark:text-white">{workout.saves.length}</p>
+                <Download size={32}
+                  className="text-muted-foreground hover:cursor-pointer"
+                  onClick={handleSaveWorkout}
+                />
+                <p className="text-black dark:text-white">{workout.saves.length}</p>
             </div>
           </div>      
       </CardContent>

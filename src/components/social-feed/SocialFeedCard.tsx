@@ -65,6 +65,8 @@ export default function SocialWorkoutCard({
   const mutateUncomment = usePublicWorkoutMutate('uncomment');
   const mutateSave = usePublicWorkoutMutate('save');
 
+  const [commentPopoverVisible, setCommentPopoverVisible] = useState<string | null>(null); //State to manage comment popover visibility
+  const [savePopoverVisible, setSavePopoverVisible] = useState(false); //State to manage comment popover visibility
 
   // Mutation handling ---------------------------------------
   const handleLikeWorkout = async () => {
@@ -103,7 +105,7 @@ export default function SocialWorkoutCard({
       console.error('Workout is null or undefined');
       return;
     }
-
+    setCommentPopoverVisible(null);
     mutateComment.mutate({ userId, workout, commentText, itemsPerPage, page });
     logger.info('Commenting on workout complete!');
   };
@@ -125,11 +127,10 @@ export default function SocialWorkoutCard({
       console.error('Workout is null or undefined');
       return;
     }
-
+    setSavePopoverVisible(false);
     mutateSave.mutate({ userId, workout, page, itemsPerPage });
     logger.info('Save workout complete!');
   };
-
   // End of mutation handling --------------------------------
 
 
@@ -219,11 +220,19 @@ export default function SocialWorkoutCard({
 
             {/*Save workout*/}
             <div className="flex flex-row gap-4 items-center">
-                <Download size={32}
-                  className="text-muted-foreground hover:cursor-pointer"
-                  onClick={handleSaveWorkout}
-                />
-                <p className="text-black dark:text-white">{workout.saves.length}</p>
+              <Popover open={savePopoverVisible} onOpenChange={setSavePopoverVisible}>
+                <PopoverTrigger className="ml-auto mt-2 self-start" onClick={() => setSavePopoverVisible(true)}>
+                  <Download size={32} className="text-muted-foreground hover:cursor-pointer"/>
+                </PopoverTrigger>
+                  <PopoverContent>
+                    <p className="text-center pb-4">Save workout to library?</p>
+                    <section className="flex flex-row justify-center gap-6">
+                      <Button variant="secondary" onClick={() => setSavePopoverVisible(false)}> Cancel </Button>
+                      <Button variant="default" onClick={() => handleSaveWorkout()}> Confirm </Button>
+                    </section>
+                  </PopoverContent>
+              </Popover>
+              <p className="text-black dark:text-white">{workout.saves.length}</p>
             </div>
           </div>      
       </CardContent>
@@ -248,17 +257,17 @@ export default function SocialWorkoutCard({
                 </div>
                 {/*Display delete comment button if the comment belongs to the current user*/}
                 {(comment.userId == userId || workout.ownerId == userId) && 
-                  <Popover>
-                    <PopoverTrigger className="ml-auto mt-2 self-start">
+                  <Popover open={commentPopoverVisible == comment._id.toString()} onOpenChange={(open) => setCommentPopoverVisible(open ? comment._id.toString() : null)}>
+                    <PopoverTrigger className="ml-auto mt-2 self-start" onClick={() => setCommentPopoverVisible(comment._id)}>
                       <Trash size={16} className="hover:cursor-pointer"/>
                     </PopoverTrigger>
-                    <PopoverContent>
-                      <p className="text-center pb-4">Are you sure you want to delete this comment?</p>
-                      <section className="flex flex-row justify-center gap-6">
-                        <Button variant="secondary"> Cancel </Button>
-                        <Button variant="default" onClick={() => handleDeleteComment(comment._id.toString())}> Confirm </Button>
-                      </section>
-                    </PopoverContent>
+                      <PopoverContent>
+                        <p className="text-center pb-4">Are you sure you want to delete this comment?</p>
+                        <section className="flex flex-row justify-center gap-6">
+                          <Button variant="secondary" onClick={() => setCommentPopoverVisible(null)}> Cancel </Button>
+                          <Button variant="default" onClick={() => handleDeleteComment(comment._id.toString())}> Confirm </Button>
+                        </section>
+                      </PopoverContent>
                   </Popover>
                 }
               </section>

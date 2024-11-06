@@ -14,6 +14,28 @@ import { totalStepsAtom, completedStepsAtom, carouselApiAtom } from '@/store';
 import { Exercise } from '@/types';
 import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 
+// TODO remove once we have the actual data
+// eslint-disable-next-line react-hooks/exhaustive-deps
+const mockWorkoutData = {
+  sets: [
+    {
+      sets: 1,
+      reps: 10,
+      weight: 50,
+    },
+    {
+      sets: 2,
+      reps: 8,
+      weight: 55,
+    },
+    {
+      sets: 2,
+      reps: 6,
+      weight: 60,
+    },
+  ],
+};
+
 export default function WorkoutPlayer({ id }: { id: string }) {
   const [api, setApi] = useAtom(carouselApiAtom);
   const [totalSteps, setTotalSteps] = useAtom(totalStepsAtom);
@@ -28,7 +50,14 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     if (data) {
       const workout = data.find((val) => val._id === id);
       if (workout && workout.exercises) {
-        setExercises(workout.exercises);
+        // Set the exercises with mock sets data remove this when we have the actual data
+        setExercises(
+          workout.exercises.map((exercise) => ({
+            ...exercise,
+            sets: mockWorkoutData.sets,
+          }))
+        );
+        // setExercises(workout.exercises);
         setTotalSteps(workout.exercises.length);
       }
     }
@@ -69,6 +98,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
                 <ExerciseCard
                   className="!transform-none !transition-none"
                   exercise={exercise}
+                  isPlaying
                 />
               </CarouselItem>
             ))}

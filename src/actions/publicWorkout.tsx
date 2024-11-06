@@ -225,7 +225,7 @@ export async function removeCommentPublicWorkout(
 export async function addSavePublicWorkout(
   userId: string,
   workoutToBeSaved: BaseWorkout
-): Promise<boolean> {
+): Promise<boolean | Error> {
   try {
     logger.info('addSavePublicWorkout server action called');
     await dbConnect();
@@ -234,7 +234,7 @@ export async function addSavePublicWorkout(
     let user = await UserModel.findOne({ userId: userId });
     if (!user) {
       logger.error('User who saved the workout not found');
-      throw new Error('user not found, please try again later');
+      throw new Error('current user not found');
     } else {
       logger.info(`User ${user.name} found`);
     }
@@ -246,7 +246,7 @@ export async function addSavePublicWorkout(
     });
     if (!workoutOwner) {
       logger.error(`Workout owner not found`);
-      throw new Error('user not found, please try again later');
+      throw new Error('workout owner not found');
     } else {
       logger.info(`Workout owner ${workoutOwner.name} found`);
     }
@@ -289,14 +289,13 @@ export async function addSavePublicWorkout(
     );
     if (workoutResult.modifiedCount > 0) {
       logger.info("User's ID successfully added to workout's saves list");
-      return true;
     } else {
       logger.info("User has already saved this workout. Their ID has not be added to the workout's saves list");
-      return false;
     }
+    return true;
   } catch (error) {
     logger.error(`Error: ${error}`);
-    throw new Error('Internal server error');
+    return Error(`${error}`);
   }
 }
 

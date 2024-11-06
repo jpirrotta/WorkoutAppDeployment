@@ -8,8 +8,7 @@ import {
   removeLikePublicWorkout,
   addCommentPublicWorkout,
   removeCommentPublicWorkout,
-  addSavePublicWorkout,
-  removeSavePublicWorkout,
+  addSavePublicWorkout
 } from '@/actions/publicWorkout';
 import { BaseWorkout } from '@/types';
 import { toast } from 'sonner';
@@ -17,7 +16,7 @@ import { toast } from 'sonner';
 const usePublicWorkoutMutate = (
   option: 'like' | 'unlike' | 'comment' | 'uncomment' | 'save'
 ): UseMutationResult<
-  boolean,
+  boolean | Error,
   unknown,
   {
     userId: string;

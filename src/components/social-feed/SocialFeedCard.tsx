@@ -39,6 +39,7 @@ import {
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 interface SocialWorkoutCardProps {
   userId: string;
@@ -122,21 +123,37 @@ export default function SocialWorkoutCard({
   };
 
   const handleSaveWorkout = async () => {
-    logger.info('Attempting to save workout...');
+    console.log('Attempting to save workout...');
     if (!workout || !workout._id) {
       console.error('Workout is null or undefined');
       return;
     }
     setSavePopoverVisible(false);
-    mutateSave.mutate({ userId, workout, page, itemsPerPage });
-    logger.info('Save workout complete!');
+    mutateSave.mutate({ userId, workout, page, itemsPerPage }, { 
+      onSuccess: (data) => {
+        if (data) {
+          console.log('Workout saved successfully');
+          toast.success('Successfully saved workout', {
+              description: 'You can view the workout in your library',
+            });
+          return;
+        }
+        else {
+          console.log(`Error saving workout, copy already exists in user's library`);
+          toast.info('You already have a copy of this workout in your library');
+          return;
+        }
+      },
+      onError: (error) => {
+        console.error('Error saving workout: ', error);
+      }
+    });
   };
   // End of mutation handling --------------------------------
 
 
   // Utility Functions ---------------------------------------
-  // Function to calculate how long ago the post was made
-  const timeAgo = (date: Date) => {
+  const timeAgo = (date: Date) => {  // Function to calculate how long ago the post was made
     const now = new Date();
     const postDate = new Date(date);
     const diff = now.getTime() - postDate.getTime();
@@ -218,11 +235,13 @@ export default function SocialWorkoutCard({
               <p className="text-black dark:text-white">{workout.likes.length}</p>
             </div>
 
-            {/*Save workout*/}
+            {/*Save workout and save counter*/}
             <div className="flex flex-row gap-4 items-center">
-              <Popover open={savePopoverVisible} onOpenChange={setSavePopoverVisible}>
-                <PopoverTrigger className="ml-auto mt-2 self-start" onClick={() => setSavePopoverVisible(true)}>
-                  <Download size={32} className="text-muted-foreground hover:cursor-pointer"/>
+              {/*Display functional save workout button if the workout does not belong to the current user, otherwise display download icon with no functionality*/}
+              {workout.ownerId != userId ? (
+                <Popover open={savePopoverVisible} onOpenChange={setSavePopoverVisible}>
+                <PopoverTrigger onClick={() => workout.ownerId != userId && setSavePopoverVisible(true)}>
+                  <Download size={32} color="gray"/>
                 </PopoverTrigger>
                   <PopoverContent>
                     <p className="text-center pb-4">Save workout to library?</p>
@@ -231,7 +250,10 @@ export default function SocialWorkoutCard({
                       <Button variant="default" onClick={() => handleSaveWorkout()}> Confirm </Button>
                     </section>
                   </PopoverContent>
-              </Popover>
+                </Popover>
+              ) : (
+                <Download size={32} color="gray"/>
+              )}
               <p className="text-black dark:text-white">{workout.saves.length}</p>
             </div>
           </div>      
@@ -259,7 +281,7 @@ export default function SocialWorkoutCard({
                 {(comment.userId == userId || workout.ownerId == userId) && 
                   <Popover open={commentPopoverVisible == comment._id.toString()} onOpenChange={(open) => setCommentPopoverVisible(open ? comment._id.toString() : null)}>
                     <PopoverTrigger className="ml-auto mt-2 self-start" onClick={() => setCommentPopoverVisible(comment._id)}>
-                      <Trash size={16} className="hover:cursor-pointer"/>
+                      <Trash size={16}/>
                     </PopoverTrigger>
                       <PopoverContent>
                         <p className="text-center pb-4">Are you sure you want to delete this comment?</p>

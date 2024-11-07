@@ -3,7 +3,7 @@
 import { dbConnect } from '@/lib/dbConnect';
 import User from '@/models/userSchema';
 import logger from '@/lib/logger';
-import { NewWorkout, patchReqDataType, User as userType, Workout } from '@/types';
+import { NewWorkout, patchReqDataType, User as userType, Workout, Set, WorkoutExercise } from '@/types';
 import { Document } from 'mongoose';
 
 // Add a workout for a user
@@ -80,10 +80,12 @@ async function updateWorkout(userId: string, workoutId: string, workoutUpdateDat
         if (workoutUpdateData.name) {
             workout.name = workoutUpdateData.name;
         }
+
         if (workoutUpdateData.public !== undefined) {
             workout.public = workoutUpdateData.public;
             workout.postDate = workoutUpdateData.public ? new Date() : new Date(0);  // set post date to current date & time if public, or set it to epoch time (representing empty date) if private
         }
+
         if (workoutUpdateData?.exerciseArr?.length && workoutUpdateData.exerciseArr.length > 0) {
             workoutUpdateData.exerciseArr.forEach(exercise => {
                 workout.exercises.push(exercise);
@@ -112,12 +114,73 @@ async function updateWorkout(userId: string, workoutId: string, workoutUpdateDat
     }
 }
 
+async function updateExerciseSets(userId: string, workoutId: string, exerciseId: string, setData: Set[]): Promise<{ title: string; message: string }> {
+    logger.info('\n\nPATCH Workout-Exercise action called');
+
+    try {
+        logger.info(`\n\nWorkout ID - ${workoutId} | Exercise ID - ${exerciseId}`);
+
+        // Connect to the database
+        await dbConnect();
+
+        //get user
+        let user = await User.findOne({ userId: userId });
+
+        // If the user is not found return an error
+        if (!user) {
+            logger.error('User not found!');
+            return { title: 'User not found.', message: 'User you are trying to update a Workout Exercise for, does not exist in DB.' };
+        }
+
+        // Find the workout by its id
+        const workout: Workout = user?.workouts?.id(workoutId);
+
+        // If the workout is not found return an error
+        if (!workout) {
+            logger.error('Workout not found!');
+            return { title: 'Workout not found.', message: 'Unable to find Workout for current User' };
+        }
+
+        // If the workout has no exercises return an error
+        if (!workout.exercises) {
+            logger.error('No exercises found in the workout!');
+            return { title: 'No Exercises found!', message: 'No Exercises found in the specified Workout' };
+        }
+
+        // Find the exercise by its id
+        const exercise = workout.exercises.find(exercise => exercise.id === exerciseId);
+
+        // If the exercise is not found return an error
+        if (!exercise) {
+            logger.error('Exercise not found!');
+            return { title: 'Exercise not found.', message: 'Unable to find Exercise in the specified Workout' };
+        }
+
+        // Update the exercise with the new data
+        exercise.sets = setData;
+
+        await user.save();
+
+        // log and return response message
+        logger.info(`Exercise updated successfully`);
+        return { title: 'Success', message: 'Exercise updated successfully' };
+
+    } catch (error) {
+        if (error instanceof Error) {
+            logger.error(`Error updating workout exercise: ${error.message}`);
+            throw new Error(`Error updating workout Exercise: ${error.message}`);
+        }
+        logger.error(`Error updating exercise: ${error}`);
+        throw new Error(`Internal Server Error: ${error}`);
+    }
+}
+
 // update a workout to edit exercises, name, public status, comments
 async function removeExercise(userId: string, workoutId: string, ExerciseId: string): Promise<{ title: string; message: string }> {
     logger.info('\n\nPATCH Workout action called');
 
     try {
-        logger.info(`\n\Exercise ID to be removed- ${ExerciseId}`);
+        logger.info(`\nExercise ID to be removed- ${ExerciseId}`);
 
         // Connect to the database
         await dbConnect();
@@ -259,4 +322,4 @@ async function deleteAllWorkouts(userId: string): Promise<{ title: string; messa
     }
 }
 
-export { addWorkout, deleteWorkout, deleteAllWorkouts, updateWorkout, removeExercise }
+export { addWorkout, deleteWorkout, deleteAllWorkouts, updateWorkout, removeExercise, updateExerciseSets }

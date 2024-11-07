@@ -65,7 +65,7 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
     // setSelectedExercises([]);
 
     const handleDeleteWorkout = () => {
-        workoutDeleteMutation.mutate(workout._id);
+        workoutDeleteMutation.mutate(workout._id!);
 
         setWorkout(null);
     }
@@ -76,7 +76,7 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
 
     const handleExerciseDelete = (exerciseId: string) => {
         ExerciseRemoveMutation.mutate(
-            { workoutId: workout._id.toString(), ExerciseId: exerciseId },
+            { workoutId: workout._id!, ExerciseId: exerciseId },
             {
                 onSuccess: () => {
                     // Update the workout state to remove the exercise
@@ -95,7 +95,7 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
         };
 
         workoutUpdateMutation.mutate({
-            workoutId: workout._id,
+            workoutId: workout._id!,
             workoutData: updatedWorkout,
         });
     };

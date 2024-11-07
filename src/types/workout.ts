@@ -30,9 +30,11 @@ type Exercise = {
   sets: Set[];
 };
 
+type WorkoutExercise = Exercise & Document;
+
 // Base type that represents the structure of a workout (without Document)
 type BaseWorkout = {
-  _id: mongoose.Types.ObjectId & string;
+  _id?: mongoose.Types.ObjectId & string;
   name: string;
   exercises: Exercise[];
   public: boolean;
@@ -65,10 +67,12 @@ type patchReqDataType = {
   exerciseArr?: Exercise[];
   public?: boolean;
   comments?: Workout['comments'];
+  sets?: Set[];
 };
 
 export type {
   Exercise,
+  WorkoutExercise,
   FlatSets,
   Set,
   Workout,

@@ -9,10 +9,9 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import {
   totalExercisesAtom,
-  completedExerciseAtom,
   carouselApiAtom,
   currentExerciseIndexAtom,
 } from '@/store';
@@ -123,10 +122,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
       className="flex flex-col items-center justify-between gap-4"
     >
       <Stopwatch />
-      <WorkoutProgress
-        steps={totalSteps}
-        className="w-[80%] sm:w-[60%]"
-      />
+      <WorkoutProgress steps={totalSteps} className="w-[80%] sm:w-[60%]" />
 
       <div className="w-[90%] sm:w-[65%] overflow-hidden sm:overflow-visible px-4">
         <Carousel setApi={setApi} opts={{ loop: true }} className="w-90%">

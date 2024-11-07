@@ -30,11 +30,32 @@ export default function WorkoutPlayerCommandMenu({
   const setCompletedExercise = useSetAtom(completedExerciseAtom);
   const setApi = useSetAtom(carouselApiAtom);
   const [animatingButton, setAnimatingButton] = useState<string | null>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const currentExercise = exercises[currentExerciseIndex];
   const currentExerciseState = currentExercise
     ? exerciseStates[currentExercise.id]
     : null;
+
+  const areAllExercisesMarked = () => {
+    return exercises.every((exercise) => {
+      const exerciseState = exerciseStates[exercise.id];
+      if (!exerciseState) return false;
+      return exerciseState.completedSets.every((set) => set !== undefined);
+    });
+  };
+  //TODO when completing a page go to the next page that has an exercise with a  set that is undefined
+
+  useEffect(() => {
+    if (areAllExercisesMarked()) {
+      setIsCompleted(true);
+      alert('Workout completed!');
+      // TODO Add a modal that will ask the user if they want to save the workout.
+      // TODO if there were any changes made to the workout add a toggle that will update the workout
+    } else {
+      setIsCompleted(false);
+    }
+  }, [exerciseStates, exercises]);
 
   const handleClick = (buttonName: string, callback: () => void) => {
     if (animatingButton) {
@@ -81,6 +102,15 @@ export default function WorkoutPlayerCommandMenu({
       }));
     } else {
       // Handle exercise completion
+      setExerciseStates((prev) => ({
+        ...prev,
+        [currentExercise.id]: {
+          ...prev[currentExercise.id],
+          completedSets: prev[currentExercise.id].completedSets.map((set, i) =>
+            i === currentSetIndex ? true : set
+          ),
+        },
+      }));
       setCompletedExercise((prev) => [...prev, currentExerciseIndex]);
       setCurrentSetIndex(0);
       nextStep();
@@ -97,6 +127,8 @@ export default function WorkoutPlayerCommandMenu({
       prev?.scrollTo(newIndex);
       return prev;
     });
+    setCurrentSetIndex(0);
+    return;
   };
 
   const prevStep = () => {
@@ -105,12 +137,7 @@ export default function WorkoutPlayerCommandMenu({
       prev?.scrollTo(newIndex);
       return prev;
     });
-
-    if (currentSetIndex > 0) {
-      setCurrentSetIndex((prev) => prev - 1);
-      return;
-    }
-
+    setCurrentSetIndex(0);
     return;
   };
 

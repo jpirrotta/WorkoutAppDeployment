@@ -33,7 +33,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
         ...prev,
         [exercise.id]: {
           numberOfSets: flatSets.length,
-          completedSets: new Array(flatSets.length).fill(false),
+          completedSets: new Array(flatSets.length).fill(undefined),
         },
       }));
     }
@@ -101,6 +101,16 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
     console.log('new values', newValues);
   }
 
+  // this handles the styling of the set number based on if its completed or not
+  const isCompletedStyle = (index: number) => {
+    if (exerciseState?.completedSets[index] === true) {
+      return 'border rounded-3xl border-primary bg-primary';
+    } else if (exerciseState?.completedSets[index] === false) {
+      return 'border rounded-3xl border-primary bg-muted';
+    }
+    return 'border rounded-3xl border-primary';
+  };
+
   return (
     <Form {...playerForm}>
       <form onSubmit={playerForm.handleSubmit(onSubmit)}>
@@ -112,13 +122,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
               currentSetIndex === index ? 'bg-background rounded-3xl' : ''
             }`}
           >
-            <p
-              className={` p-2 font-bold ${
-                exerciseState?.completedSets[index] === true
-                  ? 'border rounded-3xl border-primary bg-primary'
-                  : 'border rounded-3xl border-primary'
-              }`}
-            >
+            <p className={` p-2 font-bold ${isCompletedStyle(index)}`}>
               {index + 1}
             </p>
             <FormField

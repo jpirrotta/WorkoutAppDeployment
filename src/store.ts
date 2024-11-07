@@ -29,7 +29,7 @@ export const currentSetIndexAtom = atom<number>(0);
 export const exerciseStatesAtom = atom<{
   [exerciseId: string]: {
     numberOfSets: number;
-    completedSets: boolean[];
+    completedSets: (boolean | undefined)[];
   };
 }>({});
 

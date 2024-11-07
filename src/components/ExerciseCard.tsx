@@ -29,14 +29,14 @@ import useFavMutate from '@/hooks/exercises/setFav';
 
 import PlayerExerciseForm from './workout/player/player-exercise-form';
 
-type ExerciseCardProps = {
-  readonly exercise: Exercise;
+type ExerciseCardProps = Readonly<{
+  exercise: Exercise;
   closeIcon?: (exerciseId: string) => React.ReactNode;
   CreateWorkoutFlag?: boolean;
   className?: string;
   isForm?: boolean;
   isPlaying?: boolean;
-};
+}>;
 
 export default function ExerciseCard({
   exercise,
@@ -50,7 +50,7 @@ export default function ExerciseCard({
   const [SelectedExercises, setSelectedExercises] = useAtom(
     selectedExercisesAtom
   );
-  const [isFavorited, setIsFavorited] = useState(false); // State to track if the exercise is favorited
+  const [isFavorited, setIsFavorited] = useState(false);
   const mutation = useFavMutate();
   const { user, isSignedIn, isLoaded } = useUser();
 

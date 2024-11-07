@@ -14,7 +14,6 @@ export const limitAtom = atom<number>(6);
 export const sidebarToggleAtom = atomWithStorage('sidebarToggle', true);
 
 // atoms for the workout player ( consider moving this to a separate store )
-
 // this will hold the current played workout which will be used
 // to see if theres a workout playing or not ( can be useful for the notification )
 export const selectedWorkoutAtom = atom<string | undefined>();
@@ -26,7 +25,7 @@ export const completedExerciseAtom = atom<number[]>([]);
 
 export const currentSetIndexAtom = atom<number>(0);
 
-
+// essentially a map of exercise id to the state of the exercise (completed sets) for the player
 export const exerciseStatesAtom = atom<{
   [exerciseId: string]: {
     numberOfSets: number;

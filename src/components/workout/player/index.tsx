@@ -124,7 +124,6 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     >
       <Stopwatch />
       <WorkoutProgress
-        value={60}
         steps={totalSteps}
         className="w-[80%] sm:w-[60%]"
       />

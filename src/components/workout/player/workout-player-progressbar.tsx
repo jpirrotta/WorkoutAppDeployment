@@ -22,7 +22,7 @@ interface WorkoutProgressProps
 const WorkoutProgress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   WorkoutProgressProps
->(({ className, value, steps, ...props }, ref) => {
+>(({ className, value = 60, steps, ...props }, ref) => {
   const [currentExerciseIndex, SetCurrentExerciseIndex] = useAtom(
     currentExerciseIndexAtom
   );

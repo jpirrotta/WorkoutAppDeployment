@@ -8,8 +8,7 @@ import {
   carouselApiAtom,
   isPlayingAtom,
   totalExercisesAtom,
-  numberOfSetsAtom,
-  completedSetsAtom,
+  exerciseStatesAtom,
 } from '@/store';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import { Play, StepBack, StepForward, Check, X, Pause } from 'lucide-react';
@@ -17,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { Exercise } from '@/types';
 
 type WorkoutPlayerCommandMenuProps = {
-  exercises?: Exercise[];
+  exercises: Exercise[];
 };
 
 export default function WorkoutPlayerCommandMenu({
@@ -25,18 +24,21 @@ export default function WorkoutPlayerCommandMenu({
 }: WorkoutPlayerCommandMenuProps) {
   const [totalSteps, setTotalSteps] = useAtom(totalExercisesAtom);
 
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useAtom(
-    currentExerciseIndexAtom
-  );
   const [completedExercise, setCompletedExercise] = useAtom(
     completedExerciseAtom
   );
-  const [currentSetIndex, setCurrentSetIndex] = useAtom(currentSetIndexAtom);
   const setApi = useSetAtom(carouselApiAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
-  const numberOfSets = useAtomValue(numberOfSetsAtom);
-  const [completedSets, setCompletedSets] = useAtom(completedSetsAtom);
+  const [exerciseStates, setExerciseStates] = useAtom(exerciseStatesAtom);
+  const [currentExerciseIndex] = useAtom(currentExerciseIndexAtom);
+  const setCurrentExerciseIndex = useSetAtom(currentExerciseIndexAtom);
+  const [currentSetIndex, setCurrentSetIndex] = useAtom(currentSetIndexAtom);
   const [animatingButton, setAnimatingButton] = useState<string | null>(null);
+
+  const currentExercise = exercises[currentExerciseIndex];
+  const currentExerciseState = currentExercise
+    ? exerciseStates[currentExercise.id]
+    : null;
 
   const handleClick = (buttonName: string, callback: () => void) => {
     if (animatingButton) {
@@ -47,46 +49,46 @@ export default function WorkoutPlayerCommandMenu({
   };
 
   const removeCompletedStep = () => {
-    if (currentSetIndex >= 0 && currentSetIndex < numberOfSets - 1) {
-      setCurrentSetIndex((prev) => prev + 1);
-      setCompletedSets((prev) => {
-        const updated = [...prev];
-        updated[currentSetIndex] = false;
-        return updated;
-      });
-      return;
-    }
-    setCurrentSetIndex((prev) => prev + 1);
-    setCompletedSets((prev) => {
-      const updated = [...prev];
-      updated[currentSetIndex] = false;
-      return updated;
-    });
-    setCompletedExercise((prev) => [...prev, currentExerciseIndex]);
+    if (!currentExercise || !currentExerciseState) return;
 
-    setCurrentSetIndex(0);
-    nextStep();
+    setExerciseStates((prev) => ({
+      ...prev,
+      [currentExercise.id]: {
+        ...prev[currentExercise.id],
+        completedSets: prev[currentExercise.id].completedSets.map((set, i) =>
+          i === currentSetIndex ? false : set
+        ),
+      },
+    }));
+
+    if (currentSetIndex < currentExerciseState.numberOfSets - 1) {
+      setCurrentSetIndex((prev) => prev + 1);
+    } else {
+      setCurrentSetIndex(0);
+      nextStep();
+    }
   };
 
   const addStep = () => {
-    if (currentSetIndex < numberOfSets - 1) {
+    if (!currentExercise || !currentExerciseState) return;
+
+    if (currentSetIndex < currentExerciseState.numberOfSets - 1) {
       setCurrentSetIndex((prev) => prev + 1);
-      setCompletedSets((prev) => {
-        const updated = [...prev];
-        updated[currentSetIndex] = true;
-        return updated;
-      });
-      return;
+      setExerciseStates((prev) => ({
+        ...prev,
+        [currentExercise.id]: {
+          ...prev[currentExercise.id],
+          completedSets: prev[currentExercise.id].completedSets.map((set, i) =>
+            i === currentSetIndex ? true : set
+          ),
+        },
+      }));
+    } else {
+      // Handle exercise completion
+      setCompletedExercise((prev) => [...prev, currentExerciseIndex]);
+      setCurrentSetIndex(0);
+      nextStep();
     }
-    setCurrentSetIndex((prev) => prev + 1);
-    setCompletedSets((prev) => {
-      const updated = [...prev];
-      updated[currentSetIndex] = true;
-      return updated;
-    });
-    setCompletedExercise((prev) => [...prev, currentExerciseIndex]);
-    setCurrentSetIndex(0);
-    nextStep();
   };
 
   const playPause = () => {
@@ -100,7 +102,6 @@ export default function WorkoutPlayerCommandMenu({
       return prev;
     });
 
-    setCurrentExerciseIndex((prev) => (prev + 1) % totalSteps);
   };
 
   const prevStep = () => {
@@ -115,7 +116,6 @@ export default function WorkoutPlayerCommandMenu({
       return;
     }
 
-    setCurrentExerciseIndex((prev) => (prev - 1 + totalSteps) % totalSteps);
     return;
   };
 
@@ -165,7 +165,6 @@ export default function WorkoutPlayerCommandMenu({
       </Button>
 
       <Button
-        disabled={completedExercise.includes(currentExerciseIndex)}
         onClick={() => handleClick('add', addStep)}
       >
         <Check

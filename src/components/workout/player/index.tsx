@@ -9,11 +9,12 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   totalExercisesAtom,
   completedExerciseAtom,
   carouselApiAtom,
+  currentExerciseIndexAtom,
 } from '@/store';
 import { Exercise } from '@/types';
 import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
@@ -79,6 +80,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
   const [api, setApi] = useAtom(carouselApiAtom);
   const [totalSteps, setTotalSteps] = useAtom(totalExercisesAtom);
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const setCurrentExerciseIndex = useSetAtom(currentExerciseIndexAtom);
 
   const { data } = useGetAllWorkouts();
 
@@ -108,6 +110,10 @@ export default function WorkoutPlayer({ id }: { id: string }) {
 
     api.on('init', () => {
       console.log('Carousel initialized');
+    });
+
+    api.on('select', () => {
+      setCurrentExerciseIndex(api.selectedScrollSnap());
     });
   }, [api]);
 
@@ -142,7 +148,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
           </CarouselContent>
         </Carousel>
       </div>
-      <WorkoutPlayerCommandMenu />
+      <WorkoutPlayerCommandMenu exercises={exercises} />
     </section>
   );
 }

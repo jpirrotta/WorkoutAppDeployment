@@ -26,9 +26,13 @@ export const completedExerciseAtom = atom<number[]>([]);
 
 export const currentSetIndexAtom = atom<number>(0);
 
-export const completedSetsAtom = atom<boolean[]>([]);
 
-export const numberOfSetsAtom = atom<number>(0);
+export const exerciseStatesAtom = atom<{
+  [exerciseId: string]: {
+    numberOfSets: number;
+    completedSets: boolean[];
+  };
+}>({});
 
 export const totalExercisesAtom = atom<number>(0);
 

@@ -14,24 +14,32 @@ import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { Exercise, Set, playerFormSchema, FlatSets } from '@/types';
-import {
-  currentExerciseIndexAtom,
-  numberOfSetsAtom,
-  currentSetIndexAtom,
-  completedSetsAtom,
-} from '@/store';
+import { currentSetIndexAtom, exerciseStatesAtom } from '@/store';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
+import { useEffect } from 'react';
 type ExerciseFormProps = {
   exercise: Exercise;
 };
 
 export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useAtom(
-    currentExerciseIndexAtom
-  );
-  const setNumberOfSets = useSetAtom(numberOfSetsAtom);
-  const currentSetIndex = useAtomValue(currentSetIndexAtom);
-  const completedSets = useAtomValue(completedSetsAtom);
+  const [currentSetIndex, setCurrentSetIndex] = useAtom(currentSetIndexAtom);
+  const [exerciseStates, setExerciseStates] = useAtom(exerciseStatesAtom);
+
+  // Initialize exercise state if not exists
+  useEffect(() => {
+    if (!exerciseStates[exercise.id]) {
+      const flatSets = flattenSets(exercise.sets);
+      setExerciseStates((prev) => ({
+        ...prev,
+        [exercise.id]: {
+          numberOfSets: flatSets.length,
+          completedSets: new Array(flatSets.length).fill(false),
+        },
+      }));
+    }
+  }, [exercise.id, exercise.sets, exerciseStates, setExerciseStates]);
+
+  const exerciseState = exerciseStates[exercise.id];
 
   // Function to flatten the nested sets structure
   const flattenSets = (nestedSets: Set[]): FlatSets => {
@@ -73,7 +81,6 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
   // Flatten the sets
   const flatSets = flattenSets(exercise.sets);
   console.log('flatSets', flatSets);
-  setNumberOfSets(flatSets.length);
 
   // Reconstruct the sets
   const playerForm = useForm<z.infer<typeof playerFormSchema>>({
@@ -99,20 +106,26 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
       <form onSubmit={playerForm.handleSubmit(onSubmit)}>
         {fields.map((field, index) => (
           <div
+            onClick={() => setCurrentSetIndex(index)}
             key={field.id}
-            className={`flex flex-row justify-between pb-2 ${
-              currentSetIndex === index ? 'bg-background' : ''
+            className={`flex flex-row justify-between p-2 pb-3 items-center ${
+              currentSetIndex === index ? 'bg-background rounded-3xl' : ''
             }`}
           >
-            <p>
-              {index + 1} {completedSets.at(index) === true && '✅'}{' '}
-              {completedSets.at(index) === false && '❌'}
+            <p
+              className={` p-2 font-bold ${
+                exerciseState?.completedSets[index] === true
+                  ? 'border rounded-3xl border-primary bg-primary'
+                  : 'border rounded-3xl border-primary'
+              }`}
+            >
+              {index + 1}
             </p>
             <FormField
               control={playerForm.control}
               name={`sets.${index}.reps`}
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-row-reverse justify-center items-center gap-2">
                   <FormLabel>Reps</FormLabel>
                   <FormControl>
                     <Input
@@ -132,7 +145,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
               control={playerForm.control}
               name={`sets.${index}.weight`}
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-row-reverse justify-center items-center gap-2">
                   <FormLabel>weight</FormLabel>
                   <FormControl>
                     <Input

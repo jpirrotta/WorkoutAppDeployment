@@ -22,17 +22,13 @@ type WorkoutPlayerCommandMenuProps = {
 export default function WorkoutPlayerCommandMenu({
   exercises,
 }: WorkoutPlayerCommandMenuProps) {
-  const [totalSteps, setTotalSteps] = useAtom(totalExercisesAtom);
-
-  const [completedExercise, setCompletedExercise] = useAtom(
-    completedExerciseAtom
-  );
-  const setApi = useSetAtom(carouselApiAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
   const [exerciseStates, setExerciseStates] = useAtom(exerciseStatesAtom);
-  const [currentExerciseIndex] = useAtom(currentExerciseIndexAtom);
-  const setCurrentExerciseIndex = useSetAtom(currentExerciseIndexAtom);
   const [currentSetIndex, setCurrentSetIndex] = useAtom(currentSetIndexAtom);
+  const currentExerciseIndex = useAtomValue(currentExerciseIndexAtom);
+  const totalSteps = useAtomValue(totalExercisesAtom);
+  const setCompletedExercise = useSetAtom(completedExerciseAtom);
+  const setApi = useSetAtom(carouselApiAtom);
   const [animatingButton, setAnimatingButton] = useState<string | null>(null);
 
   const currentExercise = exercises[currentExerciseIndex];
@@ -101,7 +97,6 @@ export default function WorkoutPlayerCommandMenu({
       prev?.scrollTo(newIndex);
       return prev;
     });
-
   };
 
   const prevStep = () => {
@@ -164,9 +159,7 @@ export default function WorkoutPlayerCommandMenu({
         />
       </Button>
 
-      <Button
-        onClick={() => handleClick('add', addStep)}
-      >
+      <Button onClick={() => handleClick('add', addStep)}>
         <Check
           className={animatingButton === 'add' ? 'animate-grow-shrink' : ''}
         />

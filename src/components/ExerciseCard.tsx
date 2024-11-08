@@ -221,7 +221,7 @@ export default function ExerciseCard({
           )}
         </CardContent>
 
-        <CardFooter className={`${isSetsOpen && 'p-0'} capitalize px-2 text-secondary items-start flex flex-row gap-5`}>
+        <CardFooter className={`${isSetsOpen && 'p-0'} capitalize px-2 text-secondary items-start flex flex-wrap gap-5`}>
           {/* conditionally show exercise details or sets */}
           {!isPlaying && (
             isSetsOpen ? (
@@ -231,19 +231,19 @@ export default function ExerciseCard({
                 {/* modal trigger btn for adding exercise to desired workout */}
                 <AddExerciseToWorkout
                   triggerNode={
-                    <div className="w-full">
-                      <Button className="px-2" variant="outline">
-                        Add To Workout
-                      </Button>
-                    </div>
+                    <Button className="px-2 w-full sm:w-auto flex-1" variant="outline">
+                      Add To Workout
+                    </Button>
                   }
                   exerciseToAdd={exercise}
                 />
 
                 {/* sets show trigger */}
-                <Button onClick={() => setIsSetsOpen(!isSetsOpen)} variant='outline'>
-                  Adjust Sets
-                </Button>
+                {closeIcon && (
+                  <Button onClick={() => setIsSetsOpen(!isSetsOpen)} variant='outline' className='px-2 w-full sm:w-auto flex-1'>
+                    Adjust Sets
+                  </Button>
+                )}
               </>
             )
           )}

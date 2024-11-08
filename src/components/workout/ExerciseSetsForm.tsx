@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { MinusCircle, ArrowLeftToLineIcon } from 'lucide-react';
+import { MinusCircle, ArrowLeftToLineIcon, ChevronLeft } from 'lucide-react';
 
 // type imports
 import { exerciseSetsSchema, Exercise } from '@/types';
@@ -70,7 +70,7 @@ export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: Ex
                                 {/* Sets field */}
                                 <FormField
                                     control={exerciseSetsForm.control}
-                                    name={`sets.${index}.reps`}
+                                    name={`sets.${index}.sets`}
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Sets</FormLabel>
@@ -143,6 +143,7 @@ export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: Ex
                 {/* Add new pair of set */}
                 <div className="flex w-full justify-center mb-5">
                     <Button
+                        type='button'
                         onClick={() => {
                             append({ sets: 0, reps: 0, weight: 0 });
                         }}
@@ -156,7 +157,7 @@ export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: Ex
                 {/* save sets */}
                 <div className='flex justify-between'>
                     <Button onClick={() => setSetsFlag(!setsFlag)} variant='outline'>
-                        <ArrowLeftToLineIcon />
+                        <ChevronLeft />
                     </Button>
 
                     <Button

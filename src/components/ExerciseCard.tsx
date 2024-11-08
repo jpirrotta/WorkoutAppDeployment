@@ -221,7 +221,7 @@ export default function ExerciseCard({
           )}
         </CardContent>
 
-        <CardFooter className="capitalize px-2 text-secondary items-start flex flex-row border gap-5">
+        <CardFooter className={`${isSetsOpen && 'p-0'} capitalize px-2 text-secondary items-start flex flex-row gap-5`}>
           {/* conditionally show exercise details or sets */}
           {!isPlaying && (
             isSetsOpen ? (

@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { MinusCircle } from 'lucide-react';
+import { MinusCircle, ArrowLeftToLineIcon } from 'lucide-react';
 
 // type imports
 import { exerciseSetsSchema, Exercise } from '@/types';
@@ -63,97 +63,100 @@ export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: Ex
     return (
         <Form {...exerciseSetsForm}>
             <form onSubmit={exerciseSetsForm.handleSubmit(onSubmit)}>
-                {fields.map((field, index) => (
-                    <div key={field.id} className='flex items-center p-2'>
-                        <div className="flex flex-row justify-between mb-2 gap-2 p-4">
-                            {/* Sets field */}
-                            <FormField
-                                control={exerciseSetsForm.control}
-                                name={`sets.${index}.reps`}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Sets</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...exerciseSetsForm.register(`sets.${index}.sets`, {
-                                                    valueAsNumber: true,
-                                                })}
-                                                type="number"
-                                                placeholder="sets"
-                                                className="w-full"
-                                                min={1}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
+                <div className="h-60 border border-zinc-500 shadow-2xl shadow-primary rounded-md overflow-y-auto mb-2">
+                    {fields.map((field, index) => (
+                        <div key={field.id} className='flex items-center px-2'>
+                            <div className="flex flex-row justify-between mb-1 gap-2 p-3">
+                                {/* Sets field */}
+                                <FormField
+                                    control={exerciseSetsForm.control}
+                                    name={`sets.${index}.reps`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Sets</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...exerciseSetsForm.register(`sets.${index}.sets`, {
+                                                        valueAsNumber: true,
+                                                    })}
+                                                    type="number"
+                                                    placeholder="sets"
+                                                    className="w-full"
+                                                    min={1}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
 
-                            {/* Reps */}
-                            <FormField
-                                control={exerciseSetsForm.control}
-                                name={`sets.${index}.reps`}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Reps</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...exerciseSetsForm.register(`sets.${index}.reps`, {
-                                                    valueAsNumber: true,
-                                                })}
-                                                type="number"
-                                                placeholder="reps"
-                                                className="w-full"
-                                                min={1}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
+                                {/* Reps */}
+                                <FormField
+                                    control={exerciseSetsForm.control}
+                                    name={`sets.${index}.reps`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Reps</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...exerciseSetsForm.register(`sets.${index}.reps`, {
+                                                        valueAsNumber: true,
+                                                    })}
+                                                    type="number"
+                                                    placeholder="reps"
+                                                    className="w-full"
+                                                    min={1}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
 
-                            {/* Weight */}
-                            <FormField
-                                control={exerciseSetsForm.control}
-                                name={`sets.${index}.weight`}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>weight</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                {...exerciseSetsForm.register(`sets.${index}.weight`, {
-                                                    valueAsNumber: true,
-                                                })}
-                                                type="number"
-                                                placeholder="weight"
-                                                className="w-full"
-                                                min={0}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
+                                {/* Weight */}
+                                <FormField
+                                    control={exerciseSetsForm.control}
+                                    name={`sets.${index}.weight`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>weight</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...exerciseSetsForm.register(`sets.${index}.weight`, {
+                                                        valueAsNumber: true,
+                                                    })}
+                                                    type="number"
+                                                    placeholder="weight"
+                                                    className="w-full"
+                                                    min={0}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                            {index > 0 && (
+                                <MinusCircle className='text-primary' onClick={() => remove(index)} size={50} />
+                            )}
                         </div>
-                        {index > 0 && (
-                            <MinusCircle className='text-primary' onClick={() => remove(index)} size={40} />
-                        )}
-                    </div>
-                ))}
+                    ))}
+                </div>
 
                 {/* Add new pair of set */}
-                <div className="flex flex-col mb-5">
+                <div className="flex w-full justify-center mb-5">
                     <Button
                         onClick={() => {
                             append({ sets: 0, reps: 0, weight: 0 });
                         }}
+                        className='w-full text-xl'
                         variant="outline"
                     >
-                        Add Set +
+                        +
                     </Button>
                 </div>
 
                 {/* save sets */}
                 <div className='flex justify-between'>
                     <Button onClick={() => setSetsFlag(!setsFlag)} variant='outline'>
-                        Go back
+                        <ArrowLeftToLineIcon />
                     </Button>
 
                     <Button

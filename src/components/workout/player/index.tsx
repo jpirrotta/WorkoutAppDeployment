@@ -29,12 +29,12 @@ const mockWorkoutData = [
         weight: 50,
       },
       {
-        sets: 2,
+        sets: 1,
         reps: 8,
         weight: 55,
       },
       {
-        sets: 2,
+        sets: 1,
         reps: 6,
         weight: 60,
       },
@@ -48,7 +48,7 @@ const mockWorkoutData = [
         weight: 30,
       },
       {
-        sets: 3,
+        sets: 1,
         reps: 10,
         weight: 55,
       },
@@ -114,7 +114,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     api.on('select', () => {
       setCurrentExerciseIndex(api.selectedScrollSnap());
     });
-  }, [api]);
+  }, [api, setCurrentExerciseIndex]);
 
   return (
     <section

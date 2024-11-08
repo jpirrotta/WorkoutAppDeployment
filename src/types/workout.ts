@@ -4,8 +4,8 @@ import z from 'zod';
 export const playerFormSchema = z.object({
   sets: z.array(
     z.object({
-      reps: z.number(),
-      weight: z.number(),
+      reps: z.number().min(1),
+      weight: z.number().min(0),
     })
   ),
 });

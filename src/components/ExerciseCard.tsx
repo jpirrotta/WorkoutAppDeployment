@@ -210,9 +210,8 @@ export default function ExerciseCard({
               </>
             )}
             {/* Player Form */}
-            {isPlaying && <PlayerExerciseForm exercise={exercise} />}
-            
           </CardDescription>
+          {isPlaying && <PlayerExerciseForm exercise={exercise} />}
         </CardContent>
 
         <CardFooter className="capitalize text-secondary items-start flex flex-col gap-5">

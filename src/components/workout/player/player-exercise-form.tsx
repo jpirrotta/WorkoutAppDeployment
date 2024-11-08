@@ -13,10 +13,26 @@ import { Input } from '@/components/ui/input';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { Exercise, Set, playerFormSchema, FlatSets } from '@/types';
+import { Exercise, Set, playerFormSchema, FlatSets, Workout } from '@/types';
 import { currentSetIndexAtom, exerciseStatesAtom } from '@/store';
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { set } from 'lodash';
+
 type ExerciseFormProps = {
   exercise: Exercise;
 };
@@ -24,7 +40,7 @@ type ExerciseFormProps = {
 export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
   const [currentSetIndex, setCurrentSetIndex] = useAtom(currentSetIndexAtom);
   const [exerciseStates, setExerciseStates] = useAtom(exerciseStatesAtom);
-
+  const [isCompleted, setIsCompleted] = useState(false);
   // Initialize exercise state if not exists
   useEffect(() => {
     if (!exerciseStates[exercise.id]) {
@@ -38,6 +54,22 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
       }));
     }
   }, [exercise.id, exercise.sets, exerciseStates, setExerciseStates]);
+
+  const isAllExercisesCompleted = useMemo(() => {
+    if (!exerciseStates[exercise.id]) return false;
+    return Object.values(exerciseStates).every((exerciseState) => {
+      return (
+        exerciseState.numberOfSets ===
+        exerciseState.completedSets.filter((set) => set !== undefined).length
+      );
+    });
+  }, [exerciseStates]);
+
+  useEffect(() => {
+    if (isAllExercisesCompleted && !isCompleted) {
+      setIsCompleted(true);
+    }
+  }, [isAllExercisesCompleted]);
 
   const exerciseState = exerciseStates[exercise.id];
 
@@ -76,7 +108,6 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
     });
   };
 
-
   // Flatten the sets
   const flatSets = flattenSets(exercise.sets);
 
@@ -88,7 +119,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
     },
   });
 
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: playerForm.control,
     name: 'sets',
   });
@@ -97,6 +128,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
     console.log('values', values);
     const newValues = reconstructSets(values.sets);
     console.log('new values', newValues);
+    setIsCompleted(false);
   }
 
   // this handles the styling of the set number based on if its completed or not
@@ -126,7 +158,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
             <FormField
               control={playerForm.control}
               name={`sets.${index}.reps`}
-              render={({ field }) => (
+              render={() => (
                 <FormItem className="flex flex-row-reverse justify-center items-center gap-2">
                   <FormLabel>Reps</FormLabel>
                   <FormControl>
@@ -137,7 +169,6 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
                       type="number"
                       placeholder="reps"
                       className="w-full"
-                      min={1}
                     />
                   </FormControl>
                 </FormItem>
@@ -146,9 +177,9 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
             <FormField
               control={playerForm.control}
               name={`sets.${index}.weight`}
-              render={({ field }) => (
+              render={() => (
                 <FormItem className="flex flex-row-reverse justify-center items-center gap-2">
-                  <FormLabel>weight</FormLabel>
+                  <FormLabel>Weight</FormLabel>
                   <FormControl>
                     <Input
                       {...playerForm.register(`sets.${index}.weight`, {
@@ -157,7 +188,6 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
                       type="number"
                       placeholder="weight"
                       className="w-full"
-                      min={1}
                     />
                   </FormControl>
                 </FormItem>
@@ -165,17 +195,74 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
             />
           </div>
         ))}
-        <div className="flex flex-col gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              append({ reps: 0, weight: 0 });
+        <div className="flex flex-col gap-1 pt-2">
+          <Button
+            variant="icon"
+            onClick={(e) => {
+              e.preventDefault();
+              append({ reps: 1, weight: 0 });
+              setExerciseStates((prev) => ({
+                ...prev,
+                [exercise.id]: {
+                  ...prev[exercise.id],
+                  numberOfSets: (prev[exercise.id]?.numberOfSets || 0) + 1, // Update numberOfSets
+                  completedSets: [
+                    ...(prev[exercise.id]?.completedSets || []),
+                    undefined,
+                  ],
+                },
+              }));
+            }}
+            className="text-primary"
+          >
+            <Plus />
+          </Button>
+
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              if (fields.length === 1) return; // Prevent removing if no sets exist
+              remove(fields.length - 1);
+              setExerciseStates((prev) => ({
+                ...prev,
+                [exercise.id]: {
+                  ...prev[exercise.id],
+                  numberOfSets: prev[exercise.id]?.numberOfSets - 1, // Update numberOfSets
+                  completedSets: prev[exercise.id]?.completedSets.slice(0, -1),
+                },
+              }));
             }}
           >
-            Add Set
-          </button>
+            Remove Set
+          </Button>
         </div>
-        <button type="submit">Submit</button>
+        <AlertDialog open={isCompleted} onOpenChange={setIsCompleted}>
+          {/* <AlertDialogTrigger value={"fdsf"} />
+            {/* Save Workout */}
+          {/* </AlertDialogTrigger> */}
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Mazal Tov 🎉 you have completed your workout{' '}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your
+                account and remove your data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                type="submit"
+                onClick={() => {
+                  onSubmit(playerForm.getValues());
+                }}
+              >
+                Save Workout
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </form>
     </Form>
   );

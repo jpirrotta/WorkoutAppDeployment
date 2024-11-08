@@ -32,21 +32,11 @@ export default function WorkoutPlayerCommandMenu({
   );
   const setApi = useSetAtom(carouselApiAtom);
   const [animatingButton, setAnimatingButton] = useState<string | null>(null);
-  const [isCompleted, setIsCompleted] = useState(false);
 
   const currentExercise = exercises[currentExerciseIndex];
   const currentExerciseState = currentExercise
     ? exerciseStates[currentExercise.id]
     : null;
-
-  const areAllExercisesMarked = useCallback(() => {
-    if (!currentExercise || !currentExerciseState) return false;
-    return exercises.every((exercise) => {
-      const exerciseState = exerciseStates[exercise.id];
-      if (!exerciseState) return false;
-      return exerciseState.completedSets.every((set) => set !== undefined);
-    });
-  }, [exerciseStates, exercises, currentExercise, currentExerciseState]);
 
   const goToNextIncompleteExercise = useCallback(() => {
     let nextExerciseIndex = -1;
@@ -97,17 +87,6 @@ export default function WorkoutPlayerCommandMenu({
     goToNextIncompleteExercise,
   ]);
 
-  useEffect(() => {
-    if (areAllExercisesMarked()) {
-      setIsCompleted(true);
-      alert('Workout completed!');
-      // TODO Add a modal that will ask the user if they want to save the workout.
-      // TODO if there were any changes made to the workout add a toggle that will update the workout
-    } else {
-      setIsCompleted(false);
-    }
-  }, [exerciseStates, exercises, areAllExercisesMarked]);
-
   const handleClick = (buttonName: string, callback: () => void) => {
     if (animatingButton) {
       return;
@@ -116,7 +95,7 @@ export default function WorkoutPlayerCommandMenu({
     callback();
   };
 
-  const removeCompletedStep = () => {
+  const skipSet = () => {
     if (!currentExercise || !currentExerciseState) return;
 
     // Mark the current set as skipped
@@ -134,12 +113,10 @@ export default function WorkoutPlayerCommandMenu({
       setCurrentSetIndex((prev) => prev + 1);
     } else {
       goToNextIncompleteExercise();
-      // setCurrentSetIndex(0);
-      // Navigation is handled by useEffect when the exercise is marked as completed
     }
   };
 
-  const addStep = () => {
+  const completeSet = () => {
     if (!currentExercise || !currentExerciseState) return;
 
     // Mark the current set as completed
@@ -156,9 +133,7 @@ export default function WorkoutPlayerCommandMenu({
     if (currentSetIndex < currentExerciseState.numberOfSets - 1) {
       setCurrentSetIndex((prev) => prev + 1);
     } else {
-      // setCurrentSetIndex(0);
       goToNextIncompleteExercise();
-      // Navigation is handled by useEffect when the exercise is marked as completed
     }
   };
 
@@ -197,7 +172,7 @@ export default function WorkoutPlayerCommandMenu({
 
   return (
     <menu className="flex flex-row gap-2 sm:gap-6 h-14 border-primary">
-      <Button onClick={() => handleClick('remove', removeCompletedStep)}>
+      <Button onClick={() => handleClick('remove', skipSet)}>
         <X
           className={animatingButton === 'remove' ? 'animate-grow-shrink' : ''}
         />
@@ -231,7 +206,7 @@ export default function WorkoutPlayerCommandMenu({
         />
       </Button>
 
-      <Button onClick={() => handleClick('add', addStep)}>
+      <Button onClick={() => handleClick('add', completeSet)}>
         <Check
           className={animatingButton === 'add' ? 'animate-grow-shrink' : ''}
         />

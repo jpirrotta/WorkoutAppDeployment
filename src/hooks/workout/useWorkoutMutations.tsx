@@ -98,7 +98,7 @@ const useWorkoutExerciseUpdate = (
 ): UseMutationResult<
   { title: string; message: string },
   unknown,
-  { workoutId: string, exerciseId: string, sets: Set[] },
+  { workoutId: string, exerciseId: string, sets: Set },
   unknown
 > => {
   const { user } = useUser();
@@ -106,7 +106,7 @@ const useWorkoutExerciseUpdate = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (variables: { workoutId: string, exerciseId: string, sets: Set[] }) => {
+    mutationFn: (variables: { workoutId: string, exerciseId: string, sets: Set }) => {
       return updateExerciseSets(userId, variables.workoutId, variables.exerciseId, variables.sets)
     },
 
@@ -192,4 +192,4 @@ const useWorkoutDelete = (
   });
 };
 
-export { useWorkoutCreate, useWorkoutDelete, useWorkoutUpdate, useExerciseRemove };
+export { useWorkoutCreate, useWorkoutDelete, useWorkoutUpdate, useWorkoutExerciseUpdate, useExerciseRemove };

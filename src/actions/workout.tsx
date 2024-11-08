@@ -3,7 +3,7 @@
 import { dbConnect } from '@/lib/dbConnect';
 import User from '@/models/userSchema';
 import logger from '@/lib/logger';
-import { NewWorkout, patchReqDataType, User as userType, Workout, Set, WorkoutExercise } from '@/types';
+import { NewWorkout, patchReqDataType, User as userType, Workout, Set } from '@/types';
 import { Document } from 'mongoose';
 
 // Add a workout for a user
@@ -114,7 +114,7 @@ async function updateWorkout(userId: string, workoutId: string, workoutUpdateDat
     }
 }
 
-async function updateExerciseSets(userId: string, workoutId: string, exerciseId: string, setData: Set[]): Promise<{ title: string; message: string }> {
+async function updateExerciseSets(userId: string, workoutId: string, exerciseId: string, setData: Set): Promise<{ title: string; message: string }> {
     logger.info('\n\nPATCH Workout-Exercise action called');
 
     try {
@@ -148,12 +148,14 @@ async function updateExerciseSets(userId: string, workoutId: string, exerciseId:
         }
 
         // Find the exercise by its id
-        const exercise = workout.exercises.find(exercise => exercise.id === exerciseId);
+        const exercise = workout.exercises.find(exercise =>
+            exercise._id?.toString() === exerciseId
+        );
 
         // If the exercise is not found return an error
         if (!exercise) {
             logger.error('Exercise not found!');
-            return { title: 'Exercise not found.', message: 'Unable to find Exercise in the specified Workout' };
+            return { title: 'Exercise not found.', message: 'Unable to find specified Exercise in the Workout' };
         }
 
         // Update the exercise with the new data

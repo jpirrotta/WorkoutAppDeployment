@@ -206,29 +206,32 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
         );
     });
 
-    const ExerciseExistingList = () => {
-        return (
-            <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value='item-1'>
-                    <AccordionTrigger className='border border-gray-500 rounded-xl px-2'>
-                        <div className={`flex items-center justify-between space-x-4 px-4`}>
-                            <h4 className="text-primary md:text-2xl">
-                                Existing Exercise List
-                            </h4>
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <div className="mt-10">
-                            <ExerciseCards
-                                exercises={workout.exercises}
-                                closeIcon={generateCloseIcon}
-                            />
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
-        );
-    };
+    const ExerciseExistingList = () => (
+        // return (
+        // <ExerciseCards
+        //     exercises={workout.exercises}
+        //     closeIcon={generateCloseIcon}
+        // />
+        <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value='item-1'>
+                <AccordionTrigger className='border border-gray-500 rounded-xl px-2'>
+                    <div className={`flex items-center justify-between space-x-4 px-4`}>
+                        <h4 className="text-primary md:text-2xl">
+                            Existing Exercise List
+                        </h4>
+                    </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                    <div className="mt-10">
+                        <ExerciseCards
+                            exercises={workout.exercises}
+                            closeIcon={generateCloseIcon}
+                        />
+                    </div>
+                </AccordionContent>
+            </AccordionItem>
+        </Accordion>
+    );
 
     // handle generating closeIcon for exercise cards
     const generateCloseIcon: (exerciseId: string) => React.ReactNode = (
@@ -272,7 +275,7 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
             <DeleteWorkoutDialog />
 
             {workout.exercises.length ? (
-                <ExerciseExistingList />
+                ExerciseExistingList()
             ) : (
                 <p className="w-full mt-10 text-center">
                     There seems to be no exercise in selected workout yet.{' '}

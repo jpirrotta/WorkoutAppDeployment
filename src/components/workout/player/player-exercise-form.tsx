@@ -21,7 +21,7 @@ type ExerciseFormProps = {
 
 export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
   // Function to flatten the nested sets structure
-  const flattenSets = (nestedSets: Set[]): FlatSets => {
+  const flattenSets = (nestedSets: Set): FlatSets => {
     const flatSets: FlatSets = [];
 
     nestedSets.forEach((set) => {
@@ -38,7 +38,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
   };
 
   // Function to reconstruct the nested structure
-  const reconstructSets = (flatSets: FlatSets): Set[] => {
+  const reconstructSets = (flatSets: FlatSets): Set => {
     const groupedSets = flatSets.reduce((acc, curr) => {
       const key = `${curr.reps}-${curr.weight}`;
       acc[key] = (acc[key] || 0) + 1;

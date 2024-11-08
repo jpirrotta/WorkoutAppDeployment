@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { Exercise, Set, playerFormSchema, FlatSets } from '@/types';
 import { currentSetIndexAtom, exerciseStatesAtom } from '@/store';
-import { useAtom, useSetAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { useEffect } from 'react';
 type ExerciseFormProps = {
   exercise: Exercise;
@@ -76,11 +76,9 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
     });
   };
 
-  console.log('exercise', exercise);
 
   // Flatten the sets
   const flatSets = flattenSets(exercise.sets);
-  console.log('flatSets', flatSets);
 
   // Reconstruct the sets
   const playerForm = useForm<z.infer<typeof playerFormSchema>>({

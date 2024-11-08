@@ -211,6 +211,7 @@ export default function ExerciseCard({
             )}
             {/* Player Form */}
             {isPlaying && <PlayerExerciseForm exercise={exercise} />}
+            
           </CardDescription>
         </CardContent>
 

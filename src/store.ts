@@ -16,7 +16,7 @@ export const sidebarToggleAtom = atomWithStorage('sidebarToggle', true);
 // atoms for the workout player ( consider moving this to a separate store )
 // this will hold the current played workout which will be used
 // to see if theres a workout playing or not ( can be useful for the notification )
-export const selectedWorkoutAtom = atom<string | undefined>();
+export const selectedWorkoutAtom = atom<string | undefined>(); // not used at the moment
 
 // this will hold the current step of the workout (eg exercise 1, exercise 2)
 export const currentExerciseIndexAtom = atom<number>(0);

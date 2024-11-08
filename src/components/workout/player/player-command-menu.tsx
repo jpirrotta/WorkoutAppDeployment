@@ -12,7 +12,7 @@ import {
 } from '@/store';
 import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import { Play, StepBack, StepForward, Check, X, Pause } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Exercise } from '@/types';
 
 type WorkoutPlayerCommandMenuProps = {
@@ -27,7 +27,9 @@ export default function WorkoutPlayerCommandMenu({
   const [currentSetIndex, setCurrentSetIndex] = useAtom(currentSetIndexAtom);
   const currentExerciseIndex = useAtomValue(currentExerciseIndexAtom);
   const totalSteps = useAtomValue(totalExercisesAtom);
-  const setCompletedExercise = useSetAtom(completedExerciseAtom);
+  const [completedExercise, setCompletedExercise] = useAtom(
+    completedExerciseAtom
+  );
   const setApi = useSetAtom(carouselApiAtom);
   const [animatingButton, setAnimatingButton] = useState<string | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -37,14 +39,63 @@ export default function WorkoutPlayerCommandMenu({
     ? exerciseStates[currentExercise.id]
     : null;
 
-  const areAllExercisesMarked = () => {
+  const areAllExercisesMarked = useCallback(() => {
+    if (!currentExercise || !currentExerciseState) return false;
     return exercises.every((exercise) => {
       const exerciseState = exerciseStates[exercise.id];
       if (!exerciseState) return false;
       return exerciseState.completedSets.every((set) => set !== undefined);
     });
-  };
-  //TODO when completing a page go to the next page that has an exercise with a  set that is undefined
+  }, [exerciseStates, exercises, currentExercise, currentExerciseState]);
+
+  const goToNextIncompleteExercise = useCallback(() => {
+    let nextExerciseIndex = -1;
+    let nextSetIndex = -1;
+
+    for (let i = 0; i < exercises.length; i++) {
+      const exercise = exercises[i];
+      const exerciseState = exerciseStates[exercise.id];
+      if (!exerciseState) continue;
+
+      const setIndex = exerciseState.completedSets.findIndex(
+        (set) => set === undefined
+      );
+      if (setIndex !== -1) {
+        nextExerciseIndex = i;
+        nextSetIndex = setIndex;
+        break;
+      }
+    }
+
+    if (nextExerciseIndex !== -1 && nextSetIndex !== -1) {
+      setApi((prev) => {
+        prev?.scrollTo(nextExerciseIndex);
+        return prev;
+      });
+      setCurrentSetIndex(nextSetIndex);
+    }
+  }, [exercises, exerciseStates, setApi, setCurrentSetIndex]);
+
+  // Effect to handle individual exercise completion
+  useEffect(() => {
+    exercises.forEach((exercise, index) => {
+      const exerciseState = exerciseStates[exercise.id];
+      if (
+        exerciseState &&
+        exerciseState.completedSets.every((set) => set !== undefined) &&
+        !completedExercise.includes(index)
+      ) {
+        setCompletedExercise((prev) => [...prev, index]);
+        goToNextIncompleteExercise();
+      }
+    });
+  }, [
+    exerciseStates,
+    exercises,
+    completedExercise,
+    setCompletedExercise,
+    goToNextIncompleteExercise,
+  ]);
 
   useEffect(() => {
     if (areAllExercisesMarked()) {
@@ -55,7 +106,7 @@ export default function WorkoutPlayerCommandMenu({
     } else {
       setIsCompleted(false);
     }
-  }, [exerciseStates, exercises]);
+  }, [exerciseStates, exercises, areAllExercisesMarked]);
 
   const handleClick = (buttonName: string, callback: () => void) => {
     if (animatingButton) {
@@ -68,6 +119,7 @@ export default function WorkoutPlayerCommandMenu({
   const removeCompletedStep = () => {
     if (!currentExercise || !currentExerciseState) return;
 
+    // Mark the current set as skipped
     setExerciseStates((prev) => ({
       ...prev,
       [currentExercise.id]: {
@@ -81,39 +133,32 @@ export default function WorkoutPlayerCommandMenu({
     if (currentSetIndex < currentExerciseState.numberOfSets - 1) {
       setCurrentSetIndex((prev) => prev + 1);
     } else {
-      setCurrentSetIndex(0);
-      nextStep();
+      goToNextIncompleteExercise();
+      // setCurrentSetIndex(0);
+      // Navigation is handled by useEffect when the exercise is marked as completed
     }
   };
 
   const addStep = () => {
     if (!currentExercise || !currentExerciseState) return;
 
+    // Mark the current set as completed
+    setExerciseStates((prev) => ({
+      ...prev,
+      [currentExercise.id]: {
+        ...prev[currentExercise.id],
+        completedSets: prev[currentExercise.id].completedSets.map((set, i) =>
+          i === currentSetIndex ? true : set
+        ),
+      },
+    }));
+
     if (currentSetIndex < currentExerciseState.numberOfSets - 1) {
       setCurrentSetIndex((prev) => prev + 1);
-      setExerciseStates((prev) => ({
-        ...prev,
-        [currentExercise.id]: {
-          ...prev[currentExercise.id],
-          completedSets: prev[currentExercise.id].completedSets.map((set, i) =>
-            i === currentSetIndex ? true : set
-          ),
-        },
-      }));
     } else {
-      // Handle exercise completion
-      setExerciseStates((prev) => ({
-        ...prev,
-        [currentExercise.id]: {
-          ...prev[currentExercise.id],
-          completedSets: prev[currentExercise.id].completedSets.map((set, i) =>
-            i === currentSetIndex ? true : set
-          ),
-        },
-      }));
-      setCompletedExercise((prev) => [...prev, currentExerciseIndex]);
-      setCurrentSetIndex(0);
-      nextStep();
+      // setCurrentSetIndex(0);
+      goToNextIncompleteExercise();
+      // Navigation is handled by useEffect when the exercise is marked as completed
     }
   };
 

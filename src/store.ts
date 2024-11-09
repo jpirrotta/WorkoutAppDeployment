@@ -1,7 +1,13 @@
 import { atom } from 'jotai';
-import { BMI, User, Exercise } from '@/types';
+import {
+  type BMI,
+  type User,
+  type Exercise,
+  type Set,
+} from '@/types';
 import { atomWithStorage } from 'jotai/utils';
 import { type CarouselApi } from './components/ui/carousel';
+import { z } from 'zod';
 
 export const measurementAtom = atom<'metric' | 'imperial'>('metric');
 
@@ -33,11 +39,28 @@ export const exerciseStatesAtom = atom<{
   };
 }>({});
 
+export const exerciseFormValuesAtom = atom<Record<string, Set[]>>({});
+
 export const totalExercisesAtom = atom<number>(0);
 
 export const carouselApiAtom = atom<CarouselApi>();
 
 export const isPlayingAtom = atom<boolean>(false);
+
+export const isAllExercisesCompletedAtom = atom((get) => {
+  const exerciseStates = get(exerciseStatesAtom);
+
+  // Return false if no states exist
+  if (Object.keys(exerciseStates).length === 0) return false;
+
+  return Object.values(exerciseStates).every(
+    (exerciseState) =>
+      exerciseState.numberOfSets ===
+      exerciseState.completedSets.filter((set) => set !== undefined).length
+  );
+});
+
+// end of player atoms
 
 // Used in Social Feed for number of posts to render per load
 export const pageAtom = atom<number>(1);

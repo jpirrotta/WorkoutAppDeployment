@@ -1,22 +1,28 @@
 'use client';
 
+// react imports
 import React, { useEffect, useState } from 'react';
+
+// UI imports
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-// import CreateWorkout from '@/components/workout/CreateWorkout';
 import { Separator } from '@/components/ui/separator';
 import { ScrollBar } from '@/components/ui/scroll-area';
-import MyWorkout from '@/components/workout/MyWorkout';
-import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import { toast } from 'sonner';
 import { LoaderCircle, Dumbbell, BicepsFlexed } from 'lucide-react';
-import { truncateText } from '@/utils/trucateText';
 import { StyledIcon } from '@/components/StyledIcon';
+
+// component and method imports
+import MyWorkout from '@/components/workout/MyWorkout';
 import CreateWorkout from '@/components/workout/CreateWorkout';
+import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
+import { truncateText } from '@/utils/trucateText';
+import { selectedWorkoutIndexAtom } from '@/store';
+import { useAtom } from 'jotai';
 
 export default function Page() {
   // state vars
-  const [selectedWorkoutIndex, setSelectedWorkoutIndex] = useState<number | null>(null);
+  const [selectedWorkoutIndex, setSelectedWorkoutIndex] = useAtom(selectedWorkoutIndexAtom);
   const [isWorkoutFormVisible, setIsWorkoutFormVisible] = useState(false);
   const {
     data: workouts,
@@ -27,7 +33,7 @@ export default function Page() {
   // error handling for getting user workouts
   useEffect(() => {
     if (workoutError) {
-      toast.error('Seems like there was an issue getting your Workouts:(', {
+      toast.error('Seems like there was an issue getting your Workouts :(', {
         description: workoutError.message,
       });
     }

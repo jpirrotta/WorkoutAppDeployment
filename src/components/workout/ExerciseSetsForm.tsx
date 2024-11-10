@@ -1,9 +1,7 @@
 'use client';
 
-// form imports
-import { useForm, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import z from 'zod';
+// react imports
+import { useEffect } from 'react';
 
 // UI imports
 import {
@@ -17,15 +15,23 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { MinusCircle, ArrowLeftToLineIcon, ChevronLeft } from 'lucide-react';
+import { MinusCircle, ChevronLeft } from 'lucide-react';
+import { toast } from 'sonner';
 
 // type imports
 import { exerciseSetsSchema, Exercise } from '@/types';
 
 // server actions imports
 import { useWorkoutExerciseUpdate } from '@/hooks/workout/useWorkoutMutations';
+import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 
+// other method imports
+import { useForm, useFieldArray } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod';
 import logger from '@/lib/logger';
+import { selectedWorkoutIndexAtom } from '@/store';
+import { useAtomValue } from 'jotai';
 
 type ExerciseFormProps = {
     exercise: Exercise;
@@ -34,8 +40,22 @@ type ExerciseFormProps = {
 };
 
 export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: ExerciseFormProps) {
+    const selectedWorkoutIndex = useAtomValue(selectedWorkoutIndexAtom);
 
-    console.log('exercise', exercise);
+    const {
+        data: workouts,
+        error: workoutError,
+        isLoading: workoutsLoading,
+    } = useGetAllWorkouts();
+
+    // error handling for getting user workouts
+    useEffect(() => {
+        if (workoutError) {
+            toast.error('Seems like there was an issue getting your Workouts :(', {
+                description: workoutError.message,
+            });
+        }
+    }, [workoutError]);
 
     const exerciseSetsForm = useForm<z.infer<typeof exerciseSetsSchema>>({
         resolver: zodResolver(exerciseSetsSchema),
@@ -55,10 +75,14 @@ export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: Ex
     function onSubmit(values: z.infer<typeof exerciseSetsSchema>) {
         console.log('Sets submitting ------> ', values);
 
-        ExerciseUpdateMutation.mutate({ workoutId: '672a5303003b3e35401b450b', exerciseId: exercise._id?.toString()!, sets: values.sets })
+        if (!workouts || workoutsLoading) {
+            return toast.error('Error getting workouts');
+        }
+
+        ExerciseUpdateMutation.mutate({ workoutId: workouts[selectedWorkoutIndex!]._id!, exerciseId: exercise._id?.toString()!, sets: values.sets })
     }
 
-    console.log(`form errors`, exerciseSetsForm.formState.errors);
+    logger.info(`form errors`, exerciseSetsForm.formState.errors);
 
     return (
         <Form {...exerciseSetsForm}>

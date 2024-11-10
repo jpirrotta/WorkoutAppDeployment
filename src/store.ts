@@ -37,3 +37,6 @@ export const itemsPerPageAtom = atom<number>(10);
 
 // create workout from selected exercises atom
 export const selectedExercisesAtom = atom<Exercise[]>([]);
+
+// selected workout index
+export const selectedWorkoutIndexAtom = atom<number | null>(0);

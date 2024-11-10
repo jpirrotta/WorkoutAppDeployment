@@ -63,7 +63,7 @@ export default function SocialFeed() {
     <div className="flex flex-col space-y-8 items-center justify-center">
       {sortedWorkouts.map((workout) => (
         <SocialFeedCard
-          key={workout._id.toString()}
+          key={workout._id!.toString()}
           userId={userId || ''}
           workout={workout}
           itemsPerPage={itemsPerPage}

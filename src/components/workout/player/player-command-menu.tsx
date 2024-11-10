@@ -35,7 +35,7 @@ export default function WorkoutPlayerCommandMenu({
 
   const currentExercise = exercises[currentExerciseIndex];
   const currentExerciseState = currentExercise
-    ? exerciseStates[currentExercise.id]
+    ? exerciseStates[currentExercise._id!.toString()]
     : null;
 
   const goToNextIncompleteExercise = useCallback(() => {
@@ -44,7 +44,7 @@ export default function WorkoutPlayerCommandMenu({
 
     for (let i = 0; i < exercises.length; i++) {
       const exercise = exercises[i];
-      const exerciseState = exerciseStates[exercise.id];
+      const exerciseState = exerciseStates[exercise._id!.toString()];
       if (!exerciseState) continue;
 
       const setIndex = exerciseState.completedSets.findIndex(
@@ -69,7 +69,7 @@ export default function WorkoutPlayerCommandMenu({
   // Effect to handle individual exercise completion
   useEffect(() => {
     exercises.forEach((exercise, index) => {
-      const exerciseState = exerciseStates[exercise.id];
+      const exerciseState = exerciseStates[exercise._id!.toString()];
       if (
         exerciseState &&
         exerciseState.completedSets.every((set) => set !== undefined) &&
@@ -101,10 +101,10 @@ export default function WorkoutPlayerCommandMenu({
     // Mark the current set as skipped
     setExerciseStates((prev) => ({
       ...prev,
-      [currentExercise.id]: {
-        ...prev[currentExercise.id],
-        completedSets: prev[currentExercise.id].completedSets.map((set, i) =>
-          i === currentSetIndex ? false : set
+      [currentExercise._id!.toString()]: {
+        ...prev[currentExercise._id!.toString()],
+        completedSets: prev[currentExercise._id!.toString()].completedSets.map(
+          (set, i) => (i === currentSetIndex ? false : set)
         ),
       },
     }));
@@ -122,10 +122,10 @@ export default function WorkoutPlayerCommandMenu({
     // Mark the current set as completed
     setExerciseStates((prev) => ({
       ...prev,
-      [currentExercise.id]: {
-        ...prev[currentExercise.id],
-        completedSets: prev[currentExercise.id].completedSets.map((set, i) =>
-          i === currentSetIndex ? true : set
+      [currentExercise._id!.toString()]: {
+        ...prev[currentExercise._id!.toString()],
+        completedSets: prev[currentExercise._id!.toString()].completedSets.map(
+          (set, i) => (i === currentSetIndex ? true : set)
         ),
       },
     }));

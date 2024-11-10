@@ -90,14 +90,21 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
     if (isAllExercisesCompleted) {
       setExerciseFormValues((prev) => ({
         ...prev,
-        [exercise.id]: reconstructSets(playerForm.getValues().sets),
+        [exercise._id!.toString()]: reconstructSets(
+          playerForm.getValues().sets
+        ),
       }));
     }
-  }, [isAllExercisesCompleted, exercise.id, playerForm, setExerciseFormValues]);
+  }, [
+    isAllExercisesCompleted,
+    exercise._id,
+    playerForm,
+    setExerciseFormValues,
+  ]);
 
   // this handles the styling of the set number based on if its completed or not
   const isCompletedStyle = (index: number) => {
-    const exerciseState = exerciseStates[exercise.id];
+    const exerciseState = exerciseStates[exercise._id!.toString()];
 
     if (exerciseState?.completedSets[index] === true) {
       return 'border rounded-3xl border-primary bg-primary';
@@ -169,11 +176,11 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
               append({ reps: 1, weight: 0 });
               setExerciseStates((prev) => ({
                 ...prev,
-                [exercise.id]: {
-                  ...prev[exercise.id],
-                  numberOfSets: (prev[exercise.id]?.numberOfSets || 0) + 1, // Update numberOfSets
+                [exercise._id!.toString()]: {
+                  ...prev[exercise._id!.toString()],
+                  numberOfSets: (prev[exercise._id!.toString()]?.numberOfSets || 0) + 1, // Update numberOfSets
                   completedSets: [
-                    ...(prev[exercise.id]?.completedSets || []),
+                    ...(prev[exercise._id!.toString()]?.completedSets || []),
                     undefined,
                   ],
                 },
@@ -191,10 +198,10 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
               remove(fields.length - 1);
               setExerciseStates((prev) => ({
                 ...prev,
-                [exercise.id]: {
-                  ...prev[exercise.id],
-                  numberOfSets: prev[exercise.id]?.numberOfSets - 1, // Update numberOfSets
-                  completedSets: prev[exercise.id]?.completedSets.slice(0, -1),
+                [exercise._id!.toString()]: {
+                  ...prev[exercise._id!.toString()],
+                  numberOfSets: prev[exercise._id!.toString()]?.numberOfSets - 1, // Update numberOfSets
+                  completedSets: prev[exercise._id!.toString()]?.completedSets.slice(0, -1),
                 },
               }));
             }}

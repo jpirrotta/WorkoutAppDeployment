@@ -106,11 +106,11 @@ export default function WorkoutPlayer({ id }: { id: string }) {
   // Initialize exercise states
   useEffect(() => {
     for (const exercise of exercises) {
-      if (!exerciseStates[exercise.id]) {
+      if (!exerciseStates[exercise._id!.toString()]) {
         const flatSets = flattenSets(exercise.sets);
         setExerciseStates((prev) => ({
           ...prev,
-          [exercise.id]: {
+          [exercise._id!.toString()]: {
             numberOfSets: flatSets.length,
             completedSets: new Array(flatSets.length).fill(undefined),
           },
@@ -132,14 +132,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     if (data) {
       const workout = data.find((val) => val._id === id);
       if (workout && workout.exercises) {
-        // Set the exercises with mock sets data remove this when we have the actual data
-        setExercises(
-          workout.exercises.map((exercise, index) => ({
-            ...exercise,
-            sets: mockWorkoutData[index].sets,
-          }))
-        );
-        // setExercises(workout.exercises);
+        setExercises(workout.exercises);
         setTotalSteps(workout.exercises.length);
       }
     }
@@ -172,7 +165,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
           <CarouselContent className="flex gap-4">
             {exercises.map((exercise) => (
               <CarouselItem
-                key={exercise.id}
+                key={exercise._id!.toString()}
                 className="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
               >
                 {/* Adjust width */}

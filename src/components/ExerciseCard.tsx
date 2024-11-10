@@ -32,7 +32,7 @@ import ExerciseSetsForm from './workout/ExerciseSetsForm';
 
 type ExerciseCardProps = Readonly<{
   exercise: Exercise;
-  closeIcon?: (exerciseId: string) => React.ReactNode;
+  closeIcon?: (exercise: Exercise) => React.ReactNode; // Changed from exerciseId
   CreateWorkoutFlag?: boolean;
   className?: string;
   isForm?: boolean;
@@ -122,7 +122,7 @@ export default function ExerciseCard({
         key={exercise.id}
       >
         {/* conditionally rendering close icon for exercise in workouts */}
-        {closeIcon && <>{closeIcon(exercise.id)}</>}
+        {closeIcon && <>{closeIcon(exercise)}</>}
 
         {/* conditionally rendered checkbox for letting user select exercise for new workout */}
         {CreateWorkoutFlag && (

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { WorkoutProgress } from '@/components/workout/player/workout-player-progressbar';
 import ExerciseCard from '@/components/ExerciseCard';
 import WorkoutPlayerCommandMenu from '@/components/workout/player/player-command-menu';
@@ -20,7 +20,7 @@ import {
   exerciseFormValuesAtom,
   isAllExercisesCompletedAtom,
 } from '@/store';
-import { Exercise, Sets, FlatSets } from '@/types';
+import { Exercise } from '@/types';
 import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import {
   AlertDialog,
@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import { useWorkoutExerciseUpdate } from '@/hooks/workout/useWorkoutMutations';
-import { flattenSets, getChangedExerciseIds } from '@/lib/workout';
+import { flattenSets, hasExerciseChanges } from '@/lib/workout';
 import { forEach } from 'lodash';
 
 export default function WorkoutPlayer({ id }: { id: string }) {
@@ -46,12 +46,15 @@ export default function WorkoutPlayer({ id }: { id: string }) {
   const [isAllExercisesCompleted] = useAtom(isAllExercisesCompletedAtom);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [isWorkoutCompleted, setIsWorkoutCompleted] = useState(false);
+  const [saveChangesSelected, setSaveChangesSelected] = useState(false);
 
   const { mutate: updateExerciseSets } = useWorkoutExerciseUpdate();
 
-  const changedIds = getChangedExerciseIds(exercises, exerciseFormValues);
-
   const { data } = useGetAllWorkouts();
+
+  const shouldUpdateWorkoutSets = useMemo(() => {
+    return hasExerciseChanges(exercises, exerciseFormValues);
+  }, [exercises, exerciseFormValues]);
 
   // console.log('id', id);
 
@@ -61,12 +64,19 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     // TODO if the user wants to save the changes to the workout
     // we can call the mutation to update the workout
     // and pass the changedIds to update only the exercises that have changed
-    // if the user doesn't want to save the changes we just save the data to his history  
-    forEach(exerciseFormValues, (sets, exerciseId) => {
-      console.log('exerciseId', exerciseId);
-      console.log('sets', sets);
-      updateExerciseSets({ workoutId: id, exerciseId, sets });
-    });
+    // if the user doesn't want to save the changes we just save the data to his history
+
+    // if a change has been made to the exercises sets we update the workout
+    if (shouldUpdateWorkoutSets && saveChangesSelected) {
+      forEach(exerciseFormValues, (sets, exerciseId) => {
+        console.log('exerciseId', exerciseId);
+        console.log('sets', sets);
+        updateExerciseSets({ workoutId: id, exerciseId, sets });
+      });
+    } else {
+      // if no changes have been made we just save the data to the history
+      console.log('no changes have been made, saving to history');
+    }
     setIsWorkoutCompleted(false);
   };
 
@@ -157,9 +167,12 @@ export default function WorkoutPlayer({ id }: { id: string }) {
             <AlertDialogTitle asChild>
               <div className="flex justify-between">
                 <h2>Workout Completed</h2>
-                {!!changedIds.size && (
+                {shouldUpdateWorkoutSets && (
                   <div className="flex items-center space-x-2">
-                    <Switch id="airplane-mode" />
+                    <Switch
+                      checked={saveChangesSelected}
+                      onCheckedChange={setSaveChangesSelected}
+                    />
                     <Label htmlFor="airplane-mode">save changes</Label>
                   </div>
                 )}

@@ -101,3 +101,29 @@ export function getChangedExerciseIds(
 
   return changedIds;
 }
+
+/**
+ * Compares the form values with the original workout values and returns true if there are any changes.
+ * @param originalExercises - The original exercises from the workout.
+ * @param formValues - The form values from the user input.
+ * @returns True if there are any changes, false otherwise.
+ */
+export function hasExerciseChanges(
+  originalExercises: Exercise[],
+  formValues: Record<string, Sets>
+): boolean {
+  for (const exercise of originalExercises) {
+    const originalSets = exercise.sets;
+    const formSets = formValues[exercise._id!.toString()];
+
+    if (!formSets) {
+      continue;
+    }
+
+    if (!areSetsEqual(originalSets, formSets)) {
+      return true;
+    }
+  }
+
+  return false;
+}

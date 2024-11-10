@@ -153,65 +153,50 @@ async function updateExerciseSets(
   try {
     logger.info(`\n\nWorkout ID - ${workoutId} | Exercise ID - ${exerciseId}`);
 
-    // Connect to the database
     await dbConnect();
 
-    //get user
-    let user = await User.findOne({ userId: userId });
+    // First verify the document exists with all required nested objects
+    const existingUser = await User.findOne({
+      userId,
+      'workouts._id': workoutId,
+      'workouts.exercises._id': exerciseId,
+    });
 
-    // If the user is not found return an error
-    if (!user) {
-      logger.error('User not found!');
+    if (!existingUser) {
+      logger.error('Required data not found!');
       return {
-        title: 'User not found.',
-        message:
-          'User you are trying to update a Workout Exercise for, does not exist in DB.',
+        title: 'Not found',
+        message: 'Unable to find specified User, Workout or Exercise',
       };
     }
 
-    // Find the workout by its id
-    const workout: Workout = user?.workouts?.id(workoutId);
-
-    // If the workout is not found return an error
-    if (!workout) {
-      logger.error('Workout not found!');
-      return {
-        title: 'Workout not found.',
-        message: 'Unable to find Workout for current User',
-      };
-    }
-
-    // If the workout has no exercises return an error
-    if (!workout.exercises) {
-      logger.error('No exercises found in the workout!');
-      return {
-        title: 'No Exercises found!',
-        message: 'No Exercises found in the specified Workout',
-      };
-    }
-
-    // Find the exercise by its id
-    const exercise = workout.exercises.find(
-      (exercise) => exercise._id?.toString() === exerciseId
+    // Perform targeted update
+    const result = await User.findOneAndUpdate(
+      {
+        userId,
+        'workouts._id': workoutId,
+        'workouts.exercises._id': exerciseId,
+      },
+      {
+        $set: {
+          'workouts.$[workout].exercises.$[exercise].sets': setData,
+        },
+      },
+      {
+        arrayFilters: [
+          { 'workout._id': workoutId },
+          { 'exercise._id': exerciseId },
+        ],
+        new: true,
+      }
     );
 
-    // If the exercise is not found return an error
-    if (!exercise) {
-      logger.error('Exercise not found!');
-      return {
-        title: 'Exercise not found.',
-        message: 'Unable to find specified Exercise in the Workout',
-      };
+    if (!result) {
+      throw new Error('Update failed');
     }
 
-    // Update the exercise with the new data
-    exercise.sets = setData;
-
-    await user.save();
-
-    // log and return response message
-    logger.info(`Exercise updated successfully`);
-    return { title: 'Success', message: 'Exercise updated successfully' };
+    logger.info('Exercise sets updated successfully');
+    return { title: 'Success', message: 'Exercise sets updated successfully' };
   } catch (error) {
     if (error instanceof Error) {
       logger.error(`Error updating workout exercise: ${error.message}`);
@@ -233,50 +218,35 @@ async function removeExercise(
   try {
     logger.info(`\nExercise ID to be removed- ${ExerciseId}`);
 
-    // Connect to the database
     await dbConnect();
 
-    //get user
-    let user = await User.findOne({ userId: userId });
-
-    // If the user is not found return an error
-    if (!user) {
-      logger.error('User not found!');
-      return {
-        title: 'User not found.',
-        message:
-          'User you are trying to update a Workout for does not exist in DB.',
-      };
-    }
-
-    // Find the workout by its id
-    const workout: Workout = user?.workouts?.id(workoutId);
-
-    if (!workout) {
-      logger.error('Workout not found!');
-      return {
-        title: 'Workout not found.',
-        message: 'Unable to find Workout for current User',
-      };
-    }
-
-    // Find the exercise by its id and remove it
-    const exerciseIndex = workout.exercises.findIndex(
-      (exercise) => exercise.id === ExerciseId
+    // Single atomic operation to find and remove exercise
+    const result = await User.findOneAndUpdate(
+      {
+        userId,
+        'workouts._id': workoutId,
+        'workouts.exercises._id': ExerciseId,
+      },
+      {
+        $pull: {
+          'workouts.$[workout].exercises': {
+            _id: ExerciseId,
+          },
+        },
+      },
+      {
+        arrayFilters: [{ 'workout._id': workoutId }],
+        new: true,
+      }
     );
 
-    if (exerciseIndex === -1) {
-      logger.error('Exercise not found!');
+    if (!result) {
+      logger.error('Required data not found!');
       return {
-        title: 'Exercise not found.',
-        message: 'Unable to find Exercise in the specified Workout',
+        title: 'Not found',
+        message: 'Unable to find specified User, Workout or Exercise',
       };
     }
-
-    workout.exercises.splice(exerciseIndex, 1);
-
-    // Save the updated user document
-    await user.save();
 
     logger.info('Exercise removed successfully');
     return {

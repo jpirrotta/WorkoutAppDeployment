@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 interface ExerciseCardsProps {
   readonly exercises: Exercise[];
-  closeIcon?: (exerciseId: string) => React.ReactNode;
+  closeIcon?: (exercise: Exercise) => React.ReactNode; // Changed from exerciseId
   CreateWorkoutFlag?: boolean;
   existingWorkoutFlag?: boolean;
 }
@@ -27,7 +27,7 @@ export default function ExerciseCards({
         <ExerciseCard
           key={exercise._id?.toString() ?? exercise.id}
           exercise={exercise}
-          closeIcon={closeIcon}
+          closeIcon={closeIcon ? () => closeIcon(exercise) : undefined}
           CreateWorkoutFlag={CreateWorkoutFlag}
         />
       ))}

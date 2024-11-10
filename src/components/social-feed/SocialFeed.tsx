@@ -45,7 +45,7 @@ export default function SocialFeed() {
   if (loadingWorkouts) {
     return (
       <div className='flex h-screen justify-center items-center'>
-        <LoaderCircle className="text-primary text-6xl animate-spin" />
+        <LoaderCircle size={64}  className="text-primary animate-spin" />
       </div>
     )
   }

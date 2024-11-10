@@ -10,15 +10,22 @@ export const playerFormSchema = z.object({
   ),
 });
 
+export const exerciseSetsSchema = z.object({
+  sets: z.array(
+    z.object({
+      sets: z.number().min(1),
+      reps: z.number().min(1),
+      weight: z.number().min(0),
+    })
+  ),
+});
+
 type FlatSets = z.infer<typeof playerFormSchema>['sets'];
 
-type Set = {
-  sets: number;
-  reps: number;
-  weight: number;
-};
+type Set = z.infer<typeof exerciseSetsSchema>['sets'];
 
 type Exercise = {
+  _id?: mongoose.Types.ObjectId;
   id: string;
   name: string;
   gifUrl: string;
@@ -27,12 +34,12 @@ type Exercise = {
   bodyPart: string;
   secondaryMuscles: string[];
   instructions: string[];
-  sets: Set[];
+  sets: Set;
 };
 
 // Base type that represents the structure of a workout (without Document)
 type BaseWorkout = {
-  _id: mongoose.Types.ObjectId & string;
+  _id?: mongoose.Types.ObjectId & string;
   name: string;
   exercises: Exercise[];
   public: boolean;
@@ -65,6 +72,7 @@ type patchReqDataType = {
   exerciseArr?: Exercise[];
   public?: boolean;
   comments?: Workout['comments'];
+  sets?: Set[];
 };
 
 export type {

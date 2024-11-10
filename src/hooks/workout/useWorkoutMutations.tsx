@@ -4,8 +4,8 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { addWorkout, deleteWorkout, updateWorkout, removeExercise } from '@/actions/workout';
-import { NewWorkout, patchReqDataType, Workout } from '@/types';
+import { addWorkout, deleteWorkout, updateWorkout, removeExercise, updateExerciseSets } from '@/actions/workout';
+import { NewWorkout, patchReqDataType, Workout, Set } from '@/types';
 import { useUser } from '@clerk/clerk-react';
 import logger from '@/lib/logger';
 
@@ -73,7 +73,7 @@ const useWorkoutUpdate = (
       queryClient.invalidateQueries({
         queryKey: ['workouts', userId],
       });
-      
+
       queryClient.invalidateQueries({
         queryKey: ['public-workouts', page, itemsPerPage],
       });
@@ -92,6 +92,40 @@ const useWorkoutUpdate = (
     },
   });
 };
+
+// update the Workout exercise sets
+const useWorkoutExerciseUpdate = (
+): UseMutationResult<
+  { title: string; message: string },
+  unknown,
+  { workoutId: string, exerciseId: string, sets: Set },
+  unknown
+> => {
+  const { user } = useUser();
+  const userId = user?.id ?? '';
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (variables: { workoutId: string, exerciseId: string, sets: Set }) => {
+      return updateExerciseSets(userId, variables.workoutId, variables.exerciseId, variables.sets)
+    },
+
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['workouts', userId],
+      });
+      logger.info('Workout Exercise updated successfully');
+      toast.success(data.title, { description: data.message });
+    },
+
+    onError: (error) => {
+      toast.error('Something went wrong', {
+        description:
+          error instanceof Error ? error.message : 'Please try again',
+      });
+    },
+  });
+}
 
 // remove an exercise from a workout
 const useExerciseRemove = (
@@ -158,4 +192,4 @@ const useWorkoutDelete = (
   });
 };
 
-export { useWorkoutCreate, useWorkoutDelete, useWorkoutUpdate, useExerciseRemove };
+export { useWorkoutCreate, useWorkoutDelete, useWorkoutUpdate, useWorkoutExerciseUpdate, useExerciseRemove };

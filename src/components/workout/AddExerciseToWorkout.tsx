@@ -51,7 +51,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
 
             const structuredOptions = workoutData.map(workout => ({
                 label: truncateText(workout.name),
-                value: workout._id.toString()
+                value: workout._id!
             }));
 
             setOptions(structuredOptions);
@@ -91,9 +91,9 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
         logger.info(`Creating new Workout: ${JSON.stringify(newWorkoutData)}`);
         const response = await workoutCreateMutation.mutateAsync(newWorkoutData);
 
-        if (response.createdWorkout) {
+        if (response?.createdWorkout?._id) {
             // Add the newly created workout to the options
-            selectedWorkoutIds.push(response.createdWorkout._id.toString());
+            selectedWorkoutIds.push(response.createdWorkout._id);
         }
         else {
             logger.info(`didn\'t got any workout in create workout response: ${JSON.stringify(response)}`);

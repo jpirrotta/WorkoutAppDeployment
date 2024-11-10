@@ -28,6 +28,7 @@ import { useUserFavourites } from '@/hooks/exercises/getFavourites';
 import useFavMutate from '@/hooks/exercises/setFav';
 
 import PlayerExerciseForm from './workout/player/player-exercise-form';
+import ExerciseSetsForm from './workout/ExerciseSetsForm';
 
 type ExerciseCardProps = Readonly<{
   exercise: Exercise;
@@ -43,14 +44,14 @@ export default function ExerciseCard({
   closeIcon,
   CreateWorkoutFlag,
   className,
-  isForm = false,
   isPlaying = false,
 }: ExerciseCardProps) {
   const [showDemo, setShowDemo] = useState(true);
   const [SelectedExercises, setSelectedExercises] = useAtom(
     selectedExercisesAtom
   );
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false); // State to track if the exercise is favorited
+  const [isSetsOpen, setIsSetsOpen] = useState(false); // State to track if the sets editing is needed
   const mutation = useFavMutate();
   const { user, isSignedIn, isLoaded } = useUser();
 
@@ -156,78 +157,110 @@ export default function ExerciseCard({
           </div>
         </CardHeader>
 
-        <CardContent>
-          {showDemo ? (
-            <div className="flex justify-center items-center flex-col">
-              <Image
-                src={exercise.gifUrl}
-                alt={exercise.name}
-                width={350}
-                height={125}
-                className="rounded-md"
-                unoptimized
-              />
-              <Button
-                className="px-0"
-                variant="link"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  ImageToggler();
-                }}
-              >
-                Hide Demo
-              </Button>
-            </div>
-          ) : (
-            <Button
-              className="px-0"
-              variant="link"
-              onClick={(e) => {
-                e.stopPropagation();
-                ImageToggler();
-              }}
-            >
-              Show Demo
-            </Button>
-          )}
-
-          <CardDescription className="flex flex-col gap-1 text-secondary capitalize">
-            {!isPlaying && (
-              <>
-                <span>
-                  <strong>Target:</strong> {exercise.target}
-                </span>
-                <span>
-                  <strong>Equipment:</strong> {exercise.equipment}
-                </span>
-                <span>
-                  <strong>Body Part:</strong> {exercise.bodyPart}
-                </span>
-                <span className="pt-4">
-                  <strong>Secondary Muscles:</strong>{' '}
-                  {exercise.secondaryMuscles.join(', ')}
-                </span>
-              </>
-            )}
-            {/* Player Form */}
-          </CardDescription>
-          {isPlaying && <PlayerExerciseForm exercise={exercise} />}
-        </CardContent>
-
-        <CardFooter className="capitalize text-secondary items-start flex flex-col gap-5">
-          {/* modal trigger btn for adding exercise to desired workout */}
-          {!isPlaying && (
-            <AddExerciseToWorkout
-              triggerNode={
-                <div className="w-full">
-                  <Button className="px-2" variant="outline">
-                    Add To Workout
+        <CardContent className={`${isSetsOpen && 'px-2'}`}>
+          {!isSetsOpen ? (
+            <>
+              {showDemo ? (
+                <div className="flex justify-center items-center flex-col">
+                  <Image
+                    src={exercise.gifUrl}
+                    alt={exercise.name}
+                    width={350}
+                    height={125}
+                    className="rounded-md"
+                    unoptimized
+                  />
+                  <Button
+                    className="px-0"
+                    variant="link"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      ImageToggler();
+                    }}
+                  >
+                    Hide Demo
                   </Button>
                 </div>
-              }
-              exerciseToAdd={exercise}
+              ) : (
+                <Button
+                  className="px-0"
+                  variant="link"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    ImageToggler();
+                  }}
+                >
+                  Show Demo
+                </Button>
+              )}
+
+              <CardDescription className="flex flex-col gap-1 text-secondary capitalize">
+                {!isPlaying && (
+                  <>
+                    <span>
+                      <strong>Target:</strong> {exercise.target}
+                    </span>
+                    <span>
+                      <strong>Equipment:</strong> {exercise.equipment}
+                    </span>
+                    <span>
+                      <strong>Body Part:</strong> {exercise.bodyPart}
+                    </span>
+                    <span className="pt-4">
+                      <strong>Secondary Muscles:</strong>{' '}
+                      {exercise.secondaryMuscles.join(', ')}
+                    </span>
+                  </>
+                )}
+                {/* Player Form */}
+              </CardDescription>
+              {isPlaying && <PlayerExerciseForm exercise={exercise} />}
+            </>
+          ) : (
+            <ExerciseSetsForm
+              exercise={exercise}
+              setsFlag={isSetsOpen}
+              setSetsFlag={setIsSetsOpen}
             />
           )}
+        </CardContent>
+
+        <CardFooter
+          className={`${
+            isSetsOpen && 'p-0'
+          } capitalize px-2 text-secondary items-start flex flex-wrap gap-5`}
+        >
+          {/* conditionally show exercise details or sets */}
+          {!isPlaying &&
+            (isSetsOpen ? (
+              <></>
+            ) : (
+              <>
+                {/* modal trigger btn for adding exercise to desired workout */}
+                <AddExerciseToWorkout
+                  triggerNode={
+                    <Button
+                      className="px-2 w-full sm:w-auto flex-1"
+                      variant="outline"
+                    >
+                      Add To Workout
+                    </Button>
+                  }
+                  exerciseToAdd={exercise}
+                />
+
+                {/* sets show trigger */}
+                {closeIcon && (
+                  <Button
+                    onClick={() => setIsSetsOpen(!isSetsOpen)}
+                    variant="outline"
+                    className="px-2 w-full sm:w-auto flex-1"
+                  >
+                    Adjust Sets
+                  </Button>
+                )}
+              </>
+            ))}
         </CardFooter>
       </Card>
     </div>

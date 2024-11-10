@@ -19,6 +19,7 @@ import {
   exerciseStatesAtom,
   exerciseFormValuesAtom,
   isAllExercisesCompletedAtom,
+  workoutDurationAtom,
 } from '@/store';
 import { Exercise } from '@/types';
 import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
@@ -33,9 +34,13 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-import { useWorkoutExerciseUpdate } from '@/hooks/workout/useWorkoutMutations';
+import {
+  useWorkoutExerciseUpdate,
+  useWorkoutHistorySave,
+} from '@/hooks/workout/useWorkoutMutations';
 import { flattenSets, hasExerciseChanges } from '@/lib/workout';
 import { forEach } from 'lodash';
+import { collectWorkoutHistoryData } from '@/lib/workout';
 
 export default function WorkoutPlayer({ id }: { id: string }) {
   const [api, setApi] = useAtom(carouselApiAtom);
@@ -47,8 +52,10 @@ export default function WorkoutPlayer({ id }: { id: string }) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [isWorkoutCompleted, setIsWorkoutCompleted] = useState(false);
   const [saveChangesSelected, setSaveChangesSelected] = useState(false);
+  const duration = useAtomValue(workoutDurationAtom);
 
   const { mutate: updateExerciseSets } = useWorkoutExerciseUpdate();
+  const { mutate: saveToHistory } = useWorkoutHistorySave();
 
   const { data } = useGetAllWorkouts();
 
@@ -65,18 +72,32 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     // we can call the mutation to update the workout
     // and pass the changedIds to update only the exercises that have changed
     // if the user doesn't want to save the changes we just save the data to his history
-
-    // if a change has been made to the exercises sets we update the workout
     if (shouldUpdateWorkoutSets && saveChangesSelected) {
+      // if a change has been made to the exercises sets we update the workout
       forEach(exerciseFormValues, (sets, exerciseId) => {
-        console.log('exerciseId', exerciseId);
-        console.log('sets', sets);
-        updateExerciseSets({ workoutId: id, exerciseId, sets });
+        updateExerciseSets({
+          workoutId: id,
+          exerciseId,
+          sets,
+        });
       });
-    } else {
-      // if no changes have been made we just save the data to the history
-      console.log('no changes have been made, saving to history');
     }
+
+    // Collect history data
+    const historyData = collectWorkoutHistoryData(
+      {
+        _id: id,
+        name: data?.find((val) => val._id === id)?.name ?? '',
+        exercises,
+      },
+      exerciseStates,
+      exerciseFormValues,
+      duration
+    );
+    console.log('historyData', historyData);
+    // Save the workout to history
+    saveToHistory(historyData);
+
     setIsWorkoutCompleted(false);
   };
 

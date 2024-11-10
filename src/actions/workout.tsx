@@ -3,9 +3,16 @@
 import { dbConnect } from '@/lib/dbConnect';
 import User from '@/models/userSchema';
 import logger from '@/lib/logger';
-import { NewWorkout, patchReqDataType, Workout, Sets, Exercise } from '@/types';
+import {
+  NewWorkout,
+  patchReqDataType,
+  Workout,
+  Sets,
+  Exercise,
+  WorkoutHistory,
+} from '@/types';
 
-async function addWorkout(
+export async function addWorkout(
   userId: string,
   workout: NewWorkout
 ): Promise<{ title: string; message: string; createdWorkout?: Workout }> {
@@ -66,7 +73,7 @@ async function addWorkout(
   }
 }
 
-async function updateWorkout(
+export async function updateWorkout(
   userId: string,
   workoutId: string,
   workoutUpdateData: patchReqDataType
@@ -161,7 +168,7 @@ async function updateWorkout(
   }
 }
 
-async function updateExerciseSets(
+export async function updateExerciseSets(
   userId: string,
   workoutId: string,
   exerciseId: string,
@@ -171,25 +178,8 @@ async function updateExerciseSets(
 
   try {
     logger.info(`\n\nWorkout ID - ${workoutId} | Exercise ID - ${exerciseId}`);
-
     await dbConnect();
 
-    // First verify the document exists with all required nested objects
-    const existingUser = await User.findOne({
-      userId,
-      'workouts._id': workoutId,
-      'workouts.exercises._id': exerciseId,
-    });
-
-    if (!existingUser) {
-      logger.error('Required data not found!');
-      return {
-        title: 'Not found',
-        message: 'Unable to find specified User, Workout or Exercise',
-      };
-    }
-
-    // Perform targeted update
     const result = await User.findOneAndUpdate(
       {
         userId,
@@ -214,7 +204,6 @@ async function updateExerciseSets(
       throw new Error('Update failed');
     }
 
-    logger.info('Exercise sets updated successfully');
     return { title: 'Success', message: 'Exercise sets updated successfully' };
   } catch (error) {
     if (error instanceof Error) {
@@ -227,7 +216,7 @@ async function updateExerciseSets(
 }
 
 // update a workout to edit exercises, name, public status, comments
-async function removeExercise(
+export async function removeExercise(
   userId: string,
   workoutId: string,
   ExerciseId: string
@@ -282,7 +271,7 @@ async function removeExercise(
   }
 }
 
-async function deleteWorkout(
+export async function deleteWorkout(
   userId: string,
   workoutId: string
 ): Promise<{ title: string; message: string }> {
@@ -330,7 +319,7 @@ async function deleteWorkout(
 }
 // unused as of now since we don't have any feature for deleting all workouts at once, but might going ahead
 // delete all workouts for a user
-async function deleteAllWorkouts(
+export async function deleteAllWorkouts(
   userId: string
 ): Promise<{ title: string; message: string }> {
   logger.info('\n\nDELETE All Workouts action called');
@@ -378,11 +367,45 @@ async function deleteAllWorkouts(
   }
 }
 
-export {
-  addWorkout,
-  deleteWorkout,
-  deleteAllWorkouts,
-  updateWorkout,
-  removeExercise,
-  updateExerciseSets,
-};
+export async function saveWorkoutHistory(
+  userId: string,
+  historyData: WorkoutHistory
+): Promise<{ title: string; message: string }> {
+  logger.info('\n\nSave Workout History action called');
+
+  try {
+    logger.info(`Saving workout history for user: ${userId}`);
+    await dbConnect();
+
+    const result = await User.findOneAndUpdate(
+      { userId },
+      {
+        $push: {
+          workoutHistory: historyData,
+        },
+      },
+      { new: true }
+    );
+
+    if (!result) {
+      logger.error('User not found!');
+      return {
+        title: 'Not found',
+        message: 'Unable to find specified User',
+      };
+    }
+
+    logger.info('Workout history saved successfully');
+    return {
+      title: 'Success',
+      message: 'Workout history saved successfully',
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(`Error saving workout history: ${error.message}`);
+      throw new Error(`Error saving workout history: ${error.message}`);
+    }
+    logger.error(`Error saving workout history: ${error}`);
+    throw new Error(`Internal Server Error: ${error}`);
+  }
+}

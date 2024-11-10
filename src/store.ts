@@ -1,10 +1,5 @@
 import { atom } from 'jotai';
-import {
-  type BMI,
-  type User,
-  type Exercise,
-  type Sets,
-} from '@/types';
+import { type BMI, type User, type Exercise, type Sets } from '@/types';
 import { atomWithStorage } from 'jotai/utils';
 import { type CarouselApi } from './components/ui/carousel';
 import { z } from 'zod';
@@ -46,6 +41,8 @@ export const totalExercisesAtom = atom<number>(0);
 export const carouselApiAtom = atom<CarouselApi>();
 
 export const isPlayingAtom = atom<boolean>(false);
+
+export const workoutDurationAtom = atom<number>(0);
 
 export const isAllExercisesCompletedAtom = atom((get) => {
   const exerciseStates = get(exerciseStatesAtom);

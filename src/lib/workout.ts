@@ -1,4 +1,10 @@
-import { Exercise, FlatSets, Sets } from '@/types';
+import {
+  Exercise,
+  FlatSets,
+  Sets,
+  WorkoutHistory,
+  ExerciseHistory,
+} from '@/types';
 
 /**
  * Flattens the nested sets structure into a flat array of sets.
@@ -126,4 +132,57 @@ export function hasExerciseChanges(
   }
 
   return false;
+}
+export function collectWorkoutHistoryData(
+  workout: {
+    _id: string;
+    name: string;
+    exercises: Exercise[];
+  },
+  exerciseStates: Record<
+    string,
+    {
+      numberOfSets: number;
+      completedSets: (boolean | undefined)[];
+    }
+  >,
+  exerciseFormValues: Record<string, Sets>,
+  duration: number
+): WorkoutHistory {
+  const completedExercises = Object.values(exerciseStates).filter((state) =>
+    state.completedSets.every((set) => set !== undefined)
+  ).length;
+
+  const exercises: ExerciseHistory[] = workout.exercises.map((exercise) => {
+    const exerciseId = exercise._id!.toString();
+    const completedSets = exerciseStates[exerciseId]?.completedSets || [];
+    const formSets = exerciseFormValues[exerciseId] || [];
+
+    // Flatten sets into individual entries
+    const flattenedSets = flattenSets(formSets);
+
+    // Filter only completed sets
+    const completedFlatSets = flattenedSets.filter(
+      (_, index) =>
+        completedSets[Math.floor(index / formSets[0]?.sets || 1)] === true
+    );
+
+    // Reconstruct sets with counts
+    const processedSets = reconstructSets(completedFlatSets);
+
+    return {
+      name: exercise.name,
+      primaryMuscle: exercise.target,
+      sets: processedSets,
+    };
+  });
+
+  return {
+    name: workout.name,
+    date: new Date(),
+    duration,
+    completedExercises,
+    totalExercises: workout.exercises.length,
+    exercises,
+  };
 }

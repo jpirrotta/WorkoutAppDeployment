@@ -18,7 +18,7 @@ import {
   exerciseFormValuesAtom,
   isAllExercisesCompletedAtom,
 } from '@/store';
-import { Exercise, Set, FlatSets } from '@/types';
+import { Exercise, Sets, FlatSets } from '@/types';
 import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
 import {
   AlertDialog,
@@ -73,7 +73,7 @@ const mockWorkoutData = [
   },
 ];
 // Function to flatten the nested sets structure
-export const flattenSets = (nestedSets: Set[]): FlatSets => {
+export const flattenSets = (nestedSets: Sets): FlatSets => {
   const flatSets: FlatSets = [];
 
   nestedSets.forEach((set) => {
@@ -102,13 +102,6 @@ export default function WorkoutPlayer({ id }: { id: string }) {
   const { data } = useGetAllWorkouts();
 
   console.log('exercises', exercises);
-
-  console.log(
-    'xxxxxxxxxxxxxxxxxxxxxxx',
-    exerciseFormValues ? exerciseFormValues : 'no data'
-  );
-
-
 
   // Initialize exercise states
   useEffect(() => {

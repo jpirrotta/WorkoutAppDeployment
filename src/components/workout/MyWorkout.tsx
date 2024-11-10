@@ -204,11 +204,6 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
     });
 
     const ExerciseExistingList = () => (
-        // return (
-        // <ExerciseCards
-        //     exercises={workout.exercises}
-        //     closeIcon={generateCloseIcon}
-        // />
         <Accordion type="single" collapsible className="w-full">
             <AccordionItem value='item-1'>
                 <AccordionTrigger className='border border-gray-500 rounded-xl px-2'>

@@ -25,7 +25,7 @@ type FlatSets = z.infer<typeof playerFormSchema>['sets'];
 type Set = z.infer<typeof exerciseSetsSchema>['sets'];
 
 type Exercise = {
-  _id?: mongoose.Types.ObjectId;
+  _id?: mongoose.Types.ObjectId & string;
   id: string;
   name: string;
   gifUrl: string;

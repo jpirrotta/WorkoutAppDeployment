@@ -4,8 +4,14 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { addWorkout, deleteWorkout, updateWorkout, removeExercise, updateExerciseSets } from '@/actions/workout';
-import { NewWorkout, patchReqDataType, Workout, Set } from '@/types';
+import {
+  addWorkout,
+  deleteWorkout,
+  updateWorkout,
+  removeExercise,
+  updateExerciseSets,
+} from '@/actions/workout';
+import { NewWorkout, patchReqDataType, Workout, Sets } from '@/types';
 import { useUser } from '@clerk/clerk-react';
 import logger from '@/lib/logger';
 
@@ -14,9 +20,8 @@ import { useAtomValue } from 'jotai';
 import { pageAtom, itemsPerPageAtom } from '@/store';
 
 // create new workout
-const useWorkoutCreate = (
-): UseMutationResult<
-  { title: string; message: string, createdWorkout?: Workout }, // TData: The response from the mutation
+const useWorkoutCreate = (): UseMutationResult<
+  { title: string; message: string; createdWorkout?: Workout }, // TData: The response from the mutation
   unknown, // TError: Could be unknown or Error
   NewWorkout, // TVariables: The data passed to the mutation function
   unknown // TContext: Context not used here, so it's unknown
@@ -27,7 +32,7 @@ const useWorkoutCreate = (
 
   return useMutation({
     mutationFn: (workout: NewWorkout) => {
-      return addWorkout(userId, workout)
+      return addWorkout(userId, workout);
     },
     onSuccess: (data, variables) => {
       toast.success(data.title, { description: data.message });
@@ -49,11 +54,10 @@ const useWorkoutCreate = (
 };
 
 // update a workout
-const useWorkoutUpdate = (
-): UseMutationResult<
+const useWorkoutUpdate = (): UseMutationResult<
   { title: string; message: string },
   unknown,
-  { workoutId: string, workoutData: patchReqDataType },
+  { workoutId: string; workoutData: patchReqDataType },
   unknown
 > => {
   const { user } = useUser();
@@ -65,8 +69,11 @@ const useWorkoutUpdate = (
   const itemsPerPage = useAtomValue(itemsPerPageAtom);
 
   return useMutation({
-    mutationFn: (variables: { workoutId: string, workoutData: patchReqDataType }) => {
-      return updateWorkout(userId, variables.workoutId, variables.workoutData)
+    mutationFn: (variables: {
+      workoutId: string;
+      workoutData: patchReqDataType;
+    }) => {
+      return updateWorkout(userId, variables.workoutId, variables.workoutData);
     },
 
     onSuccess: (data, variables) => {
@@ -94,11 +101,10 @@ const useWorkoutUpdate = (
 };
 
 // update the Workout exercise sets
-const useWorkoutExerciseUpdate = (
-): UseMutationResult<
+const useWorkoutExerciseUpdate = (): UseMutationResult<
   { title: string; message: string },
   unknown,
-  { workoutId: string, exerciseId: string, sets: Set },
+  { workoutId: string; exerciseId: string; sets: Sets },
   unknown
 > => {
   const { user } = useUser();
@@ -106,8 +112,17 @@ const useWorkoutExerciseUpdate = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (variables: { workoutId: string, exerciseId: string, sets: Set }) => {
-      return updateExerciseSets(userId, variables.workoutId, variables.exerciseId, variables.sets)
+    mutationFn: (variables: {
+      workoutId: string;
+      exerciseId: string;
+      sets: Sets;
+    }) => {
+      return updateExerciseSets(
+        userId,
+        variables.workoutId,
+        variables.exerciseId,
+        variables.sets
+      );
     },
 
     onSuccess: (data, variables) => {
@@ -125,14 +140,13 @@ const useWorkoutExerciseUpdate = (
       });
     },
   });
-}
+};
 
 // remove an exercise from a workout
-const useExerciseRemove = (
-): UseMutationResult<
+const useExerciseRemove = (): UseMutationResult<
   { title: string; message: string },
   unknown,
-  { workoutId: string, ExerciseId: string },
+  { workoutId: string; ExerciseId: string },
   unknown
 > => {
   const { user } = useUser();
@@ -140,8 +154,8 @@ const useExerciseRemove = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (variables: { workoutId: string, ExerciseId: string }) => {
-      return removeExercise(userId, variables.workoutId, variables.ExerciseId)
+    mutationFn: (variables: { workoutId: string; ExerciseId: string }) => {
+      return removeExercise(userId, variables.workoutId, variables.ExerciseId);
     },
 
     onSuccess: (data, variables) => {
@@ -163,8 +177,7 @@ const useExerciseRemove = (
 };
 
 // delete a workout
-const useWorkoutDelete = (
-): UseMutationResult<
+const useWorkoutDelete = (): UseMutationResult<
   { title: string; message: string },
   unknown,
   string,
@@ -175,7 +188,7 @@ const useWorkoutDelete = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (workoutId: string) => {
-      return deleteWorkout(userId, workoutId)
+      return deleteWorkout(userId, workoutId);
     },
     onSuccess: (data, variables) => {
       toast.success(data.title, { description: data.message });
@@ -192,4 +205,10 @@ const useWorkoutDelete = (
   });
 };
 
-export { useWorkoutCreate, useWorkoutDelete, useWorkoutUpdate, useWorkoutExerciseUpdate, useExerciseRemove };
+export {
+  useWorkoutCreate,
+  useWorkoutDelete,
+  useWorkoutUpdate,
+  useWorkoutExerciseUpdate,
+  useExerciseRemove,
+};

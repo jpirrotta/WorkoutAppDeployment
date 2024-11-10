@@ -3,16 +3,8 @@
 import { dbConnect } from '@/lib/dbConnect';
 import User from '@/models/userSchema';
 import logger from '@/lib/logger';
-import {
-  NewWorkout,
-  patchReqDataType,
-  User as userType,
-  Workout,
-  Sets,
-} from '@/types';
-import { Document } from 'mongoose';
+import { NewWorkout, patchReqDataType, Workout, Sets, Exercise } from '@/types';
 
-// Add a workout for a user
 async function addWorkout(
   userId: string,
   workout: NewWorkout
@@ -20,13 +12,27 @@ async function addWorkout(
   logger.info('POST Workout action called');
 
   try {
-    // Connect to the database
     await dbConnect();
 
-    // Find the user
-    const user: (userType & Document) | null = await User.findOne({ userId });
+    const result = await User.findOneAndUpdate(
+      { userId },
+      {
+        $push: {
+          workouts: workout,
+        },
+      },
+      {
+        new: true,
+        projection: {
+          workouts: {
+            $slice: -1,
+          },
+          userId: 1,
+        },
+      }
+    );
 
-    if (!user) {
+    if (!result?.userId) {
       logger.error('User not found!');
       return {
         title: 'User not found.',
@@ -34,21 +40,20 @@ async function addWorkout(
       };
     }
 
-    // Add the workout to the user's workouts
-    user.workouts?.push(workout as any); // Temporarily cast to any, to bypass _id check
-    await user.save();
+    if (!result.workouts || result.workouts.length === 0) {
+      logger.error('Workout not found!');
+      return {
+        title: 'Workout not found.',
+        message: 'Unable to find Workout for current User',
+      };
+    }
 
-    // Fetch the last workout (the one we added recently) with converting it to object
-    const savedWorkout: Workout | undefined = user?.workouts
-      ?.slice(-1)[0]
-      ?.toObject();
-
+    const savedWorkout = result.workouts[0]?.toObject();
     logger.info(`Added Workout: ${JSON.stringify({ savedWorkout })}`);
 
-    // send the response msg
     return {
       title: 'Workout Created!',
-      message: `Your Workout "${workout.name}" created successfully!`,
+      message: `Workout "${workout.name}" created successfully!`,
       createdWorkout: savedWorkout,
     };
   } catch (error) {
@@ -61,7 +66,6 @@ async function addWorkout(
   }
 }
 
-// update a workout to edit exercises, name, public status, comments
 async function updateWorkout(
   userId: string,
   workoutId: string,
@@ -71,73 +75,88 @@ async function updateWorkout(
 
   try {
     logger.info(`\n\nWorkout ID - ${workoutId}`);
-
-    // Connect to the database
     await dbConnect();
 
-    //get user
-    let user = await User.findOne({ userId: userId });
-
-    // If the user is not found return an error
-    if (!user) {
-      logger.error('User not found!');
-      return {
-        title: 'User not found.',
-        message:
-          'User you are trying to update a Workout for does not exist in DB.',
+    // Build update object based on provided data
+    const updateObj: {
+      'workouts.$.name'?: string;
+      'workouts.$.public'?: boolean;
+      'workouts.$.postDate'?: Date;
+      'workouts.$.comments'?: Array<{ text: string; userId: string }>;
+      $push?: {
+        'workouts.$.exercises': {
+          $each: Exercise[];
+        };
       };
-    }
+    } = {};
 
-    // Find the workout by its id
-    const workout: Workout = user?.workouts?.id(workoutId);
-
-    if (!workout) {
-      logger.error('Workout not found!');
-      return {
-        title: 'Workout not found.',
-        message: 'Unable to find Workout for current User',
-      };
-    }
-
-    logger.info(`Workout found, now updating...`);
-
-    // Manually update workout fields (had issues using set method from mongoose)
     if (workoutUpdateData.name) {
-      workout.name = workoutUpdateData.name;
+      updateObj['workouts.$.name'] = workoutUpdateData.name;
     }
 
     if (workoutUpdateData.public !== undefined) {
-      workout.public = workoutUpdateData.public;
-      workout.postDate = workoutUpdateData.public ? new Date() : new Date(0); // set post date to current date & time if public, or set it to epoch time (representing empty date) if private
-    }
-
-    if (
-      workoutUpdateData?.exerciseArr?.length &&
-      workoutUpdateData.exerciseArr.length > 0
-    ) {
-      workoutUpdateData.exerciseArr.forEach((exercise) => {
-        workout.exercises.push(exercise);
-      });
+      updateObj['workouts.$.public'] = workoutUpdateData.public;
+      updateObj['workouts.$.postDate'] = workoutUpdateData.public
+        ? new Date()
+        : new Date(0);
     }
 
     if (workoutUpdateData.comments) {
-      workout.comments = workoutUpdateData.comments;
+      updateObj['workouts.$.comments'] = workoutUpdateData.comments;
     }
 
-    // Update user
-    await user.save();
+    if ((workoutUpdateData.exerciseArr ?? []).length > 0) {
+      updateObj['$push'] = {
+        'workouts.$.exercises': {
+          $each: workoutUpdateData.exerciseArr ?? [],
+        },
+      };
+    }
 
-    // Send the response with the confirmation message
+    const result = await User.findOneAndUpdate(
+      {
+        userId,
+        'workouts._id': workoutId,
+      },
+      updateObj,
+      {
+        new: true,
+      }
+    );
+
+    // Check if user exists
+    if (!result) {
+      logger.error('User not found!');
+      return {
+        title: 'Not Found',
+        message: 'Unable to find specified User',
+      };
+    }
+
+    // Check if workout exists in user's workouts array
+    const workoutExists = result.workouts?.some(
+      (workout) => workout._id?.toString() === workoutId
+    );
+
+    if (!workoutExists) {
+      logger.error('Workout not found!');
+      return {
+        title: 'Workout not found',
+        message: 'Unable to find specified Workout',
+      };
+    }
+
+    logger.info('Workout updated successfully');
     return {
       title: 'Workout Updated!',
-      message: `Workout has been updated successfully!`,
+      message: 'Workout has been updated successfully!',
     };
   } catch (error) {
     if (error instanceof Error) {
       logger.error(`Error updating workout: ${error.message}`);
       throw new Error(`Error updating Workout: ${error.message}`);
     }
-    logger.error(`Error updating workouts: ${error}`);
+    logger.error(`Error updating workout: ${error}`);
     throw new Error(`Internal Server Error: ${error}`);
   }
 }
@@ -263,50 +282,42 @@ async function removeExercise(
   }
 }
 
-// Delete a specific workout for a user
 async function deleteWorkout(
   userId: string,
   workoutId: string
 ): Promise<{ title: string; message: string }> {
-  logger.info('DELETE all Workouts action called');
+  logger.info('DELETE Workout action called');
 
   try {
-    // Connect to the database
     await dbConnect();
 
-    // Find the user
-    const user = await User.findOne({ userId });
+    const result = await User.findOneAndUpdate(
+      {
+        userId,
+        'workouts._id': workoutId,
+      },
+      {
+        $pull: {
+          workouts: {
+            _id: workoutId,
+          },
+        },
+      }
+    );
 
-    if (!user) {
-      logger.error('User not found!');
+    if (!result) {
+      logger.error('User or Workout not found!');
       return {
-        title: 'User not found.',
-        message:
-          'User you are trying to delete a Workout for does not exist in DB.',
+        title: 'Not found',
+        message: 'Unable to find specified User or Workout',
       };
     }
-
-    // Find the workout by its id and remove it
-    const workout: Document & Workout = user.workouts?.id(workoutId);
-    if (!workout) {
-      logger.error('Workout not found!');
-      return {
-        title: 'Workout not found.',
-        message: 'Unable to find Workout for current User',
-      };
-    }
-
-    // Remove the workout
-    workout.deleteOne();
-
-    await user.save();
 
     logger.info(`Workout deleted: ${workoutId}`);
 
-    // Send the response with the updated workouts
     return {
       title: 'Workout Deleted!',
-      message: `Your Workout named ${workout.name} deleted successfully!`,
+      message: 'The selected Workout has been deleted successfully!',
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -317,25 +328,25 @@ async function deleteWorkout(
     throw new Error(`Internal Server Error: ${error}`);
   }
 }
-
 // unused as of now since we don't have any feature for deleting all workouts at once, but might going ahead
 // delete all workouts for a user
 async function deleteAllWorkouts(
   userId: string
 ): Promise<{ title: string; message: string }> {
-  logger.info('\n\nDELETE Workout action called');
-  try {
-    // logs
-    logger.info(`Request from userId: ${userId}`);
+  logger.info('\n\nDELETE All Workouts action called');
 
-    // Connect to the database
+  try {
+    logger.info(`Request from userId: ${userId}`);
     await dbConnect();
 
-    // Find the user by their userId
-    let user = await User.findOne({ userId: userId });
+    // Single atomic operation to find user and update workouts array
+    const result = await User.findOneAndUpdate(
+      { userId },
+      { $set: { workouts: [] } },
+      { new: true }
+    );
 
-    // If the user is not found return an error
-    if (!user) {
+    if (!result) {
       logger.error('User not found!');
       return {
         title: 'User not found.',
@@ -344,28 +355,18 @@ async function deleteAllWorkouts(
       };
     }
 
-    // if the user has no workouts return a message
-    if (user.workouts?.length === 0) {
-      logger.error('User found, but no Workouts exist!');
+    if (result.workouts?.length === 0) {
+      logger.info('No workouts found to delete');
       return {
         title: 'No Workouts found',
         message: 'Seems like you have no Workouts to delete',
       };
     }
 
-    // if the user is found delete all workouts
-    logger.info('User found, deleting all workouts');
-
-    // remove all workouts
-    (user.workouts as Workout[]) = [];
-
-    // update the user
-    await user.save();
-
-    // Send the response with the confirmation message
+    logger.info('All workouts deleted successfully');
     return {
-      title: 'Workouts Deleted!',
-      message: `All of your Workouts are deleted successfully!`,
+      title: 'Success',
+      message: 'All workouts deleted successfully',
     };
   } catch (error) {
     if (error instanceof Error) {

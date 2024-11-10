@@ -1,26 +1,28 @@
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import {
   isPlayingAtom,
-  totalStepsAtom,
-  completedStepsAtom,
+  totalExercisesAtom,
+  workoutDurationAtom,
+  completedExerciseAtom,
 } from '@/store'; // Adjust the import path as needed
 
 export default function Stopwatch() {
   const [stopwatch, setStopwatch] = useState(0);
-  const totalSteps = useAtomValue(totalStepsAtom);
-  const stepsCompleted = useAtomValue(completedStepsAtom);
+  const totalSteps = useAtomValue(totalExercisesAtom);
+  const completedExercise = useAtomValue(completedExerciseAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
+  const setWorkoutDuration = useSetAtom(workoutDurationAtom);
 
   console.log('totalSteps', totalSteps);
-  console.log('stepsCompleted', stepsCompleted);
-  console.log('stepsCompleted.length', stepsCompleted.length);
+  console.log('completedExercise', completedExercise);
+  console.log('completedExercise.length', completedExercise.length);
   console.log('isPlaying', isPlaying);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
 
-    if (isPlaying && !(stepsCompleted.length === totalSteps)) {
+    if (isPlaying && !(completedExercise.length === totalSteps)) {
       interval = setInterval(() => {
         setStopwatch((prev) => prev + 1);
       }, 1000);
@@ -34,7 +36,11 @@ export default function Stopwatch() {
         clearInterval(interval);
       }
     };
-  }, [isPlaying, setIsPlaying, setStopwatch, stepsCompleted, totalSteps]);
+  }, [isPlaying, setIsPlaying, setStopwatch, completedExercise, totalSteps]);
+
+  useEffect(() => {
+    setWorkoutDuration(stopwatch);
+  }, [stopwatch, setWorkoutDuration]);
 
   // Format the stopwatch value as HH:MM:SS
   const formatTime = (time: number) => {

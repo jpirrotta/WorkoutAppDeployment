@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button";
 import { MultiSelect } from '../ui/multi-select';
-import logger from '@/lib/logger';
 import { toast } from 'sonner';
 import { Exercise, NewWorkout } from '@/types';
 import { useGetAllWorkouts } from '@/hooks/workout/useWorkoutQueries';
@@ -47,7 +46,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
     useEffect(() => {
         // structure workout data for MultiSelect
         if (workoutData) {
-            logger.info(`getting workouts....`)
+            console.log(`getting workouts....`)
 
             const structuredOptions = workoutData.map(workout => ({
                 label: truncateText(workout.name),
@@ -88,7 +87,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
             saves: [],
         };
 
-        logger.info(`Creating new Workout: ${JSON.stringify(newWorkoutData)}`);
+        console.log(`Creating new Workout: ${JSON.stringify(newWorkoutData)}`);
         const response = await workoutCreateMutation.mutateAsync(newWorkoutData);
 
         if (response?.createdWorkout?._id) {
@@ -96,7 +95,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
             selectedWorkoutIds.push(response.createdWorkout._id);
         }
         else {
-            logger.info(`didn\'t got any workout in create workout response: ${JSON.stringify(response)}`);
+            console.log(`didn\'t got any workout in create workout response: ${JSON.stringify(response)}`);
         }
 
         // clear the search field
@@ -109,8 +108,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
 
     // handle adding exercise to selected workouts
     const handleAddExercise = async () => {
-        logger.info(`Adding Exercise to Workouts: ${workoutUpdateMutation.isPending}`);
-        // logger.info(`Exercise to add: ${JSON.stringify(exerciseToAdd)}`);
+        console.log(`Adding Exercise to Workouts: ${workoutUpdateMutation.isPending}`);
 
         await Promise.all(
             selectedWorkoutIds.map(workoutId =>
@@ -169,7 +167,7 @@ const AddExerciseToWorkout: FC<props> = ({ triggerNode, exerciseToAdd }) => {
                     options={options}
                     defaultValue={selectedWorkoutIds}
                     onValueChange={(inputValue) => {
-                        logger.info(`selected workout ID's: ${inputValue}`);
+                        console.log(`selected workout ID's: ${inputValue}`);
                         setSelectedWorkoutIds(inputValue)
                     }}
                     // searchValue={workoutSearchValue}

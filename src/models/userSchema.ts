@@ -1,11 +1,11 @@
 // src/models/user.ts
 import workoutSchema from './workoutSchema';
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import type { User, WorkoutHistory } from '@/types';
-
+import type { User, MetricHistory } from '@/types';
+import { workoutHistorySchema } from './workoutHistorySchema';
 export type UserDocument = User & Document;
 
-const historySchema = new Schema<WorkoutHistory>(
+const metricHistorySchema = new Schema<MetricHistory>(
   {
     date: {
       type: Date,
@@ -55,11 +55,12 @@ const userSchema = new Schema<UserDocument>({
       max: 50,
     },
   },
-  weightHistory: [historySchema],
-  bodyFatHistory: [historySchema],
+  weightHistory: [metricHistorySchema],
+  bodyFatHistory: [metricHistorySchema],
+  workoutHistory: [workoutHistorySchema],
   workouts: { type: [workoutSchema], default: [] },
-  savedWorkouts: [ String ],
-  favExercises: { type: [ String ], default: [] },
+  savedWorkouts: [String],
+  favExercises: { type: [String], default: [] },
 });
 
 const UserModel: Model<UserDocument> =

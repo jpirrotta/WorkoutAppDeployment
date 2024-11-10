@@ -30,14 +30,14 @@ import useFavMutate from '@/hooks/exercises/setFav';
 import PlayerExerciseForm from './workout/player/player-exercise-form';
 import ExerciseSetsForm from './workout/ExerciseSetsForm';
 
-type ExerciseCardProps = {
-  readonly exercise: Exercise;
-  closeIcon?: (exerciseId: string) => React.ReactNode;
+type ExerciseCardProps = Readonly<{
+  exercise: Exercise;
+  closeIcon?: (exercise: Exercise) => React.ReactNode; // Changed from exerciseId
   CreateWorkoutFlag?: boolean;
   className?: string;
   isForm?: boolean;
   isPlaying?: boolean;
-};
+}>;
 
 export default function ExerciseCard({
   exercise,
@@ -122,7 +122,7 @@ export default function ExerciseCard({
         key={exercise.id}
       >
         {/* conditionally rendering close icon for exercise in workouts */}
-        {closeIcon && <>{closeIcon(exercise.id)}</>}
+        {closeIcon && <>{closeIcon(exercise)}</>}
 
         {/* conditionally rendered checkbox for letting user select exercise for new workout */}
         {CreateWorkoutFlag && (
@@ -161,7 +161,7 @@ export default function ExerciseCard({
           {!isSetsOpen ? (
             <>
               {showDemo ? (
-                <div className="flex justify-center items-center flex-col" >
+                <div className="flex justify-center items-center flex-col">
                   <Image
                     src={exercise.gifUrl}
                     alt={exercise.name}
@@ -213,25 +213,36 @@ export default function ExerciseCard({
                   </>
                 )}
                 {/* Player Form */}
-                {isPlaying && <PlayerExerciseForm exercise={exercise} />}
               </CardDescription>
+              {isPlaying && <PlayerExerciseForm exercise={exercise} />}
             </>
           ) : (
-            <ExerciseSetsForm exercise={exercise} setsFlag={isSetsOpen} setSetsFlag={setIsSetsOpen} />
+            <ExerciseSetsForm
+              exercise={exercise}
+              setsFlag={isSetsOpen}
+              setSetsFlag={setIsSetsOpen}
+            />
           )}
         </CardContent>
 
-        <CardFooter className={`${isSetsOpen && 'p-0'} capitalize px-2 text-secondary items-start flex flex-wrap gap-5`}>
+        <CardFooter
+          className={`${
+            isSetsOpen && 'p-0'
+          } capitalize px-2 text-secondary items-start flex flex-wrap gap-5`}
+        >
           {/* conditionally show exercise details or sets */}
-          {!isPlaying && (
-            isSetsOpen ? (
+          {!isPlaying &&
+            (isSetsOpen ? (
               <></>
             ) : (
               <>
                 {/* modal trigger btn for adding exercise to desired workout */}
                 <AddExerciseToWorkout
                   triggerNode={
-                    <Button className="px-2 w-full sm:w-auto flex-1" variant="outline">
+                    <Button
+                      className="px-2 w-full sm:w-auto flex-1"
+                      variant="outline"
+                    >
                       Add To Workout
                     </Button>
                   }
@@ -240,15 +251,18 @@ export default function ExerciseCard({
 
                 {/* sets show trigger */}
                 {closeIcon && (
-                  <Button onClick={() => setIsSetsOpen(!isSetsOpen)} variant='outline' className='px-2 w-full sm:w-auto flex-1'>
+                  <Button
+                    onClick={() => setIsSetsOpen(!isSetsOpen)}
+                    variant="outline"
+                    className="px-2 w-full sm:w-auto flex-1"
+                  >
                     Adjust Sets
                   </Button>
                 )}
               </>
-            )
-          )}
+            ))}
         </CardFooter>
       </Card>
-    </div >
+    </div>
   );
 }

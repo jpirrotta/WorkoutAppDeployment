@@ -4,8 +4,8 @@ import z from 'zod';
 export const playerFormSchema = z.object({
   sets: z.array(
     z.object({
-      reps: z.number(),
-      weight: z.number(),
+      reps: z.number().min(1),
+      weight: z.number().min(0),
     })
   ),
 });
@@ -20,12 +20,12 @@ export const exerciseSetsSchema = z.object({
   ),
 });
 
-type FlatSets = z.infer<typeof playerFormSchema>['sets'];
+export type FlatSets = z.infer<typeof playerFormSchema>['sets'];
 
-type Set = z.infer<typeof exerciseSetsSchema>['sets'];
+export type Sets = z.infer<typeof exerciseSetsSchema>['sets'];
 
-type Exercise = {
-  _id?: mongoose.Types.ObjectId & string;
+export type Exercise = {
+  _id?: mongoose.Types.ObjectId;
   id: string;
   name: string;
   gifUrl: string;
@@ -34,11 +34,33 @@ type Exercise = {
   bodyPart: string;
   secondaryMuscles: string[];
   instructions: string[];
-  sets: Set;
+  sets: Sets;
+};
+
+type HistorySets = {
+  sets: number;
+  reps: number;
+  weight: number;
+}[];
+
+// types/workout.ts
+export type ExerciseHistory = {
+  name: string;
+  primaryMuscle: string;
+  sets: HistorySets;
+};
+
+export type WorkoutHistory = {
+  name: string;
+  date: Date; // Will store date only
+  duration: number; // in minutes ( from the player)
+  completedExercises: number;
+  totalExercises: number;
+  exercises: ExerciseHistory[];
 };
 
 // Base type that represents the structure of a workout (without Document)
-type BaseWorkout = {
+export type BaseWorkout = {
   _id?: string;
   name: string;
   exercises: Exercise[];
@@ -56,32 +78,21 @@ type BaseWorkout = {
 };
 
 // Extend BaseWorkout with Document for MongoDB operations
-type Workout = BaseWorkout & Document;
+export type Workout = BaseWorkout & Document;
 
 // NewWorkout for client-side use (without _id or Document properties)
-type NewWorkout = Omit<BaseWorkout, '_id'>;
+export type NewWorkout = Omit<BaseWorkout, '_id'>;
 
-type FeedWorkout = {
+export type FeedWorkout = {
   ownerId: string;
   ownerName: string;
   ownerPfpImageUrl: string;
 } & BaseWorkout;
 
-type patchReqDataType = {
+export type patchReqDataType = {
   name?: string;
   exerciseArr?: Exercise[];
   public?: boolean;
   comments?: Workout['comments'];
-  sets?: Set[];
-};
-
-export type {
-  Exercise,
-  FlatSets,
-  Set,
-  Workout,
-  patchReqDataType,
-  NewWorkout,
-  FeedWorkout,
-  BaseWorkout,
+  sets?: Sets;
 };

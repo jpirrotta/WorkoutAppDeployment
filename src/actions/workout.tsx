@@ -3,325 +3,409 @@
 import { dbConnect } from '@/lib/dbConnect';
 import User from '@/models/userSchema';
 import logger from '@/lib/logger';
-import { NewWorkout, patchReqDataType, User as userType, Workout, Set } from '@/types';
-import { Document } from 'mongoose';
+import {
+  NewWorkout,
+  patchReqDataType,
+  Workout,
+  Sets,
+  Exercise,
+  WorkoutHistory,
+} from '@/types';
 
-// Add a workout for a user
-async function addWorkout(userId: string, workout: NewWorkout): Promise<{ title: string; message: string, createdWorkout?: Workout }> {
-    logger.info('POST Workout action called');
+export async function addWorkout(
+  userId: string,
+  workout: NewWorkout
+): Promise<{ title: string; message: string; createdWorkout?: Workout }> {
+  logger.info('POST Workout action called');
 
-    try {
-        // Connect to the database
-        await dbConnect();
+  try {
+    await dbConnect();
 
-        // Find the user
-        const user: (userType & Document) | null = await User.findOne({ userId });
+    const result = await User.findOneAndUpdate(
+      { userId },
+      {
+        $push: {
+          workouts: workout,
+        },
+      },
+      {
+        new: true,
+        projection: {
+          workouts: {
+            $slice: -1,
+          },
+          userId: 1,
+        },
+      }
+    );
 
-        if (!user) {
-            logger.error('User not found!');
-            return { title: 'User not found.', message: 'User you are trying to add Workout for does not exist in DB.' };
-        }
-
-        // Add the workout to the user's workouts
-        user.workouts?.push(workout as any); // Temporarily cast to any, to bypass _id check
-        await user.save();
-
-        // Fetch the last workout (the one we added recently) with converting it to object
-        const savedWorkout: Workout | undefined = user?.workouts?.slice(-1)[0]?.toObject();
-
-        logger.info(`Added Workout: ${JSON.stringify({ savedWorkout })}`);
-
-        // send the response msg
-        return {
-            title: 'Workout Created!',
-            message: `Your Workout "${workout.name}" created successfully!`,
-            createdWorkout: savedWorkout,
-        };
-    } catch (error) {
-        if (error instanceof Error) {
-            logger.error(`Error adding workout: ${error.message}`);
-            throw new Error(`Error adding Workout: ${error.message}`);
-        }
-        logger.error(`Error adding workout: ${error}`);
-        throw new Error(`Internal Server Error: ${error}`);
+    if (!result?.userId) {
+      logger.error('User not found!');
+      return {
+        title: 'User not found.',
+        message: 'User you are trying to add Workout for does not exist in DB.',
+      };
     }
+
+    if (!result.workouts || result.workouts.length === 0) {
+      logger.error('Workout not found!');
+      return {
+        title: 'Workout not found.',
+        message: 'Unable to find Workout for current User',
+      };
+    }
+
+    const savedWorkout = result.workouts[0]?.toObject();
+    logger.info(`Added Workout: ${JSON.stringify({ savedWorkout })}`);
+
+    return {
+      title: 'Workout Created!',
+      message: `Workout "${workout.name}" created successfully!`,
+      createdWorkout: savedWorkout,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(`Error adding workout: ${error.message}`);
+      throw new Error(`Error adding Workout: ${error.message}`);
+    }
+    logger.error(`Error adding workout: ${error}`);
+    throw new Error(`Internal Server Error: ${error}`);
+  }
+}
+
+export async function updateWorkout(
+  userId: string,
+  workoutId: string,
+  workoutUpdateData: patchReqDataType
+): Promise<{ title: string; message: string }> {
+  logger.info('\n\nPATCH Workout action called');
+
+  try {
+    logger.info(`\n\nWorkout ID - ${workoutId}`);
+    await dbConnect();
+
+    // Build update object based on provided data
+    const updateObj: {
+      'workouts.$.name'?: string;
+      'workouts.$.public'?: boolean;
+      'workouts.$.postDate'?: Date;
+      'workouts.$.comments'?: Array<{ text: string; userId: string }>;
+      $push?: {
+        'workouts.$.exercises': {
+          $each: Exercise[];
+        };
+      };
+    } = {};
+
+    if (workoutUpdateData.name) {
+      updateObj['workouts.$.name'] = workoutUpdateData.name;
+    }
+
+    if (workoutUpdateData.public !== undefined) {
+      updateObj['workouts.$.public'] = workoutUpdateData.public;
+      updateObj['workouts.$.postDate'] = workoutUpdateData.public
+        ? new Date()
+        : new Date(0);
+    }
+
+    if (workoutUpdateData.comments) {
+      updateObj['workouts.$.comments'] = workoutUpdateData.comments;
+    }
+
+    if ((workoutUpdateData.exerciseArr ?? []).length > 0) {
+      updateObj['$push'] = {
+        'workouts.$.exercises': {
+          $each: workoutUpdateData.exerciseArr ?? [],
+        },
+      };
+    }
+
+    const result = await User.findOneAndUpdate(
+      {
+        userId,
+        'workouts._id': workoutId,
+      },
+      updateObj,
+      {
+        new: true,
+      }
+    );
+
+    // Check if user exists
+    if (!result) {
+      logger.error('User not found!');
+      return {
+        title: 'Not Found',
+        message: 'Unable to find specified User',
+      };
+    }
+
+    // Check if workout exists in user's workouts array
+    const workoutExists = result.workouts?.some(
+      (workout) => workout._id?.toString() === workoutId
+    );
+
+    if (!workoutExists) {
+      logger.error('Workout not found!');
+      return {
+        title: 'Workout not found',
+        message: 'Unable to find specified Workout',
+      };
+    }
+
+    logger.info('Workout updated successfully');
+    return {
+      title: 'Workout Updated!',
+      message: 'Workout has been updated successfully!',
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(`Error updating workout: ${error.message}`);
+      throw new Error(`Error updating Workout: ${error.message}`);
+    }
+    logger.error(`Error updating workout: ${error}`);
+    throw new Error(`Internal Server Error: ${error}`);
+  }
+}
+
+export async function updateExerciseSets(
+  userId: string,
+  workoutId: string,
+  exerciseId: string,
+  setData: Sets
+): Promise<{ title: string; message: string }> {
+  logger.info('\n\nPATCH Workout-Exercise action called');
+
+  try {
+    logger.info(`\n\nWorkout ID - ${workoutId} | Exercise ID - ${exerciseId}`);
+    await dbConnect();
+
+    const result = await User.findOneAndUpdate(
+      {
+        userId,
+        'workouts._id': workoutId,
+        'workouts.exercises._id': exerciseId,
+      },
+      {
+        $set: {
+          'workouts.$[workout].exercises.$[exercise].sets': setData,
+        },
+      },
+      {
+        arrayFilters: [
+          { 'workout._id': workoutId },
+          { 'exercise._id': exerciseId },
+        ],
+        new: true,
+      }
+    );
+
+    if (!result) {
+      throw new Error('Update failed');
+    }
+
+    return { title: 'Success', message: 'Exercise sets updated successfully' };
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(`Error updating workout exercise: ${error.message}`);
+      throw new Error(`Error updating workout Exercise: ${error.message}`);
+    }
+    logger.error(`Error updating exercise: ${error}`);
+    throw new Error(`Internal Server Error: ${error}`);
+  }
 }
 
 // update a workout to edit exercises, name, public status, comments
-async function updateWorkout(userId: string, workoutId: string, workoutUpdateData: patchReqDataType): Promise<{ title: string; message: string }> {
-    logger.info('\n\nPATCH Workout action called');
+export async function removeExercise(
+  userId: string,
+  workoutId: string,
+  ExerciseId: string
+): Promise<{ title: string; message: string }> {
+  logger.info('\n\nPATCH Workout action called');
 
-    try {
-        logger.info(`\n\nWorkout ID - ${workoutId}`);
+  try {
+    logger.info(`\nExercise ID to be removed- ${ExerciseId}`);
 
-        // Connect to the database
-        await dbConnect();
+    await dbConnect();
 
-        //get user
-        let user = await User.findOne({ userId: userId });
+    // Single atomic operation to find and remove exercise
+    const result = await User.findOneAndUpdate(
+      {
+        userId,
+        'workouts._id': workoutId,
+        'workouts.exercises._id': ExerciseId,
+      },
+      {
+        $pull: {
+          'workouts.$[workout].exercises': {
+            _id: ExerciseId,
+          },
+        },
+      },
+      {
+        arrayFilters: [{ 'workout._id': workoutId }],
+        new: true,
+      }
+    );
 
-        // If the user is not found return an error
-        if (!user) {
-            logger.error('User not found!');
-            return { title: 'User not found.', message: 'User you are trying to update a Workout for does not exist in DB.' };
-        }
-
-        // Find the workout by its id
-        const workout: Workout = user?.workouts?.id(workoutId);
-
-        if (!workout) {
-            logger.error('Workout not found!');
-            return { title: 'Workout not found.', message: 'Unable to find Workout for current User' };
-        }
-
-        logger.info(`Workout found, now updating...`);
-
-        // Manually update workout fields (had issues using set method from mongoose)
-        if (workoutUpdateData.name) {
-            workout.name = workoutUpdateData.name;
-        }
-
-        if (workoutUpdateData.public !== undefined) {
-            workout.public = workoutUpdateData.public;
-            workout.postDate = workoutUpdateData.public ? new Date() : new Date(0);  // set post date to current date & time if public, or set it to epoch time (representing empty date) if private
-        }
-
-        if (workoutUpdateData?.exerciseArr?.length && workoutUpdateData.exerciseArr.length > 0) {
-            workoutUpdateData.exerciseArr.forEach(exercise => {
-                workout.exercises.push(exercise);
-            })
-        }
-
-        if (workoutUpdateData.comments) {
-            workout.comments = workoutUpdateData.comments;
-        }
-
-        // Update user
-        await user.save();
-
-        // Send the response with the confirmation message
-        return {
-            title: 'Workout Updated!',
-            message: `Workout has been updated successfully!`,
-        };
-    } catch (error) {
-        if (error instanceof Error) {
-            logger.error(`Error updating workout: ${error.message}`);
-            throw new Error(`Error updating Workout: ${error.message}`);
-        }
-        logger.error(`Error updating workouts: ${error}`);
-        throw new Error(`Internal Server Error: ${error}`);
+    if (!result) {
+      logger.error('Required data not found!');
+      return {
+        title: 'Not found',
+        message: 'Unable to find specified User, Workout or Exercise',
+      };
     }
+
+    logger.info('Exercise removed successfully');
+    return {
+      title: 'Success',
+      message: 'Exercise removed successfully from the Workout',
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(`Error removing exercise: ${error.message}`);
+      throw new Error(`Error removing Workout: ${error.message}`);
+    }
+    logger.error(`Error removing workouts: ${error}`);
+    throw new Error(`Internal Server Error: ${error}`);
+  }
 }
 
-async function updateExerciseSets(userId: string, workoutId: string, exerciseId: string, setData: Set): Promise<{ title: string; message: string }> {
-    logger.info('\n\nPATCH Workout-Exercise action called');
+export async function deleteWorkout(
+  userId: string,
+  workoutId: string
+): Promise<{ title: string; message: string }> {
+  logger.info('DELETE Workout action called');
 
-    try {
-        logger.info(`\n\nWorkout ID - ${workoutId} | Exercise ID - ${exerciseId}`);
+  try {
+    await dbConnect();
 
-        // Connect to the database
-        await dbConnect();
+    const result = await User.findOneAndUpdate(
+      {
+        userId,
+        'workouts._id': workoutId,
+      },
+      {
+        $pull: {
+          workouts: {
+            _id: workoutId,
+          },
+        },
+      }
+    );
 
-        //get user
-        let user = await User.findOne({ userId: userId });
-
-        // If the user is not found return an error
-        if (!user) {
-            logger.error('User not found!');
-            return { title: 'User not found.', message: 'User you are trying to update a Workout Exercise for, does not exist in DB.' };
-        }
-
-        // Find the workout by its id
-        const workout: Workout = user?.workouts?.id(workoutId);
-
-        // If the workout is not found return an error
-        if (!workout) {
-            logger.error('Workout not found!');
-            return { title: 'Workout not found.', message: 'Unable to find Workout for current User' };
-        }
-
-        // If the workout has no exercises return an error
-        if (!workout.exercises) {
-            logger.error('No exercises found in the workout!');
-            return { title: 'No Exercises found!', message: 'No Exercises found in the specified Workout' };
-        }
-
-        // Find the exercise by its id
-        const exercise = workout.exercises.find(exercise =>
-            exercise._id?.toString() === exerciseId
-        );
-
-        // If the exercise is not found return an error
-        if (!exercise) {
-            logger.error('Exercise not found!');
-            return { title: 'Exercise not found.', message: 'Unable to find specified Exercise in the Workout' };
-        }
-
-        // Update the exercise with the new data
-        exercise.sets = setData;
-
-        await user.save();
-
-        // log and return response message
-        logger.info(`Exercise updated successfully`);
-        return { title: 'Success', message: 'Exercise updated successfully' };
-
-    } catch (error) {
-        if (error instanceof Error) {
-            logger.error(`Error updating workout exercise: ${error.message}`);
-            throw new Error(`Error updating workout Exercise: ${error.message}`);
-        }
-        logger.error(`Error updating exercise: ${error}`);
-        throw new Error(`Internal Server Error: ${error}`);
+    if (!result) {
+      logger.error('User or Workout not found!');
+      return {
+        title: 'Not found',
+        message: 'Unable to find specified User or Workout',
+      };
     }
-}
 
-// update a workout to edit exercises, name, public status, comments
-async function removeExercise(userId: string, workoutId: string, ExerciseId: string): Promise<{ title: string; message: string }> {
-    logger.info('\n\nPATCH Workout action called');
+    logger.info(`Workout deleted: ${workoutId}`);
 
-    try {
-        logger.info(`\nExercise ID to be removed- ${ExerciseId}`);
-
-        // Connect to the database
-        await dbConnect();
-
-        //get user
-        let user = await User.findOne({ userId: userId });
-
-        // If the user is not found return an error
-        if (!user) {
-            logger.error('User not found!');
-            return { title: 'User not found.', message: 'User you are trying to update a Workout for does not exist in DB.' };
-        }
-
-        // Find the workout by its id
-        const workout: Workout = user?.workouts?.id(workoutId);
-
-        if (!workout) {
-            logger.error('Workout not found!');
-            return { title: 'Workout not found.', message: 'Unable to find Workout for current User' };
-        }
-
-        // Find the exercise by its id and remove it
-        const exerciseIndex = workout.exercises.findIndex(exercise => exercise.id === ExerciseId);
-
-        if (exerciseIndex === -1) {
-            logger.error('Exercise not found!');
-            return { title: 'Exercise not found.', message: 'Unable to find Exercise in the specified Workout' };
-        }
-
-        workout.exercises.splice(exerciseIndex, 1);
-
-        // Save the updated user document
-        await user.save();
-
-        logger.info('Exercise removed successfully');
-        return { title: 'Success', message: 'Exercise removed successfully from the Workout' };
-    } catch (error) {
-        if (error instanceof Error) {
-            logger.error(`Error removing exercise: ${error.message}`);
-            throw new Error(`Error removing Workout: ${error.message}`);
-        }
-        logger.error(`Error removing workouts: ${error}`);
-        throw new Error(`Internal Server Error: ${error}`);
+    return {
+      title: 'Workout Deleted!',
+      message: 'The selected Workout has been deleted successfully!',
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(`Error deleting workout: ${error.message}`);
+      throw new Error(`Error deleting Workout: ${error.message}`);
     }
+    logger.error(`Error deleting workout: ${error}`);
+    throw new Error(`Internal Server Error: ${error}`);
+  }
 }
-
-// Delete a specific workout for a user
-async function deleteWorkout(userId: string, workoutId: string): Promise<{ title: string; message: string }> {
-    logger.info('DELETE all Workouts action called');
-
-    try {
-        // Connect to the database
-        await dbConnect();
-
-        // Find the user
-        const user = await User.findOne({ userId });
-
-        if (!user) {
-            logger.error('User not found!');
-            return { title: 'User not found.', message: 'User you are trying to delete a Workout for does not exist in DB.' };
-        }
-
-        // Find the workout by its id and remove it
-        const workout: Document & Workout = user.workouts?.id(workoutId);
-        if (!workout) {
-            logger.error('Workout not found!');
-            return { title: 'Workout not found.', message: 'Unable to find Workout for current User' };
-        }
-
-        // Remove the workout
-        workout.deleteOne();
-
-        await user.save();
-
-        logger.info(`Workout deleted: ${workoutId}`);
-
-        // Send the response with the updated workouts
-        return {
-            title: 'Workout Deleted!',
-            message: `Your Workout named ${workout.name} deleted successfully!`,
-        };
-    } catch (error) {
-        if (error instanceof Error) {
-            logger.error(`Error deleting workout: ${error.message}`);
-            throw new Error(`Error deleting Workout: ${error.message}`);
-        }
-        logger.error(`Error deleting workout: ${error}`);
-        throw new Error(`Internal Server Error: ${error}`);
-    }
-}
-
 // unused as of now since we don't have any feature for deleting all workouts at once, but might going ahead
 // delete all workouts for a user
-async function deleteAllWorkouts(userId: string): Promise<{ title: string; message: string }> {
-    logger.info('\n\nDELETE Workout action called');
-    try {
-        // logs
-        logger.info(`Request from userId: ${userId}`);
+export async function deleteAllWorkouts(
+  userId: string
+): Promise<{ title: string; message: string }> {
+  logger.info('\n\nDELETE All Workouts action called');
 
-        // Connect to the database
-        await dbConnect();
+  try {
+    logger.info(`Request from userId: ${userId}`);
+    await dbConnect();
 
-        // Find the user by their userId
-        let user = await User.findOne({ userId: userId });
+    // Single atomic operation to find user and update workouts array
+    const result = await User.findOneAndUpdate(
+      { userId },
+      { $set: { workouts: [] } },
+      { new: true }
+    );
 
-        // If the user is not found return an error
-        if (!user) {
-            logger.error('User not found!');
-            return { title: 'User not found.', message: 'User you are trying to delete Workouts for does not exist in DB.' };
-        }
-
-        // if the user has no workouts return a message
-        if (user.workouts?.length === 0) {
-            logger.error('User found, but no Workouts exist!');
-            return { title: 'No Workouts found', message: 'Seems like you have no Workouts to delete' };
-        }
-
-        // if the user is found delete all workouts
-        logger.info('User found, deleting all workouts');
-
-        // remove all workouts
-        (user.workouts as Workout[]) = [];
-
-        // update the user
-        await user.save();
-
-        // Send the response with the confirmation message
-        return {
-            title: 'Workouts Deleted!',
-            message: `All of your Workouts are deleted successfully!`,
-        };
-    } catch (error) {
-        if (error instanceof Error) {
-            logger.error(`Error deleting workouts: ${error.message}`);
-            throw new Error(`Error deleting Workouts: ${error.message}`);
-        }
-        logger.error(`Error deleting workouts: ${error}`);
-        throw new Error(`Internal Server Error: ${error}`);
+    if (!result) {
+      logger.error('User not found!');
+      return {
+        title: 'User not found.',
+        message:
+          'User you are trying to delete Workouts for does not exist in DB.',
+      };
     }
+
+    if (result.workouts?.length === 0) {
+      logger.info('No workouts found to delete');
+      return {
+        title: 'No Workouts found',
+        message: 'Seems like you have no Workouts to delete',
+      };
+    }
+
+    logger.info('All workouts deleted successfully');
+    return {
+      title: 'Success',
+      message: 'All workouts deleted successfully',
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(`Error deleting workouts: ${error.message}`);
+      throw new Error(`Error deleting Workouts: ${error.message}`);
+    }
+    logger.error(`Error deleting workouts: ${error}`);
+    throw new Error(`Internal Server Error: ${error}`);
+  }
 }
 
-export { addWorkout, deleteWorkout, deleteAllWorkouts, updateWorkout, removeExercise, updateExerciseSets }
+export async function saveWorkoutHistory(
+  userId: string,
+  historyData: WorkoutHistory
+): Promise<{ title: string; message: string }> {
+  logger.info('\n\nSave Workout History action called');
+
+  try {
+    logger.info(`Saving workout history for user: ${userId}`);
+    await dbConnect();
+
+    const result = await User.findOneAndUpdate(
+      { userId },
+      {
+        $push: {
+          workoutHistory: historyData,
+        },
+      },
+      { new: true }
+    );
+
+    if (!result) {
+      logger.error('User not found!');
+      return {
+        title: 'Not found',
+        message: 'Unable to find specified User',
+      };
+    }
+
+    logger.info('Workout history saved successfully');
+    return {
+      title: 'Success',
+      message: 'Workout history saved successfully',
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(`Error saving workout history: ${error.message}`);
+      throw new Error(`Error saving workout history: ${error.message}`);
+    }
+    logger.error(`Error saving workout history: ${error}`);
+    throw new Error(`Internal Server Error: ${error}`);
+  }
+}

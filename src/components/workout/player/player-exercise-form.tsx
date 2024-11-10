@@ -24,44 +24,9 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
+import { flattenSets, reconstructSets } from '@/lib/workout';
 type ExerciseFormProps = {
   exercise: Exercise;
-};
-
-// Function to flatten the nested sets structure
-const flattenSets = (nestedSets: Sets): FlatSets => {
-  const flatSets: FlatSets = [];
-
-  nestedSets.forEach((set) => {
-    // Repeat for the number of sets
-    for (let i = 0; i < set.sets; i++) {
-      flatSets.push({
-        reps: set.reps,
-        weight: set.weight,
-      });
-    }
-  });
-
-  return flatSets;
-};
-
-// Function to reconstruct the nested structure
-const reconstructSets = (flatSets: FlatSets): Sets => {
-  const groupedSets = flatSets.reduce((acc, curr) => {
-    const key = `${curr.reps}-${curr.weight}`;
-    acc[key] = (acc[key] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  return Object.entries(groupedSets).map(([key, count]) => {
-    const [reps, weight] = key.split('-').map(Number);
-    return {
-      sets: count,
-      reps,
-      weight,
-    };
-  });
 };
 
 export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
@@ -178,7 +143,8 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
                 ...prev,
                 [exercise._id!.toString()]: {
                   ...prev[exercise._id!.toString()],
-                  numberOfSets: (prev[exercise._id!.toString()]?.numberOfSets || 0) + 1, // Update numberOfSets
+                  numberOfSets:
+                    (prev[exercise._id!.toString()]?.numberOfSets || 0) + 1, // Update numberOfSets
                   completedSets: [
                     ...(prev[exercise._id!.toString()]?.completedSets || []),
                     undefined,
@@ -194,14 +160,17 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
           <Button
             onClick={(e) => {
               e.preventDefault();
-              if (fields.length === 1) return; // Prevent removing if no sets exist
+              if (fields.length === 1) return; // Prevent removing the last set
               remove(fields.length - 1);
               setExerciseStates((prev) => ({
                 ...prev,
                 [exercise._id!.toString()]: {
                   ...prev[exercise._id!.toString()],
-                  numberOfSets: prev[exercise._id!.toString()]?.numberOfSets - 1, // Update numberOfSets
-                  completedSets: prev[exercise._id!.toString()]?.completedSets.slice(0, -1),
+                  numberOfSets:
+                    prev[exercise._id!.toString()]?.numberOfSets - 1, // Update numberOfSets
+                  completedSets: prev[
+                    exercise._id!.toString()
+                  ]?.completedSets.slice(0, -1),
                 },
               }));
             }}

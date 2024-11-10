@@ -4,6 +4,8 @@ import { WorkoutProgress } from '@/components/workout/player/workout-player-prog
 import ExerciseCard from '@/components/ExerciseCard';
 import WorkoutPlayerCommandMenu from '@/components/workout/player/player-command-menu';
 import Stopwatch from '@/components/workout/player/stopwatch';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Carousel,
   CarouselContent,
@@ -31,63 +33,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-// TODO remove once we have the actual data
-// eslint-disable-next-line react-hooks/exhaustive-deps
-const mockWorkoutData = [
-  {
-    sets: [
-      {
-        sets: 1,
-        reps: 10,
-        weight: 50,
-      },
-      {
-        sets: 1,
-        reps: 8,
-        weight: 55,
-      },
-    ],
-  },
-  {
-    sets: [
-      {
-        sets: 1,
-        reps: 8,
-        weight: 30,
-      },
-      {
-        sets: 1,
-        reps: 10,
-        weight: 55,
-      },
-    ],
-  },
-  {
-    sets: [
-      {
-        sets: 2,
-        reps: 8,
-        weight: 20,
-      },
-    ],
-  },
-];
-// Function to flatten the nested sets structure
-export const flattenSets = (nestedSets: Sets): FlatSets => {
-  const flatSets: FlatSets = [];
-
-  nestedSets.forEach((set) => {
-    // Repeat for the number of sets
-    for (let i = 0; i < set.sets; i++) {
-      flatSets.push({
-        reps: set.reps,
-        weight: set.weight,
-      });
-    }
-  });
-
-  return flatSets;
-};
+import { useWorkoutExerciseUpdate } from '@/hooks/workout/useWorkoutMutations';
+import { flattenSets, getChangedExerciseIds } from '@/lib/workout';
+import { forEach } from 'lodash';
 
 export default function WorkoutPlayer({ id }: { id: string }) {
   const [api, setApi] = useAtom(carouselApiAtom);
@@ -95,13 +43,32 @@ export default function WorkoutPlayer({ id }: { id: string }) {
   const setCurrentExerciseIndex = useSetAtom(currentExerciseIndexAtom);
   const [exerciseStates, setExerciseStates] = useAtom(exerciseStatesAtom);
   const exerciseFormValues = useAtomValue(exerciseFormValuesAtom);
-  const isAllExercisesCompleted = useAtomValue(isAllExercisesCompletedAtom);
+  const [isAllExercisesCompleted] = useAtom(isAllExercisesCompletedAtom);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [isWorkoutCompleted, setIsWorkoutCompleted] = useState(false);
 
+  const { mutate: updateExerciseSets } = useWorkoutExerciseUpdate();
+
+  const changedIds = getChangedExerciseIds(exercises, exerciseFormValues);
+
   const { data } = useGetAllWorkouts();
 
+  // console.log('id', id);
+
   console.log('exercises', exercises);
+
+  const handleUpdateExerciseSets = async () => {
+    // TODO if the user wants to save the changes to the workout
+    // we can call the mutation to update the workout
+    // and pass the changedIds to update only the exercises that have changed
+    // if the user doesn't want to save the changes we just save the data to his history  
+    forEach(exerciseFormValues, (sets, exerciseId) => {
+      console.log('exerciseId', exerciseId);
+      console.log('sets', sets);
+      updateExerciseSets({ workoutId: id, exerciseId, sets });
+    });
+    setIsWorkoutCompleted(false);
+  };
 
   // Initialize exercise states
   useEffect(() => {
@@ -126,7 +93,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
       setIsWorkoutCompleted(true);
       console.log('exerciseFormValues', exerciseFormValues);
     }
-  }, [isAllExercisesCompleted, exerciseFormValues]);
+  }, [isAllExercisesCompleted, exerciseFormValues, exercises]);
 
   useEffect(() => {
     if (data) {
@@ -187,7 +154,17 @@ export default function WorkoutPlayer({ id }: { id: string }) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Workout Completed</AlertDialogTitle>
+            <AlertDialogTitle asChild>
+              <div className="flex justify-between">
+                <h2>Workout Completed</h2>
+                {!!changedIds.size && (
+                  <div className="flex items-center space-x-2">
+                    <Switch id="airplane-mode" />
+                    <Label htmlFor="airplane-mode">save changes</Label>
+                  </div>
+                )}
+              </div>
+            </AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogDescription>
             You have completed the workout. Do you want to submit your results?
@@ -202,9 +179,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
             <AlertDialogAction
               type="button"
               onClick={() => {
-                // Handle submission logic here
-                setIsWorkoutCompleted(false);
-                alert('Results submitted');
+                handleUpdateExerciseSets();
               }}
             >
               Submit

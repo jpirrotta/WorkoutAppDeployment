@@ -3,7 +3,7 @@ import {
   type BMI,
   type User,
   type Exercise,
-  type Set,
+  type Sets,
 } from '@/types';
 import { atomWithStorage } from 'jotai/utils';
 import { type CarouselApi } from './components/ui/carousel';
@@ -39,7 +39,7 @@ export const exerciseStatesAtom = atom<{
   };
 }>({});
 
-export const exerciseFormValuesAtom = atom<Record<string, Set[]>>({});
+export const exerciseFormValuesAtom = atom<Record<string, Sets>>({});
 
 export const totalExercisesAtom = atom<number>(0);
 

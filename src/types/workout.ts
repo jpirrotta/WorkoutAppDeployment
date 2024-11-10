@@ -39,7 +39,7 @@ type Exercise = {
 
 // Base type that represents the structure of a workout (without Document)
 type BaseWorkout = {
-  _id?: mongoose.Types.ObjectId & string;
+  _id?: string;
   name: string;
   exercises: Exercise[];
   public: boolean;

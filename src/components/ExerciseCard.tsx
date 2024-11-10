@@ -113,7 +113,7 @@ export default function ExerciseCard({
   ]);
 
   return (
-    <div className="cursor-pointer" onClick={onExerciseSelect}>
+    <div className="cursor-pointer card-container" onClick={onExerciseSelect}>
       <Card
         className={cn(
           'bg-slate-700 border-primary md:transform md:hover:scale-105 md:transition-transform md:duration-200',

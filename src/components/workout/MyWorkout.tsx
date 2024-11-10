@@ -61,9 +61,6 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
     const ExerciseRemoveMutation = useExerciseRemove();
     const workoutUpdateMutation = useWorkoutUpdate();
 
-    // empty the selected exercise list atom
-    // setSelectedExercises([]);
-
     const handleDeleteWorkout = () => {
         workoutDeleteMutation.mutate(workout._id!);
 

@@ -42,7 +42,6 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 
 import useUserProfile from '@/hooks/user/useUserProfile';
-import useUserProfileMutate from '@/hooks/user/useUserProfileMutate';
 
 export default function Page() {
   const [selectedTab, setSelectedTab] = useAtom(measurementAtom);
@@ -76,6 +75,7 @@ export default function Page() {
     if (userData) {
       form.reset(defaultValues);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData, defaultValues]);
 
   // Watch the weight and height fields

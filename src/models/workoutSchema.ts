@@ -49,6 +49,25 @@ const exerciseSchema = new Schema<ExerciseDocument>({
     type: [String],
     required: [true, 'Instructions are required'],
   },
+  sets: [
+    {
+      sets: {
+        type: Number,
+        required: [true, 'Sets are required'],
+        min: [1, 'Sets must be at least 1'],
+      },
+      reps: {
+        type: Number,
+        required: [true, 'Reps are required'],
+        min: [1, 'Reps must be at least 1'],
+      },
+      weight: {
+        type: Number,
+        required: [true, 'Weight is required'],
+        min: [0, 'Weight must be at least 0'],
+      },
+    },
+  ],
 });
 
 const workoutSchema = new Schema<WorkoutDocument>({

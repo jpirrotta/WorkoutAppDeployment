@@ -1,4 +1,4 @@
-import { atom } from 'jotai';
+import { atom, useSetAtom } from 'jotai';
 import { type BMI, type User, type Exercise, type Sets } from '@/types';
 import { atomWithStorage } from 'jotai/utils';
 import { type CarouselApi } from './components/ui/carousel';
@@ -55,6 +55,18 @@ export const isAllExercisesCompletedAtom = atom((get) => {
       exerciseState.numberOfSets ===
       exerciseState.completedSets.filter((set) => set !== undefined).length
   );
+});
+
+export const resetPlayerAtoms = atom(null, (_get, set) => {
+  set(currentExerciseIndexAtom, 0);
+  set(completedExerciseAtom, []);
+  set(currentSetIndexAtom, 0);
+  set(exerciseStatesAtom, {});
+  set(exerciseFormValuesAtom, {});
+  set(totalExercisesAtom, 0);
+  set(carouselApiAtom, undefined);
+  set(isPlayingAtom, false);
+  set(workoutDurationAtom, 0);
 });
 
 // end of player atoms

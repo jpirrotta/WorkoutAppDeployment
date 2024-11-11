@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/carousel';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
+  resetPlayerAtoms,
   totalExercisesAtom,
   carouselApiAtom,
   currentExerciseIndexAtom,
@@ -54,6 +55,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
   const [isWorkoutCompleted, setIsWorkoutCompleted] = useState(false);
   const [saveChangesSelected, setSaveChangesSelected] = useState(false);
   const duration = useAtomValue(workoutDurationAtom);
+  const resetPlayerStates = useSetAtom(resetPlayerAtoms);
 
   const { mutate: updateExerciseSets } = useWorkoutExerciseUpdate();
   const { mutate: saveToHistory } = useWorkoutHistorySave();
@@ -95,28 +97,44 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     // Save the workout to history
     saveToHistory(historyData);
 
+    // Reset player states and atoms after saving the workout
     setIsWorkoutCompleted(false);
-
+    resetPlayerStates();
     // Redirect back to the workouts page
+    router.back();
+  };
+
+  const handleCancelWorkout = () => {
+    setIsWorkoutCompleted(false);
+    resetPlayerStates();
     router.back();
   };
 
   // Initialize exercise states
   useEffect(() => {
-    for (const exercise of exercises) {
-      if (!exerciseStates[exercise._id!.toString()]) {
-        const flatSets = flattenSets(exercise.sets);
-        setExerciseStates((prev) => ({
-          ...prev,
-          [exercise._id!.toString()]: {
-            numberOfSets: flatSets.length,
-            completedSets: new Array(flatSets.length).fill(undefined),
-          },
-        }));
-      }
-    }
-    console.log('exerciseStates', exerciseStates);
-  }, [exercises, exerciseStates, setExerciseStates]);
+    if (!data) return;
+    // state setup
+    const workout = data.find((val) => val._id === id);
+    if (!workout?.exercises) return;
+
+    setExercises(workout.exercises);
+    setTotalSteps(workout.exercises.length);
+
+    // Initialize exercise states
+    workout.exercises.forEach((exercise) => {
+      const exerciseId = exercise._id!.toString();
+      if (exerciseStates[exerciseId]) return;
+
+      const flatSets = flattenSets(exercise.sets);
+      setExerciseStates((prev) => ({
+        ...prev,
+        [exerciseId]: {
+          numberOfSets: flatSets.length,
+          completedSets: new Array(flatSets.length).fill(undefined),
+        },
+      }));
+    });
+  }, [data, id, setTotalSteps, exerciseStates, setExerciseStates]);
 
   useEffect(() => {
     console.log('isAllExercisesCompleted', isAllExercisesCompleted);
@@ -125,16 +143,6 @@ export default function WorkoutPlayer({ id }: { id: string }) {
       console.log('exerciseFormValues', exerciseFormValues);
     }
   }, [isAllExercisesCompleted, exerciseFormValues, exercises]);
-
-  useEffect(() => {
-    if (data) {
-      const workout = data.find((val) => val._id === id);
-      if (workout && workout.exercises) {
-        setExercises(workout.exercises);
-        setTotalSteps(workout.exercises.length);
-      }
-    }
-  }, [data, id, setTotalSteps]);
 
   useEffect(() => {
     if (!api) {
@@ -204,18 +212,10 @@ export default function WorkoutPlayer({ id }: { id: string }) {
             You have completed the workout. Do you want to submit your results?
           </AlertDialogDescription>
           <AlertDialogFooter>
-            <AlertDialogCancel
-              type="button"
-              onClick={() => setIsWorkoutCompleted(false)}
-            >
+            <AlertDialogCancel type="button" onClick={handleCancelWorkout}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction
-              type="button"
-              onClick={() => {
-                handleUpdateExerciseSets();
-              }}
-            >
+            <AlertDialogAction type="button" onClick={handleUpdateExerciseSets}>
               Submit
             </AlertDialogAction>
           </AlertDialogFooter>

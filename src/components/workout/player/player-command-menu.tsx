@@ -95,8 +95,16 @@ export default function WorkoutPlayerCommandMenu({
     callback();
   };
 
+  const startStopwatchIfNotStarted = () => {
+    if (!isPlaying) {
+      setIsPlaying(true);
+    }
+  };
+
   const skipSet = () => {
     if (!currentExercise || !currentExerciseState) return;
+
+    startStopwatchIfNotStarted();
 
     // Mark the current set as skipped
     setExerciseStates((prev) => ({
@@ -118,6 +126,8 @@ export default function WorkoutPlayerCommandMenu({
 
   const completeSet = () => {
     if (!currentExercise || !currentExerciseState) return;
+
+    startStopwatchIfNotStarted();
 
     // Mark the current set as completed
     setExerciseStates((prev) => ({

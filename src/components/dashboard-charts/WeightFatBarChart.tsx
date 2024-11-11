@@ -123,7 +123,7 @@ export default function WeightFatBarChart() {
               </SelectContent>
             </Select>
           </div>
-          <CardDescription>Weight and fat percentage over time</CardDescription>
+          <CardDescription>Your Fat & Weight Yearly Forecast</CardDescription>
         </div>
         <div className="space-y-2">
           <div className="flex gap-2 font-medium leading-none">

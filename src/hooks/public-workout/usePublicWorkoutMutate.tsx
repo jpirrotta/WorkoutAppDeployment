@@ -42,12 +42,12 @@ const usePublicWorkoutMutate = (
       if (option === 'like') {
         return addLikePublicWorkout(
           retVal.userId,
-          retVal.workout._id.toString()
+          retVal.workout._id!.toString()
         );
       } else if (option === 'unlike') {
         return removeLikePublicWorkout(
           retVal.userId,
-          retVal.workout._id.toString()
+          retVal.workout._id!.toString()
         );
       } else if (option === 'comment') {
         if (!retVal.commentText) {
@@ -56,7 +56,7 @@ const usePublicWorkoutMutate = (
         console.log('Comment: ', retVal.commentText);
         return addCommentPublicWorkout(
           retVal.userId,
-          retVal.workout._id.toString(),
+          retVal.workout._id!.toString(),
           retVal.commentText
         );
       } else if (option === 'uncomment') {
@@ -64,18 +64,18 @@ const usePublicWorkoutMutate = (
           throw new Error('Comment ID is required');
         }
         return removeCommentPublicWorkout(
-          retVal.workout._id.toString(),
+          retVal.workout._id!.toString(),
           retVal.commentId.toString(),
         );
       } else if (option === 'save') {
         return addSavePublicWorkout(
           retVal.userId,
-          retVal.workout._id.toString()
+          retVal.workout._id!.toString()
         );
       } else if (option === 'unsave') {
         return removeSavePublicWorkout(
           retVal.userId,
-          retVal.workout._id.toString()
+          retVal.workout._id!.toString()
         );
       } else {
         throw new Error('Invalid option');

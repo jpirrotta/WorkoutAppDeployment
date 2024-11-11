@@ -15,6 +15,7 @@ export const exercises: Exercise[] = [
       'Pause for a moment at the top, then slowly lower your upper body back down to the starting position.',
       'Repeat for the desired number of repetitions.',
     ],
+    sets: [{ sets: 3, reps: 15, weight: 0 }],
   },
   {
     bodyPart: 'waist',
@@ -31,6 +32,7 @@ export const exercises: Exercise[] = [
       'Repeat on the other side.',
       'Continue alternating sides for the desired number of repetitions.',
     ],
+    sets: [{ sets: 3, reps: 12, weight: 0 }],
   },
   {
     bodyPart: 'waist',
@@ -47,6 +49,7 @@ export const exercises: Exercise[] = [
       'Return to the starting position and repeat the movement on the opposite side, bringing your left elbow towards your right knee while straightening your left leg.',
       'Continue alternating sides in a pedaling motion for the desired number of repetitions.',
     ],
+    sets: [{ sets: 2, reps: 12, weight: 20 }],
   },
   {
     bodyPart: 'upper legs',
@@ -63,6 +66,7 @@ export const exercises: Exercise[] = [
       'Hold this position for 20-30 seconds.',
       'Switch legs and repeat the stretch on the other side.',
     ],
+    sets: [{ sets: 2, reps: 8, weight: 5 }],
   },
   {
     bodyPart: 'waist',
@@ -79,5 +83,6 @@ export const exercises: Exercise[] = [
       'Return to the starting position and repeat on the left side, reaching your left hand towards your left heel.',
       'Continue alternating sides for the desired number of repetitions.',
     ],
+    sets: [{ sets: 5, reps: 10, weight: 10 }],
   },
 ];

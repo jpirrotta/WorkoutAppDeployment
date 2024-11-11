@@ -41,6 +41,7 @@ import {
 import { flattenSets, hasExerciseChanges } from '@/lib/workout';
 import { forEach } from 'lodash';
 import { collectWorkoutHistoryData } from '@/lib/workout';
+import { useRouter } from 'next/navigation';
 
 export default function WorkoutPlayer({ id }: { id: string }) {
   const [api, setApi] = useAtom(carouselApiAtom);
@@ -56,6 +57,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
 
   const { mutate: updateExerciseSets } = useWorkoutExerciseUpdate();
   const { mutate: saveToHistory } = useWorkoutHistorySave();
+  const router = useRouter();
 
   const { data } = useGetAllWorkouts();
 
@@ -63,12 +65,7 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     return hasExerciseChanges(exercises, exerciseFormValues);
   }, [exercises, exerciseFormValues]);
 
-  // console.log('id', id);
-
-  console.log('exercises', exercises);
-
   const handleUpdateExerciseSets = async () => {
-    // TODO if the user wants to save the changes to the workout
     // we can call the mutation to update the workout
     // and pass the changedIds to update only the exercises that have changed
     // if the user doesn't want to save the changes we just save the data to his history
@@ -99,6 +96,9 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     saveToHistory(historyData);
 
     setIsWorkoutCompleted(false);
+
+    // Redirect back to the workouts page
+    router.back();
   };
 
   // Initialize exercise states

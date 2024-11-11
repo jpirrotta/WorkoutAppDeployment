@@ -8,16 +8,15 @@ import {
   removeLikePublicWorkout,
   addCommentPublicWorkout,
   removeCommentPublicWorkout,
-  addSavePublicWorkout,
-  removeSavePublicWorkout,
+  addSavePublicWorkout
 } from '@/actions/publicWorkout';
 import { BaseWorkout } from '@/types';
 import { toast } from 'sonner';
 
 const usePublicWorkoutMutate = (
-  option: 'like' | 'unlike' | 'comment' | 'uncomment' | 'save' | 'unsave'
+  option: 'like' | 'unlike' | 'comment' | 'uncomment' | 'save'
 ): UseMutationResult<
-  boolean,
+  boolean | Error,
   unknown,
   {
     userId: string;
@@ -70,12 +69,7 @@ const usePublicWorkoutMutate = (
       } else if (option === 'save') {
         return addSavePublicWorkout(
           retVal.userId,
-          retVal.workout._id!.toString()
-        );
-      } else if (option === 'unsave') {
-        return removeSavePublicWorkout(
-          retVal.userId,
-          retVal.workout._id!.toString()
+          retVal.workout
         );
       } else {
         throw new Error('Invalid option');

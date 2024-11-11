@@ -17,7 +17,6 @@ function cleanObject(obj: any): any {
   return obj;
 }
 
-// TODO add token verification, this should be done at the end for all of the routes
 export async function GET(req: NextRequest): Promise<NextResponse> {
   logger.info('GET Profile API called');
   try {
@@ -55,20 +54,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     cleanObject(user); // remove _id and __v this is temporary until the lean bug is fixed
     return NextResponse.json(user, { status: 200 });
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(`GET Error getting profile: ${error.message}`);
-      return NextResponse.json(
-        {
-          error: error.message,
-          message: 'Something went wrong, please try again or contact support',
-        },
-        { status: 500 }
-      );
-    }
-    logger.error(`GET Error getting profile: ${error}`);
+    const errorMessage =
+      error instanceof Error ? error.message : 'Internal server error';
+    logger.error(`GET Error getting profile: ${errorMessage}`);
+
     return NextResponse.json(
       {
-        error: 'Internal server error',
+        error: errorMessage,
         message: 'Something went wrong, please try again or contact support',
       },
       { status: 500 }

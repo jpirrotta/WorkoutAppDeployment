@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { FeedWorkout } from '@/types';
-import logger from '@/lib/logger';
 
 const fetchAllPublicWorkouts = async (
   page: number, 

@@ -1,11 +1,12 @@
 // src/components/workout/MyWorkout.jsx
 'use client';
+// react and next imports
 import { FC, memo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAtom } from 'jotai';
-import { selectedExercisesAtom } from '@/store';
+import logger from '@/lib/logger';
 
+// UI imports
 import {
   useWorkoutDelete,
   useExerciseRemove,
@@ -37,11 +38,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { truncateText } from '@/utils/trucateText';
 import { Trash2, CirclePlay, X, EllipsisVertical } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
+// method and component imports
+import { truncateText } from '@/utils/trucateText';
 import { Exercise, Workout } from '@/types';
 import ExerciseCards from '../ExerciseCards';
 import ExercisePage from '../ExercisePage';
@@ -55,6 +57,7 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
   const router = useRouter();
   const addExerciseSectionRef = useRef<HTMLDivElement>(null);
   const [deleteExeDialogOpen, setDeleteExeDialogOpen] = useState(false);
+  const [missingSetsDialogOpen, setMissingSetsDialogOpen] = useState(false);
 
   // mutation hooks
   const workoutDeleteMutation = useWorkoutDelete();
@@ -68,6 +71,15 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
   };
 
   const handlePlayWorkout = () => {
+    // check if all the exercises have sets data to play current workout
+    const selectedExercises = workout.exercises;
+    const hasSets = selectedExercises.every((exercise) => exercise.sets.length);
+
+    if (!hasSets) {
+      logger.error('Sets missing in one or more exercises');
+      setMissingSetsDialogOpen(true);
+      return;
+    }
     router.push(`/workout/${workout._id}/${workout.name}`);
   };
 
@@ -99,6 +111,33 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
       workoutData: updatedWorkout,
     });
   };
+
+  // alert dialog for restricting user to play workout without sets in any of the sets
+  const HandleSetsMissing = memo(function HandleSetsMissing({
+    triggerNode,
+  }: {
+    triggerNode?: React.ReactNode;
+  }) {
+    return (
+      <AlertDialog
+        open={missingSetsDialogOpen}
+        onOpenChange={setMissingSetsDialogOpen}
+      >
+        <AlertDialogTrigger asChild>{triggerNode}</AlertDialogTrigger>
+        <AlertDialogContent className="border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Missing Sets in one or more exercises?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Workout cannot be played without sets in all exercises. Please add sets to all exercises to play the workout.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className='w-full'>OK</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  });
 
   // alert dialog for delete workout confirmation
   const DeleteWorkoutDialog = memo(function DeleteWorkoutDialog({
@@ -262,6 +301,8 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
       </div>
 
       <DeleteWorkoutDialog />
+
+      <HandleSetsMissing />
 
       {workout.exercises.length ? (
         ExerciseExistingList()

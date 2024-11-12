@@ -1,23 +1,18 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useEffect, useState } from 'react';
+// Stopwatch.tsx
 import {
   isPlayingAtom,
   totalExercisesAtom,
-  workoutDurationAtom,
   completedExerciseAtom,
+  workoutDurationAtom,
 } from '@/store'; // Adjust the import path as needed
+import { useAtom, useAtomValue } from 'jotai';
+import { useEffect } from 'react';
 
 export default function Stopwatch() {
-  const [stopwatch, setStopwatch] = useState(0);
+  const [stopwatch, setStopwatch] = useAtom(workoutDurationAtom);
   const totalSteps = useAtomValue(totalExercisesAtom);
   const completedExercise = useAtomValue(completedExerciseAtom);
   const [isPlaying, setIsPlaying] = useAtom(isPlayingAtom);
-  const setWorkoutDuration = useSetAtom(workoutDurationAtom);
-
-  console.log('totalSteps', totalSteps);
-  console.log('completedExercise', completedExercise);
-  console.log('completedExercise.length', completedExercise.length);
-  console.log('isPlaying', isPlaying);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined;
@@ -37,10 +32,6 @@ export default function Stopwatch() {
       }
     };
   }, [isPlaying, setIsPlaying, setStopwatch, completedExercise, totalSteps]);
-
-  useEffect(() => {
-    setWorkoutDuration(stopwatch);
-  }, [stopwatch, setWorkoutDuration]);
 
   // Format the stopwatch value as HH:MM:SS
   const formatTime = (time: number) => {

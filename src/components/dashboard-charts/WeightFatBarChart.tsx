@@ -9,7 +9,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from '@/components/ui/chart';
-import { chartConfig } from '@/components/dashboard-charts/config';
+import { WeightFatChartConfig } from '@/components/dashboard-charts/config';
 import {
   Card,
   CardContent,
@@ -99,32 +99,32 @@ export default function WeightFatBarChart() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row justify-between">
-        <div className="space-y-2">
-          <div className="flex flex-row items-center justify-between gap-2">
-            <CardTitle>Weight & Fat</CardTitle>
-            <Select
-              defaultValue={`${selectedYear}`}
-              value={`${selectedYear}`}
-              onValueChange={(value) => setSelectedYear(Number(value))}
-            >
-              <SelectTrigger className="w-[8rem] bg-card">
-                <SelectValue placeholder="Select Year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Year</SelectLabel>
-                  {insightsData.years.map((year) => (
-                    <SelectItem key={year} value={`${year}`}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+      <CardHeader className="flex flex-col sm:flex-row justify-between">
+          <div className='sm:space-y-2'>
+            <div className="flex flex-row items-center justify-between gap-3">
+              <CardTitle>Weight & Fat</CardTitle>
+              <Select
+                defaultValue={`${selectedYear}`}
+                value={`${selectedYear}`}
+                onValueChange={(value) => setSelectedYear(Number(value))}
+              >
+                <SelectTrigger className="w-[8rem] bg-card">
+                  <SelectValue placeholder="Select Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Year</SelectLabel>
+                    {insightsData.years.map((year) => (
+                      <SelectItem key={year} value={`${year}`}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <CardDescription>Your Fat & Weight Yearly Forcast</CardDescription>
           </div>
-          <CardDescription>Your Fat & Weight Yearly Forecast</CardDescription>
-        </div>
         <div className="space-y-2">
           <div className="flex gap-2 font-medium leading-none">
             Fat is trending {fatTrend > 0 ? 'up' : 'down'} by{' '}
@@ -143,7 +143,10 @@ export default function WeightFatBarChart() {
         </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+        <ChartContainer
+          config={WeightFatChartConfig}
+          className="min-h-[200px] w-full"
+        >
           <BarChart accessibilityLayer data={selectedYearData}>
             <CartesianGrid vertical={false} />
             <XAxis

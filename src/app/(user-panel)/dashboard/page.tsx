@@ -1,9 +1,9 @@
 import WeightFatBarChart from '@/components/dashboard-charts/WeightFatBarChart';
-
+import TotalExercisesPieChart from '@/components/dashboard-charts/TotalExercisesPieChart';
 export default function Dashboard() {
   return (
-    <div>
-      <h1> Dashboard </h1>
+    <div className='flex flex-col xl:flex-row gap-2'>
+      <TotalExercisesPieChart />
       <WeightFatBarChart />
     </div>
   );

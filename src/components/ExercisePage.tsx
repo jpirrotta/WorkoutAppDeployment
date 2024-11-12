@@ -5,7 +5,7 @@ import ExerciseCards from '@/components/ExerciseCards';
 import { useExercises } from '@/utils/fetchData';
 import { useUser } from '@clerk/clerk-react';
 import { ContentLayout } from '@/components/user-panel/content-layout';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, Filter, FilterX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExercisesSearchBar from '@/components/ExerciseSearchBar';
 import { Exercise } from '@/types';
@@ -16,6 +16,8 @@ import { Badge } from './ui/badge';
 import { XCircle } from 'lucide-react';
 import { Workout } from '@/types';
 import { useWorkoutUpdate } from '@/hooks/workout/useWorkoutMutations';
+import { ExerciseFilters } from '@/types';
+import { ExerciseFilterBar } from './ExerciseFilterBar';
 
 type ExercisePageProps = {
     title?: string;
@@ -30,42 +32,69 @@ export default function ExercisePage({ title = 'Our Exercises!', workout, workou
     const [limit, setLimit] = useState(6);
     const [filteredExercises, setFilteredExercises] = useState<Exercise[]>();
     const [showFav, setShowFav] = useState(false);
+    const [showFilters, setShowFilters] = useState(false);
     const { isSignedIn, isLoaded, user } = useUser();
+
+    const [filters, setFilters] = useState<ExerciseFilters>({
+        bodyPart: [],
+        target: [],
+        equipment: [],
+        secondaryMuscles: [],
+    });
+
     let content = <></>;
-    // TODO ADD ERROR HANDLING
     const { data: exercises, error, isLoading } = useExercises();
-
     const { data: favExercises } = useUserFavourites(user?.id);
-
     const [selectedExercises, setSelectedExercises] = useAtom(selectedExercisesAtom);
-
-    // mutation hooks
     const workoutUpdateMutation = useWorkoutUpdate();
 
     useEffect(() => {
         if (exercises) {
             let filtered = exercises;
 
-            // Apply search filter
             if (searchQuery) {
                 filtered = filtered.filter((exercise: Exercise) =>
                     exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
                 );
             }
 
-            // Apply favorites filter
             if (favExercises && favExercises.length > 0 && showFav) {
                 filtered = filtered.filter((exercise: Exercise) =>
                     favExercises.includes(exercise.id)
                 );
             }
 
-            // Apply limit
+            if (filters.bodyPart && filters.bodyPart.length > 0) {
+                filtered = filtered.filter((exercise) =>
+                    filters.bodyPart?.includes(exercise.bodyPart)
+                );
+            }
+
+            if (filters.target && filters.target.length > 0) {
+                filtered = filtered.filter((exercise) =>
+                    filters.target?.includes(exercise.target)
+                );
+            }
+
+            if (filters.equipment && filters.equipment.length > 0) {
+                filtered = filtered.filter((exercise) =>
+                    filters.equipment?.includes(exercise.equipment)
+                );
+            }
+
+            if (filters.secondaryMuscles && filters.secondaryMuscles.length > 0) {
+                filtered = filtered.filter((exercise) =>
+                    filters.secondaryMuscles?.some(muscle =>
+                        exercise.secondaryMuscles.includes(muscle)
+                    )
+                );
+            }
+
             setFilteredExercises(filtered.slice(0, limit));
         } else {
             setFilteredExercises(undefined);
         }
-    }, [exercises, searchQuery, limit, favExercises, showFav]);
+    }, [exercises, searchQuery, limit, favExercises, showFav, filters]);
 
     if (!exercises) {
         return (
@@ -80,11 +109,9 @@ export default function ExercisePage({ title = 'Our Exercises!', workout, workou
             return setFilteredExercises(undefined);
         }
         setSearchQuery(query);
-        console.log('Search query:', query);
     };
 
     const handleShowMore = () => {
-        console.log('Show more clicked');
         setLimit((prev) => prev + 6);
     };
 
@@ -93,22 +120,7 @@ export default function ExercisePage({ title = 'Our Exercises!', workout, workou
         setSearchQuery(undefined)
     }
 
-    if (filteredExercises) {
-        console.log(filteredExercises);
-    }
-
-    if (isLoading || !isLoaded) {
-        content = (
-            <div className="flex justify-center items-center h-screen">
-                <LoaderCircle className="text-primary text-6xl animate-spin" />
-            </div>
-        );
-    }
-
-    // handle add more selected exercises to existing workout
     const handleAppendExercises = () => {
-        console.log('Append Exercises clicked');
-
         if (!workout) {
             console.error('No Workout provided!');
             return;
@@ -128,16 +140,57 @@ export default function ExercisePage({ title = 'Our Exercises!', workout, workou
         });
     }
 
-    // handle removing selected exercise
     const handleRemoveExercise = (exeToRemove: Exercise) => {
         setSelectedExercises((prev: Exercise[]) => prev.filter((e: Exercise) => e.id !== exeToRemove.id));
     }
+
+    const handleFilterChange = (newFilters: ExerciseFilters) => {
+        setFilters(newFilters);
+    };
+
+    const handleClearFilters = () => {
+        setFilters({
+            bodyPart: [],
+            target: [],
+            equipment: [],
+            secondaryMuscles: [],
+        });
+    };
+
+    const SearchAndFilters = () => (
+        <div className="px-4">
+            <div className="flex items-center gap-1">
+                <div className="flex-1">
+                    <ExercisesSearchBar onSearch={handleSearch} />
+                </div>
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowFilters(!showFilters)}
+                        className="h-10 w-10 flex items-center justify-center"
+                    >
+                        {showFilters ? (
+                            <FilterX className="h-5 w-5 text-primary" />
+                        ) : (
+                            <Filter className="h-5 w-5" />
+                        )}
+                    </Button>
+                    {Object.values(filters).some(arr => arr && arr.length > 0) && (
+                        <XCircle
+                            className="h-6 w-6 text-primary cursor-pointer"
+                            onClick={handleClearFilters}
+                        />
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 
     const SelectedExerciseList = () => {
         return (
             <div className='flex w-full justify-between pb-2 mt-4 px-4 items-center'>
                 <div>
-                    {/* display selected Exercises and related msg if none */}
                     <span className="text-md font-medium">
                         {selectedExercises.length > 0 ? (
                             selectedExercises.map((exercise: Exercise) => (
@@ -170,10 +223,14 @@ export default function ExercisePage({ title = 'Our Exercises!', workout, workou
                     {title}
                 </h1>
 
-                <ExercisesSearchBar onSearch={handleSearch} />
-                {workout &&
-                    <SelectedExerciseList />
-                }
+                <SearchAndFilters />
+                <ExerciseFilterBar
+                    exercises={exercises}
+                    filters={filters}
+                    onFilterChange={handleFilterChange}
+                    showFilters={showFilters}
+                />
+                {workout && <SelectedExerciseList />}
 
                 <ExerciseCards
                     exercises={filteredExercises ? filteredExercises : exercises}
@@ -198,8 +255,13 @@ export default function ExercisePage({ title = 'Our Exercises!', workout, workou
                         {title}
                     </h1>
 
-                    <ExercisesSearchBar onSearch={handleSearch} />
-
+                    <SearchAndFilters />
+                    <ExerciseFilterBar
+                        exercises={exercises}
+                        filters={filters}
+                        onFilterChange={handleFilterChange}
+                        showFilters={showFilters}
+                    />
                     <Button
                         className="px-0 bottom-0 left-0 right-0 flex items-center justify-center"
                         variant="link"

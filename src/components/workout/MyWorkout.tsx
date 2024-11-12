@@ -1,10 +1,12 @@
 // src/components/workout/MyWorkout.jsx
 'use client';
+// react and next imports
 import { FC, memo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import logger from '@/lib/logger';
 
+// UI imports
 import {
   useWorkoutDelete,
   useExerciseRemove,
@@ -36,11 +38,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { truncateText } from '@/utils/trucateText';
 import { Trash2, CirclePlay, X, EllipsisVertical } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
+// method and component imports
+import { truncateText } from '@/utils/trucateText';
 import { Exercise, Workout } from '@/types';
 import ExerciseCards from '../ExerciseCards';
 import ExercisePage from '../ExercisePage';

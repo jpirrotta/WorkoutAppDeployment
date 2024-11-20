@@ -64,39 +64,42 @@ export default function TotalExercisesPieChart() {
     return null;
   }
 
-  console.log(exerciseStats);
-
-  console.log('zzzy', exerciseStats.chartData);
-
-  console.log('zzz', TotalExercisesChartConfig);
-
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col w-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>Exercise Muscle Group Distribution</CardTitle>
         <CardDescription></CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex-1">
         <ChartContainer
           config={TotalExercisesChartConfig}
           className="mx-auto aspect-square max-h-[40rem] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
         >
-          <PieChart>
+          <PieChart className="mx-auto">
             <ChartTooltip content={<ChartTooltipContent hideLabel />} />
             <Pie
+              className="mx-auto"
               data={exerciseStats.chartData}
               dataKey="count"
               nameKey="primaryMuscle"
               innerRadius={60}
               strokeWidth={2}
-              // label={({ name }) => name}
             >
               <LabelList
                 className="fill-foreground text-[0.7rem] sm:text-[1rem] font-bold"
                 stroke="none"
                 dataKey="primaryMuscle"
-                position="inside"
+                position="middle"
               />
+              <LabelList
+                className="fill-foreground "
+                stroke="none"
+                dataKey="count"
+                position="outside"
+                formatter={(val: number) =>
+                  ((val / exerciseStats.totalExercises) * 100).toFixed(2) + '%'
+                }
+              ></LabelList>
               <Label
                 content={({ viewBox }) => {
                   if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {

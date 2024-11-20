@@ -28,103 +28,119 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import useScreenSize from '@/hooks/useScreenSize';
+
+const getTrendPercentage = (start: number, end: number) => {
+  return parseFloat((((end - start) / start) * 100).toFixed(2));
+};
+
+const calculateYearlyTrends = (data: { weight: number; fat: number }[]) => {
+  if (data.length < 2) return { weightTrend: 0, fatTrend: 0 };
+
+  const startWeight = data[0].weight;
+  const endWeight = data[data.length - 1].weight;
+  const startFat = data[0].fat;
+  const endFat = data[data.length - 1].fat;
+
+  return {
+    weightTrend: getTrendPercentage(startWeight, endWeight),
+    fatTrend: getTrendPercentage(startFat, endFat),
+  };
+};
+
+const trendClass = (trend: number) =>
+  trend < 0 ? 'text-success' : 'text-destructive';
 
 export default function WeightFatBarChart() {
   const { data: userInsights } = useInsights();
   const [selectedYear, setSelectedYear] = useState<number>();
+  const screenSize = useScreenSize();
 
-  const getTrendPercentage = (start: number, end: number) => {
-    return parseFloat((((end - start) / start) * 100).toFixed(2));
-  };
+  const insightsData = useMemo(() => {
+    if (!userInsights) {
+      return { chartData: {}, years: [] };
+    }
 
-  const calculateYearlyTrends = (data: { weight: number; fat: number }[]) => {
-    if (data.length < 2) return { weightTrend: 0, fatTrend: 0 };
+    const chartData = userInsights.weightHistory.reduce(
+      (acc, weight, index) => {
+        const year = new Date(weight.date).getFullYear();
+        const month = new Date(weight.date).toLocaleDateString('en-US', {
+          month: 'short',
+        });
 
-    const startWeight = data[0].weight;
-    const endWeight = data[data.length - 1].weight;
-    const startFat = data[0].fat;
-    const endFat = data[data.length - 1].fat;
+        if (!acc[year]) {
+          acc[year] = [];
+        }
 
-    return {
-      weightTrend: getTrendPercentage(startWeight, endWeight),
-      fatTrend: getTrendPercentage(startFat, endFat),
-    };
-  };
+        acc[year].push({
+          month,
+          weight: weight.value,
+          fat: userInsights.bodyFatHistory[index].value,
+        });
 
-  const insightsData = userInsights
-    ? {
-        chartData: userInsights.weightHistory.reduce((acc, weight, index) => {
-          const year = new Date(weight.date).getFullYear();
-          const month = new Date(weight.date).toLocaleDateString('en-US', {
-            month: 'short',
-          });
+        return acc;
+      },
+      {} as Record<number, { month: string; weight: number; fat: number }[]>
+    );
 
-          if (!acc[year]) {
-            acc[year] = [];
-          }
+    const years = Array.from(
+      new Set(
+        userInsights.weightHistory.map((weight) =>
+          new Date(weight.date).getFullYear()
+        )
+      )
+    );
 
-          acc[year].push({
-            month,
-            weight: weight.value,
-            fat: userInsights.bodyFatHistory[index].value,
-          });
-
-          return acc;
-        }, {} as Record<number, { month: string; weight: number; fat: number }[]>),
-        years: Array.from(
-          new Set(
-            userInsights.weightHistory.map((weight) =>
-              new Date(weight.date).getFullYear()
-            )
-          )
-        ),
-      }
-    : { chartData: {}, years: [] };
-
-  const trendClass = (trend: number) =>
-    trend < 0 ? 'text-success' : 'text-destructive';
+    return { chartData, years };
+  }, [userInsights]);
 
   useEffect(() => {
-    setSelectedYear(insightsData.years[0]);
+    if (!selectedYear && insightsData.years.length > 0)
+      setSelectedYear(insightsData.years[0]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [insightsData.years]);
+
+  const selectedYearData = useMemo(() => {
+    return selectedYear ? insightsData.chartData[selectedYear] || [] : [];
+  }, [selectedYear, insightsData.chartData]);
 
   if (!userInsights) return null;
 
-  const selectedYearData = selectedYear
-    ? insightsData.chartData[selectedYear] || []
-    : [];
   const { weightTrend, fatTrend } = calculateYearlyTrends(selectedYearData);
 
   return (
-    <Card>
-      <CardHeader className="flex flex-col sm:flex-row justify-between">
-          <div className='sm:space-y-2'>
-            <div className="flex flex-row items-center justify-between gap-3">
-              <CardTitle>Weight & Fat</CardTitle>
-              <Select
-                defaultValue={`${selectedYear}`}
-                value={`${selectedYear}`}
-                onValueChange={(value) => setSelectedYear(Number(value))}
-              >
-                <SelectTrigger className="w-[8rem] bg-card">
-                  <SelectValue placeholder="Select Year" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Year</SelectLabel>
-                    {insightsData.years.map((year) => (
-                      <SelectItem key={year} value={`${year}`}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            <CardDescription>Your Fat & Weight Yearly Forcast</CardDescription>
+    <Card className="w-full">
+      <CardHeader className="flex flex-col sm:flex-row justify-between gap-3">
+        <div className="sm:space-y-2">
+          <div className="flex flex-row items-center justify-between gap-3">
+            <CardTitle>Weight & Fat</CardTitle>
+            <Select
+              defaultValue={`${selectedYear}`}
+              value={`${selectedYear}`}
+              onValueChange={(value) => setSelectedYear(Number(value))}
+            >
+              <SelectTrigger className="w-[8rem] bg-card">
+                <SelectValue placeholder="Select Year" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Year</SelectLabel>
+                  {insightsData.years.map((year) => (
+                    <SelectItem
+                      key={year}
+                      value={year.toString()}
+                      onClick={(val) => setSelectedYear(Number(val))}
+                    >
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
+          <CardDescription>Your Fat & Weight Yearly Forecast</CardDescription>
+        </div>
         <div className="space-y-2">
           <div className="flex gap-2 font-medium leading-none">
             Fat is trending {fatTrend > 0 ? 'up' : 'down'} by{' '}
@@ -142,12 +158,16 @@ export default function WeightFatBarChart() {
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent id="card-pie" className="h-full">
         <ChartContainer
           config={WeightFatChartConfig}
-          className="min-h-[200px] w-full"
+          className="min-h-[200px] h-full w-full"
         >
-          <BarChart accessibilityLayer data={selectedYearData}>
+          <BarChart
+            accessibilityLayer
+            data={selectedYearData}
+            margin={{ bottom: screenSize.width > 1280 ? 120 : 0 }}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"

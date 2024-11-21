@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-import { TrendingUp } from 'lucide-react';
 import { Label, Pie, PieChart, LabelList } from 'recharts';
 import useInsights from '@/hooks/insights/useInsights';
 import { TotalExercisesChartConfig } from '@/components/dashboard-charts/config';
@@ -22,9 +20,6 @@ import { useMemo } from 'react';
 
 export default function TotalExercisesPieChart() {
   const { data: userInsights } = useInsights();
-
-  console.log(userInsights);
-
   const exerciseStats = useMemo(() => {
     const stats = {
       totalExercises: 0,
@@ -122,7 +117,7 @@ export default function TotalExercisesPieChart() {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Total Exercises
+                          Total Sets
                         </tspan>
                       </text>
                     );
@@ -135,7 +130,7 @@ export default function TotalExercisesPieChart() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="leading-none text-muted-foreground">
-          Showing total exercises performed by muscle group since joining
+          Showing total sets performed by muscle group since joining
         </div>
       </CardFooter>
     </Card>

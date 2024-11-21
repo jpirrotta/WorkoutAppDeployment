@@ -1,7 +1,7 @@
 'use client';
 
 // react imports
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // UI imports
 import {
@@ -41,6 +41,7 @@ type ExerciseFormProps = {
 
 export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: ExerciseFormProps) {
     const selectedWorkoutIndex = useAtomValue(selectedWorkoutIndexAtom);
+    const [isSetsEqual, setIsSetsEqual] = useState(true);
 
     const {
         data: workouts,
@@ -83,6 +84,29 @@ export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: Ex
     }
 
     logger.info(`form errors`, exerciseSetsForm.formState.errors);
+
+    // comparing fields and exercise sets
+    const checkSetsEqual = (fields: any, sets: any) => {
+        if (fields.length !== sets.length) {
+            return false;
+        }
+
+        return fields.every((field: any, index: number) => {
+            return (
+                field.sets === sets[index].sets &&
+                field.reps === sets[index].reps &&
+                field.weight === sets[index].weight
+            );
+        });
+    };
+
+    // when form values change or db values change check again
+    useEffect(() => {
+        const subscription = exerciseSetsForm.watch((value, { name, type }) => {
+            setIsSetsEqual(checkSetsEqual(value.sets, exercise.sets));
+        });
+        return () => subscription.unsubscribe();
+    }, [exerciseSetsForm, exercise.sets]);
 
     return (
         <Form {...exerciseSetsForm}>
@@ -186,7 +210,7 @@ export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: Ex
 
                     <Button
                         type="submit"
-                        disabled={exercise.sets === fields}
+                        disabled={isSetsEqual}
                     >
                         Save
                     </Button>

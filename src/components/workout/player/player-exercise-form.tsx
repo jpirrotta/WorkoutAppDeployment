@@ -86,7 +86,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
           <div
             onClick={() => setCurrentSetIndex(index)}
             key={field.id}
-            className={`flex flex-row justify-between p-2 pb-3 items-center ${
+            className={`flex flex-row gap-2 justify-between p-2 pb-3 items-end sm:items-center ${
               currentSetIndex === index ? 'bg-background rounded-3xl' : ''
             }`}
           >
@@ -97,7 +97,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
               control={playerForm.control}
               name={`sets.${index}.reps`}
               render={() => (
-                <FormItem className="flex flex-row-reverse justify-center items-center gap-2">
+                <FormItem className="flex flex-col sm:flex-row-reverse justify-center items-center gap-2">
                   <FormLabel>Reps</FormLabel>
                   <FormControl>
                     <Input
@@ -116,7 +116,7 @@ export default function PlayerExerciseForm({ exercise }: ExerciseFormProps) {
               control={playerForm.control}
               name={`sets.${index}.weight`}
               render={() => (
-                <FormItem className="flex flex-row-reverse justify-center items-center gap-2">
+                <FormItem className="flex flex-col sm:flex-row-reverse justify-center items-center gap-2">
                   <FormLabel>Weight</FormLabel>
                   <FormControl>
                     <Input

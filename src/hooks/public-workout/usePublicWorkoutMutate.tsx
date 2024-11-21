@@ -8,7 +8,8 @@ import {
   removeLikePublicWorkout,
   addCommentPublicWorkout,
   removeCommentPublicWorkout,
-  addSavePublicWorkout
+  addSavePublicWorkout,
+  removeSavePublicWorkout
 } from '@/actions/publicWorkout';
 import { BaseWorkout } from '@/types';
 import { toast } from 'sonner';
@@ -70,6 +71,11 @@ const usePublicWorkoutMutate = (
         return addSavePublicWorkout(
           retVal.userId,
           retVal.workout
+        );
+      } else if (option === 'unsave') {
+        return removeSavePublicWorkout(
+          retVal.userId,
+          retVal.workout._id!.toString()
         );
       } else {
         throw new Error('Invalid option');

@@ -24,6 +24,14 @@ export type FlatSets = z.infer<typeof playerFormSchema>['sets'];
 
 export type Sets = z.infer<typeof exerciseSetsSchema>['sets'];
 
+//exercise filters
+export type ExerciseFilters = {
+  bodyPart?: string[];
+  target?: string[];
+  equipment?: string[];
+  secondaryMuscles?: string[];
+};
+
 export type Exercise = {
   _id?: mongoose.Types.ObjectId;
   id: string;

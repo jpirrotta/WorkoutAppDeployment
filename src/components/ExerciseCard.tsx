@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { Exercise } from '@/types';
 import AddExerciseToWorkout from './workout/AddExerciseToWorkout';
 import logger from '@/lib/logger';
 
-import { selectedExercisesAtom } from '@/store';
+import { selectedExercisesAtom, setsMissingExerciseAtom } from '@/store';
 import { useAtom } from 'jotai';
 
 import { Star } from 'lucide-react'; // Import the star icon
@@ -50,10 +50,21 @@ export default function ExerciseCard({
   const [SelectedExercises, setSelectedExercises] = useAtom(
     selectedExercisesAtom
   );
+  const [setsMissingExercise, setSetsMissingExercise] = useAtom(setsMissingExerciseAtom);
   const [isFavorited, setIsFavorited] = useState(false); // State to track if the exercise is favorited
   const [isSetsOpen, setIsSetsOpen] = useState(false); // State to track if the sets editing is needed
   const mutation = useFavMutate();
   const { user, isSignedIn, isLoaded } = useUser();
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn && user) {
+      if (setsMissingExercise && setsMissingExercise.length > 0) {
+        if (setsMissingExercise?.includes(exercise._id!)) {
+          setIsSetsOpen(true);
+        }
+      }
+    }
+  }, [isLoaded, isSignedIn, user, setsMissingExercise]);
 
   const ImageToggler = () => {
     setShowDemo((prev) => !prev);
@@ -226,9 +237,8 @@ export default function ExerciseCard({
         </CardContent>
 
         <CardFooter
-          className={`${
-            isSetsOpen && 'p-0'
-          } capitalize px-2 text-secondary items-start flex flex-wrap gap-5`}
+          className={`${isSetsOpen && 'p-0'
+            } capitalize px-2 text-secondary items-start flex flex-wrap gap-5`}
         >
           {/* conditionally show exercise details or sets */}
           {!isPlaying &&

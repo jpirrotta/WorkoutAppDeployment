@@ -41,12 +41,15 @@ import {
 import { Trash2, CirclePlay, X, EllipsisVertical } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { toast } from 'sonner';
 
 // method and component imports
 import { truncateText } from '@/utils/trucateText';
 import { Exercise, Workout } from '@/types';
 import ExerciseCards from '../ExerciseCards';
 import ExercisePage from '../ExercisePage';
+import { useAtom } from 'jotai';
+import { setsMissingExerciseAtom } from '@/store';
 
 type MyWorkoutProps = {
   workout: Workout;
@@ -58,6 +61,8 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
   const addExerciseSectionRef = useRef<HTMLDivElement>(null);
   const [deleteExeDialogOpen, setDeleteExeDialogOpen] = useState(false);
   const [missingSetsDialogOpen, setMissingSetsDialogOpen] = useState(false);
+  const [exerciseAccordionStatus, setExerciseAccordionStatus] = useState<'exeOpen' | ''>('');
+  const [setsMissingExercise, setSetsMissingExercise] = useAtom(setsMissingExerciseAtom);
 
   // mutation hooks
   const workoutDeleteMutation = useWorkoutDelete();
@@ -71,12 +76,17 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
   };
 
   const handlePlayWorkout = () => {
-    // check if all the exercises have sets data to play current workout
-    const selectedExercises = workout.exercises;
-    const hasSets = selectedExercises.every((exercise) => exercise.sets.length);
+    // check if all the exercises have sets data to play current workout, if not, show an alert and point out those exercises
+    const workoutExercises = workout.exercises;
+    const exerciseIds = workoutExercises
+      .filter((exercise) => !exercise.sets.length)
+      .map((exercise) => exercise._id!.toString());
 
-    if (!hasSets) {
-      logger.error('Sets missing in one or more exercises');
+    if (exerciseIds) {
+      logger.error(`Sets missing in one or more exercises: ${exerciseIds}`);
+      toast.error('Sets missing in one or more exercises');
+      setExerciseAccordionStatus('exeOpen');
+      setSetsMissingExercise(exerciseIds);
       setMissingSetsDialogOpen(true);
       return;
     }
@@ -244,9 +254,9 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
   });
 
   const ExerciseExistingList = () => (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1">
-        <AccordionTrigger className="border border-gray-500 rounded-xl px-2">
+    <Accordion type="single" defaultValue='exeOpen' collapsible className="w-full">
+      <AccordionItem value={exerciseAccordionStatus}>
+        <AccordionTrigger className={`border border-gray-500 rounded-xl px-2`}>
           <div className={`flex items-center justify-between space-x-4 px-4`}>
             <h4 className="text-primary md:text-2xl">Existing Exercise List</h4>
           </div>

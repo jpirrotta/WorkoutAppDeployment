@@ -25,7 +25,7 @@ export type FlatSets = z.infer<typeof playerFormSchema>['sets'];
 export type Sets = z.infer<typeof exerciseSetsSchema>['sets'];
 
 export type Exercise = {
-  _id?: mongoose.Types.ObjectId;
+  _id?: string;
   id: string;
   name: string;
   gifUrl: string;

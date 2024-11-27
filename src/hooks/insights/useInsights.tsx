@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Insights } from '@/types';
+import { useUser } from '@clerk/clerk-react';
 
 const fetchUserInsights = async (
   userId: string,
@@ -15,11 +16,13 @@ const fetchUserInsights = async (
 };
 
 const useInsights = () => {
-  const userId = 'user_2n5bNjH87JXQtrRJ76m7Cj6x8c3';
+  const { user } = useUser();
+  const userId = user?.id ?? '';
+
   return useQuery({
     queryKey: ['insights', userId],
     queryFn: async ({ signal }) => await fetchUserInsights(userId, signal),
-    enabled: !!userId,
+    enabled: true, 
     retry: false,
   });
 };

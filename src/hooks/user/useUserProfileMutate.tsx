@@ -27,6 +27,9 @@ const useUserProfileMutate = (
       queryClient.invalidateQueries({
         queryKey: ['profile', variables.userId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['insights', variables.userId],
+      });
     },
     onError: (error) => {
       toast.error('Something went wrong', {

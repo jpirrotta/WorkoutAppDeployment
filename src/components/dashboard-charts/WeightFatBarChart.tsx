@@ -106,7 +106,6 @@ export default function WeightFatBarChart() {
   }, [selectedYear, insightsData.chartData]);
 
   const { weightTrend, fatTrend } = calculateYearlyTrends(selectedYearData);
-  console.log("weight: ", userInsights);
 
   return (
     <Card className="w-full">

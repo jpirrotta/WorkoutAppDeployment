@@ -14,8 +14,6 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 export default function WorkoutTimeline() {
   const { data: userInsights } = useInsights();
 
-  console.log(userInsights?.workoutHistory);
-
   return (
     <ScrollArea className="w-full mb-5 whitespace-nowrap rounded-md border">
       {userInsights?.workoutHistory && (userInsights.workoutHistory.length > 0) ? (

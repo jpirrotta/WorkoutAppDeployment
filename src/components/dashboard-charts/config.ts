@@ -92,3 +92,11 @@ export const TotalExercisesChartConfig = {
     color: 'hsla(346.8, 77.2%, 49.8%, 0.95)',
   },
 } satisfies ChartConfig;
+
+export const LikesChartConfig = {
+
+}
+
+export const DownloadsChartConfig = {
+
+}

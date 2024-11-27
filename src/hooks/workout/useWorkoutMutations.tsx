@@ -236,6 +236,9 @@ export const useWorkoutHistorySave = (): UseMutationResult<
       queryClient.invalidateQueries({
         queryKey: ['workoutHistory', userId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ['insights', userId],
+      });
       logger.info('Workout history saved successfully');
       // toast.success(data.title, { description: data.message });
     },

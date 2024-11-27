@@ -105,90 +105,97 @@ export default function WeightFatBarChart() {
     return selectedYear ? insightsData.chartData[selectedYear] || [] : [];
   }, [selectedYear, insightsData.chartData]);
 
-  if (!userInsights) return null;
-
   const { weightTrend, fatTrend } = calculateYearlyTrends(selectedYearData);
+  console.log("weight: ", userInsights);
 
   return (
     <Card className="w-full">
-      <CardHeader className="flex flex-col sm:flex-row justify-between gap-3">
-        <div className="sm:space-y-2">
-          <div className="flex flex-row items-center justify-between gap-3">
-            <CardTitle>Weight & Fat</CardTitle>
-            <Select
-              defaultValue={`${selectedYear}`}
-              value={`${selectedYear}`}
-              onValueChange={(value) => setSelectedYear(Number(value))}
+      {userInsights?.weightHistory && (userInsights?.weightHistory.length > 0) ? (
+        <>
+          <CardHeader className="flex flex-col sm:flex-row justify-between gap-3">
+            <div className="sm:space-y-2">
+              <div className="flex flex-row items-center justify-between gap-3">
+                <CardTitle>Weight & Fat</CardTitle>
+                <Select
+                  defaultValue={`${selectedYear}`}
+                  value={`${selectedYear}`}
+                  onValueChange={(value) => setSelectedYear(Number(value))}
+                >
+                  <SelectTrigger className="w-[8rem] bg-card">
+                    <SelectValue placeholder="Select Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Year</SelectLabel>
+                      {insightsData.years.map((year) => (
+                        <SelectItem
+                          key={year}
+                          value={year.toString()}
+                          onClick={(val) => setSelectedYear(Number(val))}
+                        >
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              <CardDescription>Your Fat & Weight Yearly Forecast</CardDescription>
+            </div>
+            <div className="space-y-2">
+              <div className="flex gap-2 font-medium leading-none">
+                Fat is trending {fatTrend > 0 ? 'up' : 'down'} by{' '}
+                <span className={`${trendClass(fatTrend)} flex flex-row gap-2`}>
+                  {fatTrend}% {fatTrend > 0 ? <TrendingUp /> : <TrendingDown />}
+                </span>
+              </div>
+              <div className="flex gap-2 font-medium leading-none">
+                Weight is trending {weightTrend > 0 ? 'up' : 'down'} by{' '}
+                <span className={`${trendClass(weightTrend)} flex flex-row gap-2 `}>
+                  {' '}
+                  {weightTrend}%{' '}
+                  {weightTrend > 0 ? <TrendingUp /> : <TrendingDown />}
+                </span>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent id="card-pie" className="h-full">
+            <ChartContainer
+              config={WeightFatChartConfig}
+              className="min-h-[200px] h-full w-full"
             >
-              <SelectTrigger className="w-[8rem] bg-card">
-                <SelectValue placeholder="Select Year" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Year</SelectLabel>
-                  {insightsData.years.map((year) => (
-                    <SelectItem
-                      key={year}
-                      value={year.toString()}
-                      onClick={(val) => setSelectedYear(Number(val))}
-                    >
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <CardDescription>Your Fat & Weight Yearly Forecast</CardDescription>
+              <BarChart
+                accessibilityLayer
+                data={selectedYearData}
+                margin={{ bottom: screenSize.width > 1280 ? 120 : 0 }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartLegend content={<ChartLegendContent />} />
+                <Bar
+                  dataKey="weight"
+                  className="rounded-3xl "
+                  fill="var(--color-weight)"
+                  radius={4}
+                />
+                <Bar dataKey="fat" fill="var(--color-fat)" radius={4} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+          <CardFooter className="flex-col items-start gap-2 text-sm"></CardFooter>
+        </>
+      ) : (
+        <div id="no-data" className="flex w-full items-center justify-center">
+          <p className="text-lg">Begin tracking your weight to see data here</p>
         </div>
-        <div className="space-y-2">
-          <div className="flex gap-2 font-medium leading-none">
-            Fat is trending {fatTrend > 0 ? 'up' : 'down'} by{' '}
-            <span className={`${trendClass(fatTrend)} flex flex-row gap-2`}>
-              {fatTrend}% {fatTrend > 0 ? <TrendingUp /> : <TrendingDown />}
-            </span>
-          </div>
-          <div className="flex gap-2 font-medium leading-none">
-            Weight is trending {weightTrend > 0 ? 'up' : 'down'} by{' '}
-            <span className={`${trendClass(weightTrend)} flex flex-row gap-2 `}>
-              {' '}
-              {weightTrend}%{' '}
-              {weightTrend > 0 ? <TrendingUp /> : <TrendingDown />}
-            </span>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent id="card-pie" className="h-full">
-        <ChartContainer
-          config={WeightFatChartConfig}
-          className="min-h-[200px] h-full w-full"
-        >
-          <BarChart
-            accessibilityLayer
-            data={selectedYearData}
-            margin={{ bottom: screenSize.width > 1280 ? 120 : 0 }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <ChartLegend content={<ChartLegendContent />} />
-            <Bar
-              dataKey="weight"
-              className="rounded-3xl "
-              fill="var(--color-weight)"
-              radius={4}
-            />
-            <Bar dataKey="fat" fill="var(--color-fat)" radius={4} />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm"></CardFooter>
+      )}
     </Card>
   );
 }

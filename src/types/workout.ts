@@ -75,7 +75,7 @@ export type BaseWorkout = {
   public: boolean;
   postDate?: Date;
   likes: {
-    userId: String, 
+    userId: string, 
     date: Date,
   }[];
   comments: {
@@ -86,7 +86,7 @@ export type BaseWorkout = {
     _id: mongoose.Types.ObjectId & string;
   }[];
   saves:  {
-    userId: String, 
+    userId: string, 
     date: Date,
   }[];
 };

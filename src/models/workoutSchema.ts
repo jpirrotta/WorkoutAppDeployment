@@ -86,8 +86,9 @@ const workoutSchema = new Schema<WorkoutDocument>({
   },
   likes: [
     {
-      type: String
-    }
+      userId: String, 
+      date: Date,
+    },
   ],
   comments: [
     {
@@ -97,7 +98,8 @@ const workoutSchema = new Schema<WorkoutDocument>({
   ],
   saves: [
     {
-      type: String
+      userId: String, 
+      date: Date,
     },
   ],
 });

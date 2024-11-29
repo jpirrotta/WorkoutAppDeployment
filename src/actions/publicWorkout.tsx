@@ -56,8 +56,10 @@ export async function addLikePublicWorkout(
           workouts: { $elemMatch: { _id: workoutId } },
         },
         {
-          $addToSet: { 'workouts.$.likes': user.userId },
-        }
+          $addToSet: { 'workouts.$.likes': { 
+            userId: user.userId }
+          }
+        },
       );
       logger.info(result);
       return true;
@@ -165,8 +167,8 @@ export async function addCommentPublicWorkout(
         },
         {
           $addToSet: {
-            'workouts.$.comments': { text: commentText, userId: user.userId },
-          },
+            'workouts.$.comments': { userId: user.userId, text: commentText },
+          }
         }
       );
       logger.info(result);
@@ -284,8 +286,10 @@ export async function addSavePublicWorkout(
         workouts: { $elemMatch: { _id: workoutToBeSaved._id } },
       },
       {
-        $addToSet: { 'workouts.$.saves': user.userId },
-      }
+        $addToSet: { 
+          'workouts.$.saves': { userId: user.userId, date: new Date() } 
+        }
+      },
     );
     if (workoutResult.modifiedCount > 0) {
       logger.info("User's ID successfully added to workout's saves list");

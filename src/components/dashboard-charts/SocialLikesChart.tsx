@@ -23,7 +23,7 @@ export default function SocialLikesChart() {
   const { data: userWorkouts } = useGetAllWorkouts();
 
   const extractLikesAcrossTime = () => {
-    const likesData: string[] = [];
+    const likesData: {userId: String, date: Date}[] = [];
 
     userWorkouts?.forEach((workout: Workout) => {
       if (workout.likes.length > 0) {

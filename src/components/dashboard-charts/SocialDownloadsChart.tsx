@@ -23,7 +23,7 @@ export default function SocialDownloadsChart() {
   const { data: userWorkouts } = useGetAllWorkouts();
 
   const extractDownloadsAcrossTime = () => {
-    const savesData: string[] = [];
+    const savesData: {userId: String, date: Date}[] = [];
 
     userWorkouts?.forEach((workout: Workout) => {
       if (workout.saves.length > 0) {

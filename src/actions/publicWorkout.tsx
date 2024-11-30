@@ -50,18 +50,38 @@ export async function addLikePublicWorkout(
       );
     } else {
       logger.info(`Workout owner ${workoutOwner.name} found`);
+    }
+
+    // Check if userId already exists in the saves array
+    const existingLike = await UserModel.findOne({
+      userId: workoutOwner.userId,
+      'workouts._id': workoutId,
+      'workouts.likes.userId': userId,
+    });
+
+    if (existingLike) {
+      logger.info("User has already liked this workout. Their ID has not been added to the workout's likes list");
+    } else {
+      // Add userId to workout's saves list if they have not saved it before
       const result = await UserModel.updateOne(
         {
           userId: workoutOwner.userId,
           workouts: { $elemMatch: { _id: workoutId } },
         },
         {
-          $addToSet: { 'workouts.$.likes': user.userId },
-        }
+          $push: { 
+            'workouts.$.likes': { userId: user.userId, date: new Date() }
+          }
+        },
       );
-      logger.info(result);
-      return true;
+      if (result.modifiedCount > 0) {
+        logger.info("User's ID successfully added to workout's likes list");
+      } else {
+        logger.info("Error saving user's ID to workout's likes list");
+      }
     }
+    
+    return true;
   } catch (error) {
     logger.error(`Error: ${error}`);
     throw new Error('Internal server error');
@@ -100,7 +120,7 @@ export async function removeLikePublicWorkout(
       throw new Error(
         'we could not find the user who owns this workout, please try again later'
       );
-    } else {
+    } else {  // Else remove the like from the workout
       logger.info(`Workout owner ${workoutOwner.name} found`);
       const result = await UserModel.updateOne(
         {
@@ -108,7 +128,7 @@ export async function removeLikePublicWorkout(
           workouts: { $elemMatch: { _id: workoutId } },
         },
         {
-          $pull: { 'workouts.$.likes': user.userId },
+          $pull: { 'workouts.$.likes': { userId: user.userId } },
         }
       );
       logger.info(result);
@@ -165,8 +185,8 @@ export async function addCommentPublicWorkout(
         },
         {
           $addToSet: {
-            'workouts.$.comments': { text: commentText, userId: user.userId },
-          },
+            'workouts.$.comments': { userId: user.userId, text: commentText },
+          }
         }
       );
       logger.info(result);
@@ -277,90 +297,39 @@ export async function addSavePublicWorkout(
     }
 
 
-    // Add userId to workout's saves list if they have not saved it before
-    const workoutResult = await UserModel.updateOne(
-      {
-        userId: workoutOwner.userId,
-        workouts: { $elemMatch: { _id: workoutToBeSaved._id } },
-      },
-      {
-        $addToSet: { 'workouts.$.saves': user.userId },
-      }
-    );
-    if (workoutResult.modifiedCount > 0) {
-      logger.info("User's ID successfully added to workout's saves list");
+    // Check if userId already exists in the saves array
+    const existingSave = await UserModel.findOne({
+      userId: workoutOwner.userId,
+      'workouts._id': workoutToBeSaved._id,
+      'workouts.saves.userId': userId,
+    });
+
+    if (existingSave) {
+      logger.info("User has already saved this workout. Their ID has not been added to the workout\'s saves list");
     } else {
-      logger.info("User has already saved this workout. Their ID has not be added to the workout's saves list");
+      // Add userId to workout's saves list if they have not saved it before
+      const result = await UserModel.updateOne(
+        {
+          userId: workoutOwner.userId,
+          workouts: { $elemMatch: { _id: workoutToBeSaved._id } },
+        },
+        {
+          $push: { 
+            'workouts.$.saves': { userId: user.userId, date: new Date() } 
+          }
+        },
+      );
+
+      if (result.modifiedCount > 0) {
+        logger.info("User's ID successfully added to workout's saves list");
+      } else {
+        logger.info("Error saving user's ID to workout's saves list");
+      }
     }
+
     return true;
   } catch (error) {
     logger.error(`Error: ${error}`);
     return Error(`${error}`);
-  }
-}
-
-export async function removeSavePublicWorkout(
-  userId: string,
-  workoutId: string
-): Promise<boolean> {
-  try {
-    logger.info('removeSavePublicWorkout server action called');
-    await dbConnect();
-
-    // find who is unsaving the workout
-    let user = await UserModel.findOne({ userId: userId });
-
-    // If the user is not found return an error
-    if (!user) {
-      logger.error('User who unsaved the workout not found');
-      throw new Error(
-        'we could not find your profile, please try again or contact support'
-      );
-    } else {
-      logger.info(`User ${user.name} found`);
-    }
-
-    // find the owner of the workout
-    let workoutOwner: UserDocument | null = await UserModel.findOne({
-      workouts: { $elemMatch: { _id: workoutId } },
-    });
-
-    // If the workoutOwner is not found return an error
-    if (!workoutOwner) {
-      logger.error(`Workout owner not found`);
-      throw new Error(
-        'we could not find the user who owns this workout, please try again later'
-      );
-    } else {
-      logger.info(`Workout owner ${workoutOwner.name} found`);
-    }
-
-    // Remove userId from workout's saves list
-    const workoutResult = await UserModel.updateOne(
-      {
-        userId: workoutOwner.userId,
-        workouts: { $elemMatch: { _id: workoutId } },
-      },
-      {
-        $pull: { 'workouts.$.saves': user.userId },
-      }
-    );
-    logger.info(workoutResult);
-
-    // Remove workoutId from user's savedWorkouts list
-    const userResult = await UserModel.updateOne(
-      {
-        userId: user.userId,
-      },
-      {
-        $pull: { savedWorkouts: workoutId },
-      }
-    );
-    logger.info(userResult);
-
-    return true;
-  } catch (error) {
-    logger.error(`Error: ${error}`);
-    throw new Error('Internal server error');
   }
 }

@@ -74,7 +74,10 @@ export type BaseWorkout = {
   exercises: Exercise[];
   public: boolean;
   postDate?: Date;
-  likes: string[];
+  likes: {
+    userId: string, 
+    date: Date,
+  }[];
   comments: {
     text: string;
     userId: string;
@@ -82,7 +85,10 @@ export type BaseWorkout = {
     pfpImageUrl: string;
     _id: mongoose.Types.ObjectId & string;
   }[];
-  saves: string[];
+  saves:  {
+    userId: string, 
+    date: Date,
+  }[];
 };
 
 // Extend BaseWorkout with Document for MongoDB operations

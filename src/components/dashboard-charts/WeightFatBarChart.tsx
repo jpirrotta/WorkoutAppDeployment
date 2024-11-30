@@ -106,7 +106,6 @@ export default function WeightFatBarChart() {
   }, [selectedYear, insightsData.chartData]);
 
   const { weightTrend, fatTrend } = calculateYearlyTrends(selectedYearData);
-  console.log("weight: ", userInsights);
 
   return (
     <Card className="w-full">
@@ -192,9 +191,14 @@ export default function WeightFatBarChart() {
           <CardFooter className="flex-col items-start gap-2 text-sm"></CardFooter>
         </>
       ) : (
-        <div id="no-data" className="flex w-full items-center justify-center">
-          <p className="text-lg">Begin tracking your weight to see data here</p>
-        </div>
+        <>
+          <CardHeader className="flex flex-row justify-center">
+            <CardTitle>Weight & Fat</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-lg">Update your profile to see weight and fat forecast here</p>
+          </CardContent>
+        </>
       )}
     </Card>
   );

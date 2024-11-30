@@ -94,9 +94,15 @@ export const TotalExercisesChartConfig = {
 } satisfies ChartConfig;
 
 export const LikesChartConfig = {
-
-}
+  likes: {
+    label: 'Likes',
+    color: 'hsl(var(--primary))',
+  },
+} satisfies ChartConfig;
 
 export const DownloadsChartConfig = {
-
-}
+  saves: {
+    label: 'Saves',
+    color: 'hsl(var(--primary))',
+  },
+} satisfies ChartConfig;

@@ -102,7 +102,7 @@ export const LikesChartConfig = {
 
 export const DownloadsChartConfig = {
   saves: {
-    label: 'Saves',
+    label: 'Downloads',
     color: 'hsl(var(--primary))',
   },
 } satisfies ChartConfig;

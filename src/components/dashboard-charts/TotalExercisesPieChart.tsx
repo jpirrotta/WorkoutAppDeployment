@@ -133,9 +133,14 @@ export default function TotalExercisesPieChart() {
           </CardFooter>
         </>
       ) : (
-        <div id="no-data" className="flex w-full items-center justify-center">
-          <p className="text-lg">Workout to see your exercise chart here</p>
-        </div>
+        <>
+          <CardHeader className="flex flex-row justify-center">
+            <CardTitle>Exercise Muscle Group Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-lg">Play a workout to see muscle group distrubution across exercises here</p>
+          </CardContent>
+        </>
       )}
     </Card>
   );

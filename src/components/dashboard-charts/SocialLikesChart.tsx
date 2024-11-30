@@ -128,76 +128,81 @@ export default function SocialLikesChart() {
 
   return (
     <Card className="flex flex-col w-full">
-      <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <CardTitle className="flex-1 text-center">Likes Activity Timeline</CardTitle>
-        { hasLikesAboveZero && ( 
-          <Select
-            defaultValue={`${selectedYear}`}
-            value={`${selectedYear}`}
-            onValueChange={(value) => setSelectedYear(Number(value))}
-          >
-            <SelectTrigger className="w-[8rem] ml:auto bg-card">
-              <SelectValue placeholder="Select Year" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Year</SelectLabel>
-                {Object.keys(likesByYear).map((year) => (
-                  <SelectItem
-                    key={year}
-                    value={year.toString()}
-                    onClick={(val) => setSelectedYear(Number(val))}
-                  >
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        )}
-        <CardDescription></CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1">
-        { hasLikesAboveZero ? ( 
-          <ChartContainer
-            config={LikesChartConfig}
-            className="mx-auto aspect-square max-h-[40rem] pb-0"
-          >
-            <BarChart
-              accessibilityLayer
-              data={selectedYearData}
+      { hasLikesAboveZero ? (
+        <>
+          <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <CardTitle className="flex-1 text-center">Likes Activity Timeline</CardTitle>
+              <Select
+                defaultValue={`${selectedYear}`}
+                value={`${selectedYear}`}
+                onValueChange={(value) => setSelectedYear(Number(value))}
+              >
+                <SelectTrigger className="w-[8rem] ml:auto bg-card">
+                  <SelectValue placeholder="Select Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Year</SelectLabel>
+                    {Object.keys(likesByYear).map((year) => (
+                      <SelectItem
+                        key={year}
+                        value={year.toString()}
+                        onClick={(val) => setSelectedYear(Number(val))}
+                      >
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            <CardDescription></CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1">
+            <ChartContainer
+              config={LikesChartConfig}
+              className="mx-auto aspect-square max-h-[40rem] pb-0"
             >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={true}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
-              <YAxis
-                tickLine={false}
-                tickMargin={10}
-                axisLine={true}
-                allowDecimals={false}
-                domain={[0, maxLikes]}
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Bar
-                dataKey="likes"
-                className="rounded-3xl "
-                fill="var(--color-likes)"
-                radius={4}
-              />
-            </BarChart>
-          </ChartContainer>
-        ) : (
-          <div className="flex w-full items-center justify-center">
-            <p className="text-lg">Publish a workout to start recieving likes and see them here</p>
-          </div>
-        )}
-      </CardContent>
+              <BarChart
+                accessibilityLayer
+                data={selectedYearData}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={true}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <YAxis
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={true}
+                  allowDecimals={false}
+                  domain={[0, maxLikes]}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartLegend content={<ChartLegendContent />} />
+                <Bar
+                  dataKey="likes"
+                  className="rounded-3xl "
+                  fill="var(--color-likes)"
+                  radius={4}
+                />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </> 
+      ) : (
+        <>
+          <CardHeader className="flex flex-row justify-center">
+            <CardTitle>Likes Activity Timeline</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-lg">Publish a workout to start receiving likes and see them here</p>
+          </CardContent>
+        </>
+      )}
     </Card>
   );
 }

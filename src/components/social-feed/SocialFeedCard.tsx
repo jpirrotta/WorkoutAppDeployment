@@ -113,8 +113,8 @@ export default function SocialWorkoutCard({
       console.error('Workout is null or undefined');
       return;
     }
-    if (workout.likes?.includes(userId)) {
-      console.error('User already liked the workout');
+    if (workout.likes?.some(like => like.userId === userId)) {
+      console.error('User has already likes the workout');
       return;
     }
 
@@ -128,7 +128,8 @@ export default function SocialWorkoutCard({
       console.error('Workout is null or undefined');
       return;
     }
-    if (!workout.likes?.includes(userId)) {
+
+    if (!workout.likes?.some(like => like.userId === userId)) {
       console.error('User has not liked the workout, so it cannot be unliked');
       return;
     }
@@ -256,11 +257,11 @@ export default function SocialWorkoutCard({
         </Carousel>
 
         <div className="flex flex-row w-full justify-between items-center">
-          {/*Like workout and like counter*/}
-          <div className="flex flex-row gap-4 items-center">
-            <div>
-              {workout.likes.includes(userId) ? (
-                <Heart size={32}
+            {/*Like workout and like counter*/}
+            <div className="flex flex-row gap-4 items-center">
+              <div>
+                {workout.likes.some(like => like.userId === userId) ? (
+                  <Heart size={32}
                   className="text-primary fill-current hover:cursor-pointer"
                   onClick={handleUnlikeWorkout} />
               ) : (

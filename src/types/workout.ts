@@ -24,6 +24,14 @@ export type FlatSets = z.infer<typeof playerFormSchema>['sets'];
 
 export type Sets = z.infer<typeof exerciseSetsSchema>['sets'];
 
+//exercise filters
+export type ExerciseFilters = {
+  bodyPart?: string[];
+  target?: string[];
+  equipment?: string[];
+  secondaryMuscles?: string[];
+};
+
 export type Exercise = {
   _id?: string;
   id: string;
@@ -73,7 +81,10 @@ export type BaseWorkout = {
   exercises: workoutExercise[];
   public: boolean;
   postDate?: Date;
-  likes: string[];
+  likes: {
+    userId: string, 
+    date: Date,
+  }[];
   comments: {
     text: string;
     userId: string;
@@ -81,7 +92,10 @@ export type BaseWorkout = {
     pfpImageUrl: string;
     _id: mongoose.Types.ObjectId & string;
   }[];
-  saves: string[];
+  saves:  {
+    userId: string, 
+    date: Date,
+  }[];
 };
 
 // Extend BaseWorkout with Document for MongoDB operations

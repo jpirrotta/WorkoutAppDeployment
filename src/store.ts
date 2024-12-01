@@ -1,4 +1,4 @@
-import { atom, useSetAtom } from 'jotai';
+import { atom } from 'jotai';
 import { type BMI, type User, type Exercise, type Sets } from '@/types';
 import { atomWithStorage } from 'jotai/utils';
 import { type CarouselApi } from './components/ui/carousel';
@@ -80,3 +80,9 @@ export const selectedExercisesAtom = atom<Exercise[]>([]);
 
 // selected workout index
 export const selectedWorkoutIndexAtom = atom<number | null>(0);
+
+// missing sets workout Id's atom
+export const setsMissingExerciseAtom = atom<string[] | null>(null);
+
+// exercises atom
+export const exercisesAtom = atom<Exercise[]>([]);

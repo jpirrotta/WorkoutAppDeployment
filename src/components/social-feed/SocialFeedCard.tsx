@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logger from '@/lib/logger';
 
 // Types
@@ -18,11 +18,12 @@ import {
 
 // Components
 import { Button } from '../ui/button';
-import { Card, 
-  CardContent, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle
 } from '@/components/ui/card';
 import {
   Popover,
@@ -40,6 +41,7 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { toast } from 'sonner';
+import { useExercises } from '@/utils/fetchData';
 
 interface SocialWorkoutCardProps {
   userId: string;
@@ -68,6 +70,41 @@ export default function SocialWorkoutCard({
 
   const [commentPopoverVisible, setCommentPopoverVisible] = useState<string | null>(null); //State to manage comment popover visibility
   const [savePopoverVisible, setSavePopoverVisible] = useState(false); //State to manage comment popover visibility
+
+  const { data: allExercises, error } = useExercises();
+  const [workoutExercises, setWorkoutExercises] = useState<Exercise[]>([]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error('Seems like there was an issue getting your Exercises :(', {
+        description: error.message,
+      });
+    }
+
+    if (allExercises) {
+      logger.info(`Fetched ${allExercises.length} exercises`);
+
+      // filter the exercises that are in the workout
+      const filteredExercises = workout.exercises.map((exercise) => {
+        // overriding the exercise we are finding since we are sure that it exists
+        const workoutExe = allExercises.find((e) => e.id === exercise.id)!;
+
+        return {
+          _id: exercise._id,
+          ...workoutExe,
+          sets: exercise?.sets || [],
+        }
+      })
+
+      if (filteredExercises.length > 0) {
+        setWorkoutExercises(filteredExercises);
+      }
+      else {
+        logger.error(`No exercises found in the workout`);
+      }
+    }
+  }
+    , [error, allExercises, workout.exercises]);
 
   // Mutation handling ---------------------------------------
   const handleLikeWorkout = async () => {
@@ -130,13 +167,13 @@ export default function SocialWorkoutCard({
       return;
     }
     setSavePopoverVisible(false);
-    mutateSave.mutate({ userId, workout, page, itemsPerPage }, { 
+    mutateSave.mutate({ userId, workout, page, itemsPerPage }, {
       onSuccess: (data) => {
         if (data) {
           console.log('Workout saved successfully');
           toast.success('Successfully saved workout', {
-              description: 'You can view the workout in your library',
-            });
+            description: 'You can view the workout in your library',
+          });
           return;
         }
         else {
@@ -194,7 +231,7 @@ export default function SocialWorkoutCard({
         <div className="flex flex-row gap-x-2 items-center justify-between">
           <div className="flex flex-row gap-x-2 items-center">
             <Avatar>
-              <AvatarImage src={workout.ownerPfpImageUrl} alt="profile picture"/>  
+              <AvatarImage src={workout.ownerPfpImageUrl} alt="profile picture" />
             </Avatar>
             <h1>{workout.ownerName}</h1>
           </div>
@@ -208,9 +245,9 @@ export default function SocialWorkoutCard({
       <CardContent className="pb-2 ">
         <Carousel className="ml-8 mr-8">
           <CarouselContent>
-            {workout.exercises?.map((exercise: Exercise) => (
+            {workoutExercises?.map((exercise: Exercise) => (
               <CarouselItem key={exercise.id} className="text-center">
-                <Image src={exercise.gifUrl} alt={exercise.name} width="350" height="350" className="rounded-lg mx-auto" unoptimized/>
+                <Image src={exercise.gifUrl} alt={exercise.name} width="350" height="350" className="rounded-lg mx-auto" unoptimized />
                 <h1>{capitalizeFirstLetterOfEachWord(exercise.name)}</h1>
               </CarouselItem>
             ))}
@@ -226,38 +263,38 @@ export default function SocialWorkoutCard({
                 {workout.likes.some(like => like.userId === userId) ? (
                   <Heart size={32}
                   className="text-primary fill-current hover:cursor-pointer"
-                  onClick={handleUnlikeWorkout}/>
-                ) : (
-                  <Heart size={32}
-                  className="text-primary hover:cursor-pointer"
-                  onClick={handleLikeWorkout}/>
-                )}
-              </div>
-              <p className="text-black dark:text-white">{workout.likes.length}</p>
-            </div>
-
-            {/*Save workout and save counter*/}
-            <div className="flex flex-row gap-4 items-center">
-              {/*Display functional save workout button if the workout does not belong to the current user, otherwise display download icon with no functionality*/}
-              {workout.ownerId != userId ? (
-                <Popover open={savePopoverVisible} onOpenChange={setSavePopoverVisible}>
-                <PopoverTrigger onClick={() => workout.ownerId != userId && setSavePopoverVisible(true)}>
-                  <Download size={32} color="gray"/>
-                </PopoverTrigger>
-                  <PopoverContent>
-                    <p className="text-center pb-4">Save workout to library?</p>
-                    <section className="flex flex-row justify-center gap-6">
-                      <Button variant="secondary" onClick={() => setSavePopoverVisible(false)}> Cancel </Button>
-                      <Button variant="default" onClick={() => handleSaveWorkout()}> Confirm </Button>
-                    </section>
-                  </PopoverContent>
-                </Popover>
+                  onClick={handleUnlikeWorkout} />
               ) : (
-                <Download size={32} color="gray"/>
+                <Heart size={32}
+                  className="text-primary hover:cursor-pointer"
+                  onClick={handleLikeWorkout} />
               )}
-              <p className="text-black dark:text-white">{workout.saves.length}</p>
             </div>
-          </div>      
+            <p className="text-black dark:text-white">{workout.likes.length}</p>
+          </div>
+
+          {/*Save workout and save counter*/}
+          <div className="flex flex-row gap-4 items-center">
+            {/*Display functional save workout button if the workout does not belong to the current user, otherwise display download icon with no functionality*/}
+            {workout.ownerId != userId ? (
+              <Popover open={savePopoverVisible} onOpenChange={setSavePopoverVisible}>
+                <PopoverTrigger onClick={() => workout.ownerId != userId && setSavePopoverVisible(true)}>
+                  <Download size={32} color="gray" />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p className="text-center pb-4">Save workout to library?</p>
+                  <section className="flex flex-row justify-center gap-6">
+                    <Button variant="secondary" onClick={() => setSavePopoverVisible(false)}> Cancel </Button>
+                    <Button variant="default" onClick={() => handleSaveWorkout()}> Confirm </Button>
+                  </section>
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <Download size={32} color="gray" />
+            )}
+            <p className="text-black dark:text-white">{workout.saves.length}</p>
+          </div>
+        </div>
       </CardContent>
 
       {/*Comments*/}
@@ -265,32 +302,32 @@ export default function SocialWorkoutCard({
         <button onClick={toggleCommentsVisibility} className="font-style: italic text-gray-500 hover:underline">
           {commentsVisible ? 'Hide Comments' : 'View Comments'}
         </button>
-        
+
         {commentsVisible && (
           <div className="mt-4">
             {/*Display comments*/}
             {workout.comments?.map((comment, index) => (
               <section key={index} className="flex flex-row mb-2 gap-2 items-center text-black dark:text-white">
                 <Avatar className="h-7 w-7 self-start ml-1 mt-1">
-                  <AvatarImage src={comment.pfpImageUrl} alt="profile picture"/>  
+                  <AvatarImage src={comment.pfpImageUrl} alt="profile picture" />
                 </Avatar>
                 <div className="flex flex-col">
-                  <p className="text-xs font-bold" style={{overflowWrap: 'anywhere'}}>{comment.name}</p>
-                  <p className="text-sm font-normal" style={{overflowWrap: 'anywhere'}}>{comment.text}</p>
+                  <p className="text-xs font-bold" style={{ overflowWrap: 'anywhere' }}>{comment.name}</p>
+                  <p className="text-sm font-normal" style={{ overflowWrap: 'anywhere' }}>{comment.text}</p>
                 </div>
                 {/*Display delete comment button if the comment belongs to the current user*/}
-                {(comment.userId == userId || workout.ownerId == userId) && 
+                {(comment.userId == userId || workout.ownerId == userId) &&
                   <Popover open={commentPopoverVisible == comment._id.toString()} onOpenChange={(open) => setCommentPopoverVisible(open ? comment._id.toString() : null)}>
                     <PopoverTrigger className="ml-auto mt-2 self-start" onClick={() => setCommentPopoverVisible(comment._id)}>
-                      <Trash size={16}/>
+                      <Trash size={16} />
                     </PopoverTrigger>
-                      <PopoverContent>
-                        <p className="text-center pb-4">Are you sure you want to delete this comment?</p>
-                        <section className="flex flex-row justify-center gap-6">
-                          <Button variant="secondary" onClick={() => setCommentPopoverVisible(null)}> Cancel </Button>
-                          <Button variant="default" onClick={() => handleDeleteComment(comment._id.toString())}> Confirm </Button>
-                        </section>
-                      </PopoverContent>
+                    <PopoverContent>
+                      <p className="text-center pb-4">Are you sure you want to delete this comment?</p>
+                      <section className="flex flex-row justify-center gap-6">
+                        <Button variant="secondary" onClick={() => setCommentPopoverVisible(null)}> Cancel </Button>
+                        <Button variant="default" onClick={() => handleDeleteComment(comment._id.toString())}> Confirm </Button>
+                      </section>
+                    </PopoverContent>
                   </Popover>
                 }
               </section>
@@ -298,10 +335,10 @@ export default function SocialWorkoutCard({
 
             {/*Add comment form*/}
             <form className="flex flex-row gap-2" onSubmit={(e) => {
-                e.preventDefault(); // Prevent the default form submission behavior
-                handleCommentWorkout();
-                setCommentText(''); //Clear the input field after submission
-              }}>
+              e.preventDefault(); // Prevent the default form submission behavior
+              handleCommentWorkout();
+              setCommentText(''); //Clear the input field after submission
+            }}>
 
               <div className="relative flex-grow">
                 <Input
@@ -310,15 +347,15 @@ export default function SocialWorkoutCard({
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder="Add a comment"
                   className="input-class pr-10 text-black dark:text-white"
-                  required 
+                  required
                 />
                 <button type="submit" className="absolute right-0 top-0 mt-2 mr-2 hover:cursor-pointer">
-                  <SendHorizontal size={26} color="red"/>
+                  <SendHorizontal size={26} color="red" />
                 </button>
               </div>
             </form>
           </div>
-        )}  
+        )}
       </CardFooter>
     </Card>
   );

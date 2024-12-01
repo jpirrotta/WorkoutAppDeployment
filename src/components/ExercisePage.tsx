@@ -23,11 +23,10 @@ type ExercisePageProps = {
     title?: string;
     navbarFlag?: boolean;
     workoutFlag?: boolean;
-    className?: string;
     workout?: Workout;
 };
 
-export default function ExercisePage({ title = 'Our Exercises!', workout, workoutFlag = false, navbarFlag = true, className }: ExercisePageProps) {
+export default function ExercisePage({ title = 'Our Exercises!', workout, workoutFlag = false, navbarFlag = true }: ExercisePageProps) {
     const [searchQuery, setSearchQuery] = useState<string>();
     const [limit, setLimit] = useState(6);
     const [filteredExercises, setFilteredExercises] = useState<Exercise[]>();

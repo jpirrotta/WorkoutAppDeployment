@@ -1,7 +1,6 @@
 'use client';
 import ExerciseCard from './ExerciseCard';
 import { Exercise } from '@/types';
-import { cn } from '@/lib/utils';
 
 interface ExerciseCardsProps {
   readonly exercises: Exercise[];

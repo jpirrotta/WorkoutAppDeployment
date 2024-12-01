@@ -81,4 +81,8 @@ export const selectedExercisesAtom = atom<Exercise[]>([]);
 // selected workout index
 export const selectedWorkoutIndexAtom = atom<number | null>(0);
 
+// missing sets workout Id's atom
 export const setsMissingExerciseAtom = atom<string[] | null>(null);
+
+// exercises atom
+export const exercisesAtom = atom<Exercise[]>([]);

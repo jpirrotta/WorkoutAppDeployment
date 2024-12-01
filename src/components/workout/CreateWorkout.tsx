@@ -39,7 +39,8 @@ const CreateWorkout = () => {
         // data prep for creating new workout
         const workoutData: NewWorkout = {
             name: workoutName,
-            exercises: selectedExercises || [],
+            // assign id's of selected exercises to exercises: selectedExercises.
+            exercises: selectedExercises.map((e) => ({ id: e.id, sets: [] })) || [],
             public: isPublic,
             postDate: isPublic ? new Date() : new Date(0), // set post date to current date & time if public, or set it to epoch time (representing empty date) if private
             likes: [],

@@ -1,7 +1,7 @@
 // src/components/workout/MyWorkout.jsx
 'use client';
 // react and next imports
-import { FC, memo, useRef, useState } from 'react';
+import { FC, memo, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import logger from '@/lib/logger';
@@ -45,11 +45,12 @@ import { toast } from 'sonner';
 
 // method and component imports
 import { truncateText } from '@/utils/trucateText';
-import { Exercise, Workout } from '@/types';
+import { Exercise, Sets, Workout } from '@/types';
 import ExerciseCards from '../ExerciseCards';
 import ExercisePage from '../ExercisePage';
-import { useAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { setsMissingExerciseAtom } from '@/store';
+import { useExercises } from '@/utils/fetchData';
 
 type MyWorkoutProps = {
   workout: Workout;
@@ -61,8 +62,41 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
   const addExerciseSectionRef = useRef<HTMLDivElement>(null);
   const [deleteExeDialogOpen, setDeleteExeDialogOpen] = useState(false);
   const [missingSetsDialogOpen, setMissingSetsDialogOpen] = useState(false);
-  const [exerciseAccordionStatus, setExerciseAccordionStatus] = useState<'exeOpen' | ''>('');
-  const [setsMissingExercise, setSetsMissingExercise] = useAtom(setsMissingExerciseAtom);
+  const setSetsMissingExercise = useSetAtom(setsMissingExerciseAtom);
+  const [workoutExercises, setWorkoutExercises] = useState<Exercise[]>([]);
+  const { data: allExercises, error } = useExercises();
+
+  useEffect(() => {
+    if (error) {
+      toast.error('Seems like there was an issue getting your Exercises :(', {
+        description: error.message,
+      });
+    }
+
+    if (allExercises) {
+      logger.info(`Fetched ${allExercises.length} exercises`);
+
+      // filter the exercises that are in the workout
+      const filteredExercises = workout.exercises.map((exercise) => {
+        // overriding the exercise we are finding since we are sure that it exists
+        const workoutExe = allExercises.find((e) => e.id === exercise.id)!;
+
+        return {
+          _id: exercise._id,
+          ...workoutExe,
+          sets: exercise?.sets || [],
+        }
+      })
+
+      if (filteredExercises.length > 0) {
+        setWorkoutExercises(filteredExercises);
+      }
+      else {
+        logger.error(`No exercises found in the workout`);
+      }
+    }
+  }
+    , [error, allExercises, workout.exercises]);
 
   // mutation hooks
   const workoutDeleteMutation = useWorkoutDelete();
@@ -77,15 +111,13 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
 
   const handlePlayWorkout = () => {
     // check if all the exercises have sets data to play current workout, if not, show an alert and point out those exercises
-    const workoutExercises = workout.exercises;
-    const exerciseIds = workoutExercises
-      .filter((exercise) => !exercise.sets.length)
+    const exerciseIds = workout.exercises
+      .filter((exercise) => exercise.sets?.length < 1)
       .map((exercise) => exercise._id!.toString());
 
-    if (exerciseIds) {
-      logger.error(`Sets missing in one or more exercises: ${exerciseIds}`);
+    if (exerciseIds.length > 0) {
+      logger.error(`Sets missing in one or more exercises: ${exerciseIds.length}`);
       toast.error('Sets missing in one or more exercises');
-      setExerciseAccordionStatus('exeOpen');
       setSetsMissingExercise(exerciseIds);
       setMissingSetsDialogOpen(true);
       return;
@@ -102,7 +134,7 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
       },
       {
         onSuccess: () => {
-          const updatedExercises = workout.exercises.filter(
+          const updatedExercises = workoutExercises.filter(
             (e) => e._id!.toString() !== exercise._id!.toString()
           );
         },
@@ -254,8 +286,8 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
   });
 
   const ExerciseExistingList = () => (
-    <Accordion type="single" defaultValue='exeOpen' collapsible className="w-full">
-      <AccordionItem value={exerciseAccordionStatus}>
+    <Accordion type="single" defaultValue='existing-accor' collapsible className="w-full">
+      <AccordionItem value='existing-accor'>
         <AccordionTrigger className={`border border-gray-500 rounded-xl px-2`}>
           <div className={`flex items-center justify-between space-x-4 px-4`}>
             <h4 className="text-primary md:text-2xl">Existing Exercise List</h4>
@@ -264,7 +296,7 @@ const MyWorkout: FC<MyWorkoutProps> = ({ workout, setWorkout }) => {
         <AccordionContent>
           <div className="mt-10">
             <ExerciseCards
-              exercises={workout.exercises}
+              exercises={workoutExercises}
               closeIcon={generateCloseIcon}
             />
           </div>

@@ -59,11 +59,18 @@ export type WorkoutHistory = {
   exercises: ExerciseHistory[];
 };
 
+// Base type that represents the structure of a workout exercise for db since we will fetch exercise at time of usage based on id
+export type workoutExercise = {
+  _id?: string;
+  id: string;
+  sets: Sets;
+}
+
 // Base type that represents the structure of a workout (without Document)
 export type BaseWorkout = {
   _id?: string;
   name: string;
-  exercises: Exercise[];
+  exercises: workoutExercise[];
   public: boolean;
   postDate?: Date;
   likes: string[];

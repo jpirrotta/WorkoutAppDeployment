@@ -61,7 +61,7 @@ export default function ExerciseSetsForm({ exercise, setsFlag, setSetsFlag }: Ex
     const exerciseSetsForm = useForm<z.infer<typeof exerciseSetsSchema>>({
         resolver: zodResolver(exerciseSetsSchema),
         defaultValues: {
-            sets: exercise.sets.length > 0 ? exercise.sets : [{ sets: 0, reps: 0, weight: 0 }],
+            sets: exercise.sets?.length > 0 ? exercise.sets : [{ sets: 0, reps: 0, weight: 0 }],
         },
     });
 

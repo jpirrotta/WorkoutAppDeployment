@@ -43,6 +43,9 @@ import { flattenSets, hasExerciseChanges } from '@/lib/workout';
 import { forEach } from 'lodash';
 import { collectWorkoutHistoryData } from '@/lib/workout';
 import { useRouter } from 'next/navigation';
+import { useExercises } from '@/utils/fetchData';
+import { toast } from 'sonner';
+import logger from '@/lib/logger';
 
 export default function WorkoutPlayer({ id }: { id: string }) {
   const [api, setApi] = useAtom(carouselApiAtom);
@@ -57,11 +60,54 @@ export default function WorkoutPlayer({ id }: { id: string }) {
   const duration = useAtomValue(workoutDurationAtom);
   const resetPlayerStates = useSetAtom(resetPlayerAtoms);
 
+  // get all exercises
+  const { data: allExercises, error } = useExercises();
+
   const { mutate: updateExerciseSets } = useWorkoutExerciseUpdate();
   const { mutate: saveToHistory } = useWorkoutHistorySave();
   const router = useRouter();
 
   const { data } = useGetAllWorkouts();
+
+  useEffect(() => {
+    if (error) {
+      toast.error('Seems like there was an issue getting your Exercises :(', {
+        description: error.message,
+      });
+    }
+
+    if (allExercises) {
+      logger.info(`Fetched ${allExercises.length} exercises`);
+
+      // get the workout to be played, it will never be undefined
+      const workoutToBePlayed = data?.find((val) => val._id === id);
+
+      if (!workoutToBePlayed) {
+        logger.error(`No workout found with id ${id}`);
+        return;
+      }
+
+      // filter the exercises that are in the workout
+      const filteredExercises = workoutToBePlayed.exercises.map((exercise) => {
+        // overriding the exercise we are finding since we are sure that it exists
+        const workoutExe = allExercises.find((e) => e.id === exercise.id)!;
+
+        return {
+          _id: exercise._id,
+          ...workoutExe,
+          sets: exercise?.sets || [],
+        }
+      })
+
+      if (filteredExercises.length > 0) {
+        setExercises(filteredExercises);
+      }
+      else {
+        logger.error(`No exercises found in the workout`);
+      }
+    }
+  }
+    , [error, allExercises, data, id]);
 
   const shouldUpdateWorkoutSets = useMemo(() => {
     return hasExerciseChanges(exercises, exerciseFormValues);
@@ -117,7 +163,6 @@ export default function WorkoutPlayer({ id }: { id: string }) {
     const workout = data.find((val) => val._id === id);
     if (!workout?.exercises) return;
 
-    setExercises(workout.exercises);
     setTotalSteps(workout.exercises.length);
 
     // Initialize exercise states

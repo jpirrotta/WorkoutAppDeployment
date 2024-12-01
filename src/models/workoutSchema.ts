@@ -10,44 +10,13 @@ type ExerciseDocument = Exercise & Document;
 type WorkoutDocument = Workout & Document;
 
 const exerciseSchema = new Schema<ExerciseDocument>({
+  // UPDATE: we will only store respected exercise id that is related to API we are using
   // this the id that comes from the api
-  // mongo will create its own _id
+  // mongo will create its own _id as well
   id: {
     type: String,
     required: [true, 'ID is required'],
     maxlength: [100, 'ID cannot be greater than 100 characters'],
-  },
-  bodyPart: {
-    type: String,
-    required: [true, 'Body Part is required'],
-    maxlength: [100, 'Body Part cannot be greater than 100 characters'],
-  },
-  gifUrl: {
-    type: String,
-    required: [false, 'Gif URL is required'],
-  },
-  equipment: {
-    type: String,
-    required: [true, 'Equipment is required'],
-    maxlength: [100, 'Equipment cannot be greater than 100 characters'],
-  },
-  name: {
-    type: String,
-    required: [true, 'Name is required'],
-    maxlength: [100, 'Name cannot be greater than 100 characters'],
-  },
-  target: {
-    type: String,
-    required: [true, 'Target is required'],
-    maxlength: [100, 'Target cannot be greater than 100 characters'],
-  },
-  secondaryMuscles: {
-    type: [String],
-    required: [true, 'Secondary Muscles are required'],
-  },
-  instructions: {
-    type: [String],
-    required: [true, 'Instructions are required'],
   },
   sets: [
     {

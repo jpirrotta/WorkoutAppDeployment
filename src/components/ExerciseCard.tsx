@@ -18,7 +18,7 @@ import AddExerciseToWorkout from './workout/AddExerciseToWorkout';
 import logger from '@/lib/logger';
 
 import { selectedExercisesAtom, setsMissingExerciseAtom } from '@/store';
-import { useAtom } from 'jotai';
+import { useAtomValue, useAtom } from 'jotai';
 
 import { Star } from 'lucide-react'; // Import the star icon
 
@@ -50,7 +50,7 @@ export default function ExerciseCard({
   const [SelectedExercises, setSelectedExercises] = useAtom(
     selectedExercisesAtom
   );
-  const [setsMissingExercise, setSetsMissingExercise] = useAtom(setsMissingExerciseAtom);
+  const setsMissingExerciseIds = useAtomValue(setsMissingExerciseAtom);
   const [isFavorited, setIsFavorited] = useState(false); // State to track if the exercise is favorited
   const [isSetsOpen, setIsSetsOpen] = useState(false); // State to track if the sets editing is needed
   const mutation = useFavMutate();
@@ -58,13 +58,13 @@ export default function ExerciseCard({
 
   useEffect(() => {
     if (isLoaded && isSignedIn && user) {
-      if (setsMissingExercise && setsMissingExercise.length > 0) {
-        if (setsMissingExercise?.includes(exercise._id!)) {
+      if (setsMissingExerciseIds && setsMissingExerciseIds.length > 0) {
+        if (setsMissingExerciseIds?.includes(exercise._id!)) {
           setIsSetsOpen(true);
         }
       }
     }
-  }, [isLoaded, isSignedIn, user, setsMissingExercise]);
+  }, [isLoaded, isSignedIn, user, setsMissingExerciseIds]);
 
   const ImageToggler = () => {
     setShowDemo((prev) => !prev);

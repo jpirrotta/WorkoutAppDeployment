@@ -19,30 +19,56 @@ export const ExerciseOptions: RequestInit = {
   },
 };
 
+async function isValidImageUrl(url: string): Promise<boolean> {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    const contentType = response.headers.get('content-type');
+    return response.ok && Boolean(contentType?.startsWith('image/'));
+  } catch {
+    return false;
+  }
+}
+
 async function fetchExercises(url: string): Promise<Exercise[]> {
   const localStorageKey = 'fetchedData';
+
+  async function fetchAndValidate(): Promise<Exercise[]> {
+    logger.info(`FETCHING exercises from ${url}`);
+    const response = await fetch(url, ExerciseOptions);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok.');
+    }
+
+    const data = await response.json() as Exercise[];
+    
+    // Validate first gif URL
+    if (data.length > 0 && !(await isValidImageUrl(data[0].gifUrl))) {
+      logger.warn('Invalid GIF URL detected, clearing cache');
+      localStorage.removeItem(localStorageKey);
+      throw new Error('Invalid GIF URLs detected');
+    }
+
+    localStorage.setItem(localStorageKey, JSON.stringify(data));
+    return data;
+  }
 
   // Check if data is in local storage
   const initialData = localStorage.getItem(localStorageKey);
 
   if (!initialData) {
-    logger.info(`FETCHING exercises from ${url}`);
-    // If nothing is in local storage, fetch the data
-    const response = await fetch(url, ExerciseOptions);
-
-    if (response.ok) {
-      const data = await response.json() as Promise<Exercise[]>;
-      localStorage.setItem(localStorageKey, JSON.stringify(data));
-      return data;
-      // Save the fetched data to local storage
-    } else {
-      throw new Error('Network response was not ok.');
-    }
-  } else {
-    // Parse the data from local storage
-    return JSON.parse(initialData) as Exercise[];
+    return fetchAndValidate();
   }
 
+  // Validate cached data
+  const parsedData = JSON.parse(initialData) as Exercise[];
+  if (parsedData.length > 0 && !(await isValidImageUrl(parsedData[0].gifUrl))) {
+    logger.warn('Cached GIF URL invalid, refetching');
+    localStorage.removeItem(localStorageKey);
+    return fetchAndValidate();
+  }
+
+  return parsedData;
 }
 
 // Custom Hook to fetch and cache the API data (using react-query)

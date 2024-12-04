@@ -20,11 +20,19 @@ export const ExerciseOptions: RequestInit = {
 };
 
 // Replace the existing isValidImageUrl function
+// Modified isValidImageUrl function
 async function isValidImageUrl(url: string): Promise<boolean> {
+  // Don't validate exercisedb.io URLs since they use different authentication
+  if (url.includes('exercisedb.io')) {
+    return true;  // Trust the URLs from the API response
+  }
+
   try {
     const response = await fetch(url, {
-      ...ExerciseOptions, // Include the API authentication headers
-      method: 'HEAD'
+      method: 'GET',  // Using GET instead of HEAD
+      headers: {
+        'Accept': 'image/gif'  // Only accept GIF images
+      }
     });
     return response.ok;
   } catch {

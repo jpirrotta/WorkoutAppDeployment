@@ -19,11 +19,14 @@ export const ExerciseOptions: RequestInit = {
   },
 };
 
+// Replace the existing isValidImageUrl function
 async function isValidImageUrl(url: string): Promise<boolean> {
   try {
-    const response = await fetch(url, { method: 'HEAD' });
-    const contentType = response.headers.get('content-type');
-    return response.ok && Boolean(contentType?.startsWith('image/'));
+    const response = await fetch(url, {
+      ...ExerciseOptions, // Include the API authentication headers
+      method: 'HEAD'
+    });
+    return response.ok;
   } catch {
     return false;
   }

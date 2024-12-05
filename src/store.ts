@@ -73,7 +73,7 @@ export const resetPlayerAtoms = atom(null, (_get, set) => {
 
 // Used in Social Feed for number of posts to render per load
 export const pageAtom = atom<number>(1);
-export const itemsPerPageAtom = atom<number>(10);
+export const itemsPerPageAtom = atom<number>(100);
 
 // create workout from selected exercises atom
 export const selectedExercisesAtom = atom<Exercise[]>([]);

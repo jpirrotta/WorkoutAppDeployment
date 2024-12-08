@@ -12,6 +12,7 @@ import {
 } from '@/actions/publicWorkout';
 import { BaseWorkout } from '@/types';
 import { toast } from 'sonner';
+import { useUser } from '@clerk/clerk-react';
 
 const usePublicWorkoutMutate = (
   option: 'like' | 'unlike' | 'comment' | 'uncomment' | 'save'
@@ -29,6 +30,8 @@ const usePublicWorkoutMutate = (
   unknown
 > => {
   const queryClient = useQueryClient();
+  const { user } = useUser();
+  const userId = user?.id ?? '';
   return useMutation({
     mutationFn: (retVal: {
       userId: string;
@@ -76,6 +79,11 @@ const usePublicWorkoutMutate = (
       }
     },
     onSuccess: (data, variables) => {
+      if (option === 'save') {
+        queryClient.invalidateQueries({
+          queryKey: ['workouts', userId],
+        });
+      }
       queryClient.invalidateQueries({
         queryKey: ['public-workouts', variables.page, variables.itemsPerPage],
       });

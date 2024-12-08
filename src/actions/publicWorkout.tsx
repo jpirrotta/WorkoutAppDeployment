@@ -6,6 +6,7 @@ import UserModel from '@/models/userSchema';
 import { UserDocument } from '@/models/userSchema';
 import logger from '@/lib/logger';
 import { BaseWorkout } from '@/types';
+import { ObjectId } from 'mongodb';
 
 /**
  * Adds like to publicWorkout data.
@@ -37,7 +38,7 @@ export async function addLikePublicWorkout(
       logger.info(`User ${userId} found`);
     }
 
-    // find the owner of the workout
+    // Find the owner of the workout
     let workoutOwner: UserDocument | null = await UserModel.findOne({
       workouts: { $elemMatch: { _id: workoutId } },
     });
@@ -55,10 +56,14 @@ export async function addLikePublicWorkout(
     // Check if userId already exists in the saves array
     const existingLike = await UserModel.findOne({
       userId: workoutOwner.userId,
-      'workouts._id': workoutId,
-      'workouts.likes.userId': userId,
+      workouts: {
+        $elemMatch: {
+          _id: workoutId,
+          'likes.userId': userId
+        }
+      }
     });
-
+    console.log("Existinglike: ",existingLike);
     if (existingLike) {
       logger.info("User has already liked this workout. Their ID has not been added to the workout's likes list");
     } else {
@@ -109,7 +114,7 @@ export async function removeLikePublicWorkout(
       logger.info(`User ${userId} found`);
     }
 
-    // find the owner of the workout
+    // Find the owner of the workout
     let workoutOwner: UserDocument | null = await UserModel.findOne({
       workouts: { $elemMatch: { _id: workoutId } },
     });
@@ -271,37 +276,16 @@ export async function addSavePublicWorkout(
       logger.info(`Workout owner ${workoutOwner.name} found`);
     }
 
-    
-    // Reset social feed data before saving as a "fresh" workout to user's workout library (also add previous owner's name to title)
-    workoutToBeSaved.name = `${workoutOwner.name} - ${workoutToBeSaved.name}`;
-    workoutToBeSaved.public = false;
-    workoutToBeSaved.likes = [];
-    workoutToBeSaved.comments = [];
-    workoutToBeSaved.saves = [];
-
-
-    // Add workout to user's workouts list (only if it does not already exist there)
-    const userResult = await UserModel.updateOne(
-      {
-        userId: user.userId,
-      },
-      {
-        $addToSet: { workouts: workoutToBeSaved },
-      }
-    );
-    if (userResult.modifiedCount > 0) {
-      logger.info('Workout successfully added to user workout library');
-    } else {
-      logger.info('User has already has a copy of this workout in their library');
-      return false;
-    }
-
 
     // Check if userId already exists in the saves array
     const existingSave = await UserModel.findOne({
       userId: workoutOwner.userId,
-      'workouts._id': workoutToBeSaved._id,
-      'workouts.saves.userId': userId,
+      workouts: {
+        $elemMatch: {
+          _id: workoutToBeSaved._id,
+          'saves.userId': userId
+        }
+      }
     });
 
     if (existingSave) {
@@ -326,8 +310,43 @@ export async function addSavePublicWorkout(
         logger.info("Error saving user's ID to workout's saves list");
       }
     }
+    
 
-    return true;
+    // Reset social feed data before saving as a "fresh" workout to user's workout library (also add previous owner's name to title)
+    workoutToBeSaved.name = `${workoutOwner.name} - ${workoutToBeSaved.name}`;
+    workoutToBeSaved.public = false;
+    workoutToBeSaved.likes = [];
+    workoutToBeSaved.comments = [];
+    workoutToBeSaved.saves = [];
+    workoutToBeSaved._id = new ObjectId().toString();
+
+
+    // Check if user has workout with same name already saved
+    const existingWorkout = await UserModel.findOne({
+      userId: user.userId,
+      workouts: {
+        $elemMatch: {
+          name: workoutToBeSaved.name
+        }
+      }
+    });
+    if (existingWorkout) {
+      logger.info('User already has a workout with the same name in their library');
+      return false;
+    }
+
+    // Add workout to user's workouts list
+    const userResult = await UserModel.updateOne(
+      { userId: user.userId },
+      { $addToSet: {workouts: workoutToBeSaved} }
+    );
+    if (userResult.modifiedCount > 0) {
+      logger.info('Workout successfully added to user workout library');
+      return true;
+    } else {
+      logger.info('User has already has a copy of this workout in their library');
+      return false;
+    }
   } catch (error) {
     logger.error(`Error: ${error}`);
     return Error(`${error}`);
